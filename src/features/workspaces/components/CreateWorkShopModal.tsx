@@ -6,11 +6,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { useCreateWorkspace } from "../api/useCreateWorkspace";
 import { useCreateWorkspaceModal } from "../store/useCreateWorkspaceModal";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 export const CreateWorkspaceModal = () => {
   const router = useRouter();
@@ -30,7 +30,8 @@ export const CreateWorkspaceModal = () => {
       { name },
       {
         onSuccess({ id }) {
-            toast.success("Workspace created")
+          setIsOpen(false);
+          toast.success("Workspace created");
           router.push(`/workspace/${id}`);
         },
       }
@@ -54,7 +55,7 @@ export const CreateWorkspaceModal = () => {
             placeholder="Workspace name e.g. 'Work', 'Personal', 'Home'"
           />
           <div className="flex justify-end">
-            <Button disabled={false}>Create</Button>
+            <Button disabled={isPending}>Create</Button>
           </div>
         </form>
       </DialogContent>

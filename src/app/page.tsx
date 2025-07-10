@@ -17,8 +17,8 @@ export default function Home() {
     if (isLoading) return;
 
     if (workspaceId) {
-      router.replace(`/workspace/${workspaceId}`);
       setIsOpen(false);
+      router.replace(`/workspace/${workspaceId}`);
     } else if (!isOpen) {
       setIsOpen(true);
       console.log("Open modal");
