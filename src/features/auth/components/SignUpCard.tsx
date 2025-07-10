@@ -11,17 +11,48 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { SignInFlow } from "../types";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { TriangleAlertIcon } from "lucide-react";
 import { useState } from "react";
+import { SignInFlow } from "../types";
 
 interface SignUpCardProps {
   setAuthState: (state: SignInFlow) => void;
 }
 
 export const SignUpCard = ({ setAuthState }: SignUpCardProps) => {
+  const { signIn } = useAuthActions();
+
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSignInProvider = (value: "github" | "google") => {
+    setPending(true);
+    signIn(value).finally(() => {
+      setPending(false);
+    });
+  };
+
+  const handlePasswordSignUp = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPending(true);
+
+    if (password !== confirmpassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    signIn("password", { name,email, password, flow: "signUp" })
+      .catch(() => {
+        setError("Failed to sign in");
+      })
+      .finally(() => setPending(false));
+  };
+
   return (
     <Card className="w-full h-full p-8">
       <CardHeader className="px-0 pt-0">
@@ -30,10 +61,23 @@ export const SignUpCard = ({ setAuthState }: SignUpCardProps) => {
           Use your email or another service to continue
         </CardDescription>
       </CardHeader>
+      {error && (
+        <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6">
+          <TriangleAlertIcon className="size-4" />
+          <p>{error}</p>
+        </div>
+      )}
       <CardContent className="space-y-5 px-0 pb-0">
-        <form className="space-y-2.5">
+        <form onSubmit={(e) => handlePasswordSignUp(e)} className="space-y-2.5">
           <Input
-            disabled={false}
+            disabled={pending}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Full name"
+            required
+          />
+          <Input
+            disabled={pending}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
@@ -41,7 +85,7 @@ export const SignUpCard = ({ setAuthState }: SignUpCardProps) => {
             required
           />
           <Input
-            disabled={false}
+            disabled={pending}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
@@ -49,22 +93,22 @@ export const SignUpCard = ({ setAuthState }: SignUpCardProps) => {
             required
           />
           <Input
-            disabled={false}
+            disabled={pending}
             value={confirmpassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Confirm Password"
             type="password"
             required
           />
-          <Button type="submit" className="w-full" size="lg" disabled>
+          <Button type="submit" className="w-full" size="lg" disabled={pending}>
             Continue
           </Button>
         </form>
         <Separator />
         <div className="flex flex-col gap-y-2.5">
           <Button
-            disabled={false}
-            onClick={() => {}}
+            disabled={pending}
+            onClick={() => handleSignInProvider("google")}
             variant="outline"
             size="lg"
             className="w-full relative">
@@ -72,8 +116,8 @@ export const SignUpCard = ({ setAuthState }: SignUpCardProps) => {
             Continue with Google
           </Button>
           <Button
-            disabled={false}
-            onClick={() => {}}
+            disabled={pending}
+            onClick={() => handleSignInProvider("github")}
             variant="outline"
             size="lg"
             className="w-full relative">
