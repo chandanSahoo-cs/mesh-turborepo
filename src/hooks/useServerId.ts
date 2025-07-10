@@ -1,7 +1,7 @@
 import { useParams } from "next/navigation";
 import { Id } from "../../convex/_generated/dataModel";
 
-export const useWorkspaceId = () => {
+export const useServerId = () => {
   const params = useParams();
-  return params.workspaceId as Id<"workspace">;
+  return params.serverId as Id<"servers">;
 };

@@ -3,11 +3,11 @@
 import { Sidebar } from "./components/Sidebar";
 import { Toolbar } from "./components/Tootlbar";
 
-interface WorkspaceIdLayoutProps {
+interface ServerIdLayoutProps {
   children: React.ReactNode;
 }
 
-const WorkspaceLayout = ({ children }: WorkspaceIdLayoutProps) => {
+const ServerLayout = ({ children }: ServerIdLayoutProps) => {
   return (
     <div className="h-full">
       <Toolbar />
@@ -19,4 +19,4 @@ const WorkspaceLayout = ({ children }: WorkspaceIdLayoutProps) => {
   );
 };
 
-export default WorkspaceLayout;
+export default ServerLayout;

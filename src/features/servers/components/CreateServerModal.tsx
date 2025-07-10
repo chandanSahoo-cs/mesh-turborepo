@@ -9,30 +9,30 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useCreateWorkspace } from "../api/useCreateWorkspace";
-import { useCreateWorkspaceModal } from "../store/useCreateWorkspaceModal";
+import { useCreateServer } from "../api/useCreateServer";
+import { useCreateServerModal } from "../store/useCreateServerModal";
 
-export const CreateWorkspaceModal = () => {
+export const CreateServerModal = () => {
   const router = useRouter();
-  const { isOpen, setIsOpen } = useCreateWorkspaceModal();
+  const { isOpen, setIsOpen } = useCreateServerModal();
   const [name, setName] = useState("");
 
-  const { createWorkspace, isPending } = useCreateWorkspace();
+  const { createServer, isPending } = useCreateServer();
 
   const handleClose = () => {
     setIsOpen(false);
     setName("");
   };
 
-  const handleCreateWorkspace = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateServer = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await createWorkspace(
+    await createServer(
       { name },
       {
         onSuccess({ id }) {
           setIsOpen(false);
-          toast.success("Workspace created");
-          router.push(`/workspace/${id}`);
+          toast.success("Server created");
+          router.push(`/servers/${id}`);
         },
       }
     );
@@ -42,9 +42,9 @@ export const CreateWorkspaceModal = () => {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add a workspace</DialogTitle>
+          <DialogTitle>Add a server</DialogTitle>
         </DialogHeader>
-        <form className="space-y-4" onSubmit={handleCreateWorkspace}>
+        <form className="space-y-4" onSubmit={handleCreateServer}>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -52,7 +52,7 @@ export const CreateWorkspaceModal = () => {
             disabled={false}
             autoFocus
             minLength={3}
-            placeholder="Workspace name e.g. 'Work', 'Personal', 'Home'"
+            placeholder="Server name e.g. 'Work', 'Personal', 'Home'"
           />
           <div className="flex justify-end">
             <Button disabled={isPending}>Create</Button>

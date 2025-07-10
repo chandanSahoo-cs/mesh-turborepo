@@ -2,12 +2,12 @@ import { useQuery } from "convex/react"
 import { api } from "../../../../convex/_generated/api"
 import { Id } from "../../../../convex/_generated/dataModel"
 
-interface useGetWorkspaceByIdProps {
-    id : Id<"workspace">
+interface useGetServerByIdProps {
+    id : Id<"servers">
 }
 
-export const useGetWorkspaceById = ({id}:useGetWorkspaceByIdProps) =>{
-    const data = useQuery(api.workspaces.getWorkspaceById,{
+export const useGetServerById = ({id}:useGetServerByIdProps) =>{
+    const data = useQuery(api.servers.getServerById,{
         id
     })
     const isLoading = data === undefined;

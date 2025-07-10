@@ -5,7 +5,7 @@ interface ModalStore {
     setIsOpen: (isOpen:boolean) => void;
 } 
 
-export const useCreateWorkspaceModal = create<ModalStore>((set)=>({
+export const useCreateServerModal = create<ModalStore>((set)=>({
     isOpen: false,
     setIsOpen : (isOpen) => set({isOpen})
 }));

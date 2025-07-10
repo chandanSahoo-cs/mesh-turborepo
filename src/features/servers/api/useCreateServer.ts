@@ -8,7 +8,7 @@ interface RequestType {
 }
 
 interface ResponseType {
-  id: Id<"workspace"> | null;
+  id: Id<"servers"> | null;
 }
 
 interface Options {
@@ -20,7 +20,7 @@ interface Options {
 
 type Status = "success" | "error" | "settled" | "pending" | null;
 
-export const useCreateWorkspace = () => {
+export const useCreateServer = () => {
   const [data, setData] = useState<ResponseType | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
@@ -31,9 +31,9 @@ export const useCreateWorkspace = () => {
   const isError = useMemo(() => status === "error", [status]);
   const isSettled = useMemo(() => status === "settled", [status]);
 
-  const create = useMutation(api.workspaces.createWorkspaces);
+  const create = useMutation(api.servers.createServer);
 
-  const createWorkspace = useCallback(
+  const createServer = useCallback(
     async (
       { name }: RequestType,
       { onSuccess, onSettled, onError, throwError }: Options
@@ -43,7 +43,7 @@ export const useCreateWorkspace = () => {
         setError(null);
 
         setStatus("pending");
-        console.log("Creating workspace");
+        console.log("Creating server");
         const response = await create({ name });
 
         onSuccess?.({ id: response });
@@ -65,7 +65,7 @@ export const useCreateWorkspace = () => {
   );
 
   return {
-    createWorkspace,
+    createServer,
     data,
     error,
     isPending,

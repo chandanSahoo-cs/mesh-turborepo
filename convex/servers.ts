@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-export const createWorkspaces = mutation({
+export const createServer = mutation({
   args: {
     name: v.string(),
   },
@@ -15,40 +15,40 @@ export const createWorkspaces = mutation({
 
       const joinCode = "123456";
 
-      const workspaceId = await ctx.db.insert("workspace", {
+      const serverId = await ctx.db.insert("servers", {
         name: name,
         ownerId: userId,
         joinCode,
       });
 
-      if (!workspaceId) {
-        throw new ConvexError("Failed to create workspace");
+      if (!serverId) {
+        throw new ConvexError("Failed to create server");
       }
 
-      return workspaceId;
+      return serverId;
     } catch (error) {
       console.log(error);
     }
   },
 });
 
-export const getWorkspaces = query({
+export const getServers = query({
   args: {},
   handler: async (ctx) => {
     try {
-      const workspaces = await ctx.db.query("workspace").collect();
-      if (!workspaces) {
-        throw new ConvexError("No workspace exists");
+      const servers = await ctx.db.query("servers").collect();
+      if (!servers) {
+        throw new ConvexError("No server exists");
       }
-      return workspaces;
+      return servers;
     } catch (error) {
       console.log(error);
     }
   },
 });
 
-export const getWorkspaceById = query({
-  args: { id: v.id("workspace") },
+export const getServerById = query({
+  args: { id: v.id("servers") },
   handler: async (ctx, { id }) => {
     try {
       const userId = await getAuthUserId(ctx);
@@ -57,12 +57,12 @@ export const getWorkspaceById = query({
         throw new ConvexError("Unauthorized user");
       }
 
-      const workspace = await ctx.db.get(id);
+      const server = await ctx.db.get(id);
 
-      if (!workspace) {
-        throw new ConvexError("Failed to fetch workspace");
+      if (!server) {
+        throw new ConvexError("Failed to fetch server");
       }
-      return workspace;
+      return server;
     } catch (error) {
       console.log(error)
     }

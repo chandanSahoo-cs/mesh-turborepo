@@ -1,30 +1,30 @@
 "use client";
 
 import { UserButton } from "@/features/auth/components/UserButton";
-import { useGetWorkspaces } from "@/features/workspaces/api/useGetWorkspaces";
-import { useCreateWorkspaceModal } from "@/features/workspaces/store/useCreateWorkspaceModal";
+import { useGetServers } from "@/features/servers/api/useGetServers";
+import { useCreateServerModal } from "@/features/servers/store/useCreateServerModal";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
 export default function Home() {
   const router = useRouter();
-  const { isOpen, setIsOpen } = useCreateWorkspaceModal();
+  const { isOpen, setIsOpen } = useCreateServerModal();
 
-  const { workspaceData, isLoading } = useGetWorkspaces();
-  const workspaceId = useMemo(() => workspaceData?.[0]?._id, [workspaceData]);
+  const { serverData, isLoading } = useGetServers();
+  const serverId = useMemo(() => serverData?.[0]?._id, [serverData]);
 
   useEffect(() => {
     if (isLoading) return;
 
-    if (workspaceId) {
+    if (serverId) {
       setIsOpen(false);
-      router.replace(`/workspace/${workspaceId}`);
+      router.replace(`/servers/${serverId}`);
     } else if (!isOpen) {
       setIsOpen(true);
       console.log("Open modal");
       console.log("isOpen: ", isOpen);
     }
-  }, [workspaceId, isLoading, isOpen]);
+  }, [serverId, isLoading, isOpen]);
 
   return (
     <div>

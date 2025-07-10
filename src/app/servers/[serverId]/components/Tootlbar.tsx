@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { useGetWorkspaceById } from "@/features/workspaces/api/useGetWorkspaceById";
-import { useWorkspaceId } from "@/hooks/useWorkspaceId";
+import { useGetServerById } from "@/features/servers/api/useGetServerById";
+import { useServerId } from "@/hooks/useServerId";
 import { InfoIcon, SearchIcon } from "lucide-react";
 
 interface ToolbarProps {}
 export const Toolbar = ({}: ToolbarProps) => {
 
-    const workspaceId = useWorkspaceId();
-    const {data , isLoading} = useGetWorkspaceById({id:workspaceId})
+    const serverId = useServerId();
+    const {data , isLoading} = useGetServerById({id:serverId})
 
   return (
     <div className="bg-[#481349] flex items-center justify-between h-10 p-1.5">

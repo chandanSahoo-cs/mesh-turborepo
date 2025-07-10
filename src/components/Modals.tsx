@@ -1,6 +1,6 @@
 "use client";
 
-import { CreateWorkspaceModal } from "@/features/workspaces/components/CreateWorkShopModal";
+import { CreateServerModal } from "@/features/servers/components/CreateServerModal";
 import { useEffect, useState } from "react";
 
 export const Modals = () => {
@@ -15,7 +15,7 @@ export const Modals = () => {
 
   return (
     <>
-      <CreateWorkspaceModal />
+      <CreateServerModal />
     </>
   );
 };
