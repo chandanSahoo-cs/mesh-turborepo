@@ -32,6 +32,7 @@ export const CreateServerModal = () => {
         onSuccess({ id }) {
           setIsOpen(false);
           toast.success("Server created");
+          setName("");
           router.push(`/servers/${id}`);
         },
       }

@@ -1,20 +1,41 @@
+import { useGetChannels } from "@/features/channels/api/useGetChannels";
 import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
+import { useGetMembers } from "@/features/serverMembers/api/useGetMembers";
 import { useGetServerById } from "@/features/servers/api/useGetServerById";
 import { useServerId } from "@/hooks/useServerId";
-import { AlertTriangleIcon, LoaderIcon } from "lucide-react";
+import {
+  AlertTriangleIcon,
+  HashIcon,
+  LoaderIcon,
+  MessageSquareTextIcon,
+  SendHorizonalIcon,
+} from "lucide-react";
 import { ServerHeader } from "./ServerHeader";
+import { ServerSection } from "./ServerSection";
+import { SidebarItem } from "./SidebarItem";
+import { UserItem } from "./UserItem";
 
 export const ServerSidebar = () => {
   const serverId = useServerId();
 
-  const { data: member, isLoading: memberLoading } = useCurrentMember({
-    serverId,
-  });
+  const { data: currentMember, isLoading: currentMemberLoading } =
+    useCurrentMember({
+      serverId,
+    });
   const { data: server, isLoading: serverLoading } = useGetServerById({
     id: serverId,
   });
 
-  if (serverLoading || memberLoading) {
+  const { data: channels, isLoading: channelsLoading } = useGetChannels({
+    serverId,
+  });
+
+  const { data: serverMembers, isLoading: serverMembersLoading } =
+    useGetMembers({
+      serverId,
+    });
+
+  if (serverLoading || currentMemberLoading) {
     return (
       <div className="flex flex-col bg-[#5E2C5F] h-full items-center justify-center">
         <LoaderIcon className="size-5 animate-spin text-white" />
@@ -22,7 +43,7 @@ export const ServerSidebar = () => {
     );
   }
 
-  if (!server || !member) {
+  if (!server || !currentMember) {
     return (
       <div className="flex flex-col gap-y-2 bg-[#5E2C5F] h-full items-center justify-center">
         <AlertTriangleIcon className="size-5  text-white" />
@@ -32,7 +53,43 @@ export const ServerSidebar = () => {
   }
   return (
     <div className="flex flex-col bg-[#5e2c5f] h-full">
-      <ServerHeader server={server} member={member}/>
+      <ServerHeader server={server} member={currentMember} />
+      <div className="flex flex-col px-2 mt-3">
+        <SidebarItem
+          label="Threads"
+          icon={MessageSquareTextIcon}
+          id="threads"
+        />
+        <SidebarItem
+          label="Drafts & sent"
+          icon={SendHorizonalIcon}
+          id="drafts"
+        />
+      </div>
+      <ServerSection label="Channels" hint="New channel" onNew={() => {}}>
+        {channels?.map(
+          (channelItem) =>
+            channelItem.type !== "category" && (
+              <SidebarItem
+                key={channelItem._id}
+                icon={HashIcon}
+                label={channelItem.name}
+                id={channelItem._id}
+              />
+            )
+        )}
+      </ServerSection>
+      <ServerSection label="Members" hint="Members">
+        {serverMembers?.map((serverMember) => (
+          <div>
+            <UserItem
+              id={serverMember._id}
+              label={serverMember.memberInfo?.name}
+              image={serverMember.memberInfo?.image}
+            />
+          </div>
+        ))}
+      </ServerSection>
     </div>
   );
 };

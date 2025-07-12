@@ -1,7 +1,7 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { query } from "./_generated/server";
-import { ServerPermission, serverPermissionValidator } from "./schema";
+import { serverPermissionValidator } from "./schema";
+import {checkPermission} from "../src/lib/permissions"
 
 // export const SERVER_PERMISSIONS = [
 //   // Server management
@@ -47,38 +47,7 @@ export const hasPermission = query({
     permission: serverPermissionValidator,
   },
   handler: async (ctx, { memberId, permission }) => {
-    try {
-      const userId = await getAuthUserId(ctx);
-
-      if (!userId) {
-        return false;
-      }
-
-      const serverMember = await ctx.db.get(memberId);
-
-      if (!serverMember) {
-        return false;
-      }
-
-      const server = await ctx.db.get(serverMember?.serverId);
-
-      if (server?.ownerId === userId) {
-        return true;
-      }
-
-      const roles = await Promise.all(
-        serverMember.roleIds.map((roleId) => ctx.db.get(roleId))
-      );
-
-      const userPermissions: ServerPermission[] = roles.flatMap(
-        (role) => role?.permissions ?? []
-      );
-
-      const isPermitted = userPermissions.includes(permission);
-
-      return isPermitted;
-    } catch (error) {
-      console.log(error);
-    }
+    const isPermitted = checkPermission({ctx,memberId,permission});
+    return isPermitted;
   },
 });

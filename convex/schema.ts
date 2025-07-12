@@ -81,8 +81,7 @@ const schema = defineSchema({
     ownerId: v.id("users"),
     joinCode: v.string(),
     profileImageUrl: v.optional(v.string()),
-  })
-  .index("byOwnerId",["ownerId"]),
+  }).index("byOwnerId", ["ownerId"]),
 
   serverMembers: defineTable({
     userId: v.id("users"),
@@ -99,6 +98,20 @@ const schema = defineSchema({
     permissions: v.array(serverPermissionValidator),
     isEveryone: v.optional(v.boolean()),
   }).index("byServerId", ["serverId"]),
+
+  channels: defineTable({
+    name: v.string(),
+    serverId: v.id("servers"),
+    type: v.union(v.literal("text"), v.literal("voice"), v.literal("category")),
+    parentId: v.optional(v.id("channels")),
+    topic: v.optional(v.string()),
+    position: v.optional(v.number()),
+  })
+    .index("byServerId", ["serverId"])
+    .index("byParentId", ["parentId"])
+    .index("byServerAndParentId", ["serverId", "parentId"]),
+
+    
 });
 
 export default schema;

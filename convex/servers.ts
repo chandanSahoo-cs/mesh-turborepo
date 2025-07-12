@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
+import { checkPermission } from "../src/lib/permissions";
 import { mutation, query } from "./_generated/server";
 
 const generateCode = () => {
@@ -33,7 +34,6 @@ export const createServer = mutation({
         throw new ConvexError("Failed to create server");
       }
 
-      
       const everyoneRoleId = await ctx.db.insert("roles", {
         serverId,
         name: "@everyone",
@@ -41,11 +41,24 @@ export const createServer = mutation({
         isEveryone: true,
       });
 
-      const owner = await ctx.db.insert("serverMembers",{
+      const textChannels = await ctx.db.insert("channels", {
+        serverId,
+        name: "Text Channels",
+        type: "category",
+      });
+
+      await ctx.db.insert("channels", {
+        serverId,
+        name: "general",
+        type: "text",
+        parentId: textChannels,
+      });
+
+      await ctx.db.insert("serverMembers", {
         serverId,
         userId,
-        roleIds:[everyoneRoleId]
-      })
+        roleIds: [everyoneRoleId],
+      });
 
       if (!everyoneRoleId) {
         throw new ConvexError("Failed to create '@everyone' role");
@@ -133,6 +146,103 @@ export const getServerById = query({
       return server;
     } catch (error) {
       console.log(error);
+    }
+  },
+});
+
+export const renameServer = mutation({
+  args: {
+    serverId: v.id("servers"),
+    name: v.string(),
+  },
+  handler: async (ctx, { serverId, name }) => {
+    try {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+        throw new ConvexError("Unauthorized user");
+      }
+
+      const member = await ctx.db
+        .query("serverMembers")
+        .withIndex("uniqueMembership", (q) =>
+          q.eq("userId", userId).eq("serverId", serverId)
+        )
+        .unique();
+
+      if (!member) {
+        throw new ConvexError("User is not a server member");
+      }
+
+      const isPermitted = checkPermission({
+        ctx,
+        memberId: member._id,
+        permission: "MANAGE_SERVER",
+      });
+
+      if (!isPermitted) {
+        throw new ConvexError("User is not permitted to rename the server");
+      }
+
+      await ctx.db.patch(serverId, {
+        name: name,
+      });
+
+      return serverId;
+    } catch (error) {
+      console.error(error);
+    }
+  },
+});
+
+export const deleteServer = mutation({
+  args: {
+    serverId: v.id("servers"),
+  },
+  handler: async (ctx, { serverId }) => {
+    try {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+        throw new ConvexError("Unauthorized user");
+      }
+
+      const server = await ctx.db.get(serverId);
+
+      if (!server) {
+        throw new ConvexError("Server not found");
+      }
+
+      if (server.ownerId !== userId) {
+        throw new ConvexError("User is not permitted to delee the server");
+      }
+
+      const [serverMembers, roles, channels] = await Promise.all([
+        ctx.db
+          .query("serverMembers")
+          .withIndex("byServerId", (q) => q.eq("serverId", serverId))
+          .collect(),
+        ctx.db
+          .query("roles")
+          .withIndex("byServerId", (q) => q.eq("serverId", serverId))
+          .collect(),
+        ctx.db
+          .query("channels")
+          .withIndex("byServerId", (q) => q.eq("serverId", serverId))
+          .collect(),
+      ]);
+
+      await Promise.all([
+        ...serverMembers.map((serverMember) => ctx.db.delete(serverMember._id)),
+        ...roles.map((role) => ctx.db.delete(role._id)),
+        ...channels.map((channel) => ctx.db.delete(channel._id)),
+      ]);
+
+      await ctx.db.delete(serverId);
+
+      return serverId;
+    } catch (error) {
+      console.error(error);
     }
   },
 });
