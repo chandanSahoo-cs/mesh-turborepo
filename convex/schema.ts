@@ -4,39 +4,42 @@ import { v } from "convex/values";
 
 export const SERVER_PERMISSIONS = [
   // Server management
-  "MANAGE_SERVER",           // Rename/delete server, change settings
-  "VIEW_AUDIT_LOG",          // See server activity logs (if you have them)
+  "MANAGE_SERVER", // Rename/delete server, change settings
+  "VIEW_AUDIT_LOG", // See server activity logs (if you have them)
 
   // Member management
-  "MANAGE_MEMBERS",          // Kick, ban, or change member roles
-  "INVITE_MEMBERS",          // Generate invite links
+  "MANAGE_MEMBERS", // Kick, ban, or change member roles
+  "INVITE_MEMBERS", // Generate invite links
 
   // Role management
-  "MANAGE_ROLES",            // Create/edit/delete roles
+  "MANAGE_ROLES", // Create/edit/delete roles
 
   // Channel management
-  "MANAGE_CHANNELS",         // Create, edit, delete channels
+  "MANAGE_CHANNELS", // Create, edit, delete channels
 
   // Category management (if you support it)
-  "MANAGE_CATEGORIES",       // Create, edit, delete channel categories
+  "MANAGE_CATEGORIES", // Create, edit, delete channel categories
 
   // General communication control
-  "VIEW_CHANNELS",           // View channel list (server-level fallback)
-  "SEND_MESSAGES",           // Post messages in all text channels
-  "DELETE_MESSAGES",         // Delete anyone's messages
+  "VIEW_CHANNELS", // View channel list (server-level fallback)
+  "SEND_MESSAGES", // Post messages in all text channels
+  "DELETE_MESSAGES", // Delete anyone's messages
 
   // Voice control (if using voice)
-  "CONNECT_VOICE",           // Join voice channels
-  "MUTE_MEMBERS",            // Mute others in voice
-  "DEAFEN_MEMBERS",          // Deafen others in voice
-  "MOVE_MEMBERS",            // Move users between voice channels
+  "CONNECT_VOICE", // Join voice channels
+  "MUTE_MEMBERS", // Mute others in voice
+  "DEAFEN_MEMBERS", // Deafen others in voice
+  "MOVE_MEMBERS", // Move users between voice channels
 
   // Admin powers
-  "ADMINISTRATOR"            // Bypass all permission checks (dangerous)
+  "ADMINISTRATOR", // Bypass all permission checks (dangerous)
 ] as const;
 
 export type ServerPermission = (typeof SERVER_PERMISSIONS)[number];
 
+export const serverPermissionValidator = v.union(
+  ...SERVER_PERMISSIONS.map((perm) => v.literal(perm))
+);
 
 const schema = defineSchema({
   ...authTables,
@@ -73,14 +76,15 @@ const schema = defineSchema({
     .index("toUser", ["toUserId"])
     .index("fromUser", ["fromUserId"]),
 
-  servers : defineTable({
+  servers: defineTable({
     name: v.string(),
     ownerId: v.id("users"),
     joinCode: v.string(),
     profileImageUrl: v.optional(v.string()),
-  }),
+  })
+  .index("byOwnerId",["ownerId"]),
 
-  members: defineTable({
+  serverMembers: defineTable({
     userId: v.id("users"),
     serverId: v.id("servers"),
     roleIds: v.array(v.id("roles")),
@@ -92,7 +96,8 @@ const schema = defineSchema({
   roles: defineTable({
     serverId: v.id("servers"),
     name: v.string(),
-    permissions: v.array(v.string()),
+    permissions: v.array(serverPermissionValidator),
+    isEveryone: v.optional(v.boolean()),
   }).index("byServerId", ["serverId"]),
 });
 
