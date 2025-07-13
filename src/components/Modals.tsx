@@ -1,5 +1,6 @@
 "use client";
 
+import { CreateChannelModal } from "@/features/channels/components/CreateChannelModal";
 import { CreateServerModal } from "@/features/servers/components/CreateServerModal";
 import { useEffect, useState } from "react";
 
@@ -15,6 +16,7 @@ export const Modals = () => {
 
   return (
     <>
+      <CreateChannelModal/>
       <CreateServerModal />
     </>
   );

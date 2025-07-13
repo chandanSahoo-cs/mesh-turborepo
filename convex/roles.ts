@@ -47,7 +47,7 @@ export const hasPermission = query({
     permission: serverPermissionValidator,
   },
   handler: async (ctx, { memberId, permission }) => {
-    const isPermitted = checkPermission({ctx,memberId,permission});
+    const isPermitted = await checkPermission({ctx,memberId,permission});
     return isPermitted;
   },
 });

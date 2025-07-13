@@ -4,7 +4,7 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import { ServerPermission } from "../../../../convex/schema";
 
 interface useMemberPermissionsProps {
-  memberId: Id<"serverMembers">;
+  memberId?: Id<"serverMembers">;
   permission: ServerPermission;
 }
 
@@ -12,10 +12,15 @@ export const useMemberPermissions = ({
   memberId,
   permission,
 }: useMemberPermissionsProps) => {
-  const isPermitted = useQuery(api.roles.hasPermission, {
-    memberId,
-    permission,
-  });
+  const isPermitted = useQuery(
+    api.roles.hasPermission,
+    memberId
+      ? {
+          memberId,
+          permission,
+        }
+      : "skip"
+  );
   const isLoading = isPermitted === undefined;
 
   return {

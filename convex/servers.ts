@@ -174,7 +174,7 @@ export const renameServer = mutation({
         throw new ConvexError("User is not a server member");
       }
 
-      const isPermitted = checkPermission({
+      const isPermitted = await checkPermission({
         ctx,
         memberId: member._id,
         permission: "MANAGE_SERVER",
@@ -244,5 +244,134 @@ export const deleteServer = mutation({
     } catch (error) {
       console.error(error);
     }
+  },
+});
+
+export const generateNewJoinCode = mutation({
+  args: {
+    serverId: v.id("servers"),
+  },
+  handler: async (ctx, { serverId }) => {
+    try {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+        throw new ConvexError("Unauthorized user");
+      }
+
+      const member = await ctx.db
+        .query("serverMembers")
+        .withIndex("uniqueMembership", (q) =>
+          q.eq("userId", userId).eq("serverId", serverId)
+        )
+        .unique();
+
+      if (!member) {
+        throw new ConvexError("User is not a server member");
+      }
+
+      const isPermitted = checkPermission({
+        ctx,
+        memberId: member._id,
+        permission: "ADMINISTRATOR",
+      });
+
+      if (!isPermitted) {
+        throw new ConvexError("User is not allowed to change invite code");
+      }
+
+      const newJoinCode = generateCode();
+
+      await ctx.db.patch(serverId, {
+        joinCode: newJoinCode,
+      });
+
+      return serverId;
+    } catch (error) {
+      console.error(error);
+    }
+  },
+});
+
+export const joinServer = mutation({
+  args: {
+    joinCode: v.string(),
+    serverId: v.id("servers"),
+  },
+  handler: async (ctx, { joinCode, serverId }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError("Unauthorized User");
+    }
+
+    const server = await ctx.db.get(serverId);
+
+    if (!server) {
+      throw new Error("Server not found");
+    }
+
+    if (server.joinCode !== joinCode.toLowerCase()) {
+      throw new Error("Invalid join code");
+    }
+
+    const existingMember = await ctx.db
+      .query("serverMembers")
+      .withIndex("uniqueMembership", (q) =>
+        q.eq("userId", userId).eq("serverId", serverId)
+      )
+      .unique();
+
+    if (existingMember) {
+      throw new Error("Already joined the server");
+    }
+
+    const everyoneRole = await ctx.db
+      .query("roles")
+      .withIndex("byNameAndServerId", (q) =>
+        q.eq("name", "@everyone").eq("serverId", serverId)
+      )
+      .unique();
+
+    if (!everyoneRole) {
+      throw new ConvexError("Everyone Role not found");
+    }
+
+    await ctx.db.insert("serverMembers", {
+      serverId: serverId,
+      userId: userId,
+      roleIds: [everyoneRole?._id],
+    });
+
+    // console.log("serverId: ",serverId)
+
+    return serverId;
+  },
+});
+
+export const getServerInfoById = query({
+  args: {
+    serverId: v.id("servers"),
+  },
+  handler: async (ctx, { serverId }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      return null;
+    }
+
+    const member = await ctx.db
+      .query("serverMembers")
+      .withIndex("uniqueMembership", (q) =>
+        q.eq("userId", userId).eq("serverId", serverId)
+      )
+      .unique();
+
+    const server = await ctx.db.get(serverId);
+
+    return {
+      serverName: server?.name,
+      isMember: !!member,
+    };
   },
 });

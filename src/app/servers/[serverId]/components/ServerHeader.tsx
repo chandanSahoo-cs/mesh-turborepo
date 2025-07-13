@@ -7,10 +7,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMemberPermissions } from "@/features/serverMembers/api/userMemberPermissions";
+import { useMemberPermissions } from "@/features/serverMembers/api/useMemberPermissions";
 import { ChevronDownIcon, ListFilterIcon, SquarePenIcon } from "lucide-react";
 import { useState } from "react";
 import { Doc } from "../../../../../convex/_generated/dataModel";
+import { InviteModal } from "./InviteModal";
 import { PreferencesModal } from "./PreferencesModal";
 
 interface ServerHeaderProps {
@@ -25,9 +26,11 @@ export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
   });
 
   const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   return (
     <>
+      <InviteModal open={inviteOpen} setOpen={setInviteOpen} server ={server} />
       <PreferencesModal
         open={preferencesOpen}
         setOpen={setPreferencesOpen}
@@ -59,7 +62,9 @@ export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
             {isAdmin && (
               <>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer py-2">
+                <DropdownMenuItem
+                  onClick={() => setInviteOpen(true)}
+                  className="cursor-pointer py-2">
                   Invite people to {server.name}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

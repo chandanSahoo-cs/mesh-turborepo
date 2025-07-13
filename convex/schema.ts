@@ -97,7 +97,9 @@ const schema = defineSchema({
     name: v.string(),
     permissions: v.array(serverPermissionValidator),
     isEveryone: v.optional(v.boolean()),
-  }).index("byServerId", ["serverId"]),
+  })
+    .index("byServerId", ["serverId"])
+    .index("byNameAndServerId", ["name", "serverId"]),
 
   channels: defineTable({
     name: v.string(),
@@ -110,8 +112,6 @@ const schema = defineSchema({
     .index("byServerId", ["serverId"])
     .index("byParentId", ["parentId"])
     .index("byServerAndParentId", ["serverId", "parentId"]),
-
-    
 });
 
 export default schema;

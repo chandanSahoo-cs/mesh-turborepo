@@ -1,6 +1,8 @@
 import { useGetChannels } from "@/features/channels/api/useGetChannels";
+import { useCreateChannelModal } from "@/features/channels/store/useCreateChannelModal";
 import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
 import { useGetMembers } from "@/features/serverMembers/api/useGetMembers";
+import { useMemberPermissions } from "@/features/serverMembers/api/useMemberPermissions";
 import { useGetServerById } from "@/features/servers/api/useGetServerById";
 import { useServerId } from "@/hooks/useServerId";
 import {
@@ -34,6 +36,13 @@ export const ServerSidebar = () => {
     useGetMembers({
       serverId,
     });
+    
+  const { isPermitted, isLoading } = useMemberPermissions({
+    memberId: currentMember?._id,
+    permission: "MANAGE_CHANNELS",
+  });
+
+  const { setIsOpen } = useCreateChannelModal();
 
   if (serverLoading || currentMemberLoading) {
     return (
@@ -51,6 +60,7 @@ export const ServerSidebar = () => {
       </div>
     );
   }
+
   return (
     <div className="flex flex-col bg-[#5e2c5f] h-full">
       <ServerHeader server={server} member={currentMember} />
@@ -66,7 +76,10 @@ export const ServerSidebar = () => {
           id="drafts"
         />
       </div>
-      <ServerSection label="Channels" hint="New channel" onNew={() => {}}>
+      <ServerSection
+        label="Channels"
+        hint="New channel"
+        onNew={() => setIsOpen(true)}>
         {channels?.map(
           (channelItem) =>
             channelItem.type !== "category" && (

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   title: "Mesh",
   description: "A mesh of chats",
   icons: {
-    icon: "/logo.svg",
+    icon: "/image.svg",
   },
 };
 
