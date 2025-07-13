@@ -7,12 +7,15 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useServerId } from "@/hooks/useServerId";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useCreateChannel } from "../api/useCreateChannel";
 import { useCreateChannelModal } from "../store/useCreateChannelModal";
 
 export const CreateChannelModal = () => {
+  const router = useRouter();
+
   const serverId = useServerId();
   const { isOpen, setIsOpen } = useCreateChannelModal();
   const [name, setName] = useState("");
@@ -34,8 +37,9 @@ export const CreateChannelModal = () => {
     createChannel(
       { serverId, name },
       {
-        onSuccess: (id) => {
+        onSuccess: ({ id }) => {
           toast.success(`${name} channel created`);
+          router.push(`/servers/${serverId}/channel/${id}`);
           handleClose();
         },
         onError: () => {

@@ -78,3 +78,127 @@ export const createChannel = mutation({
     return newChannelId;
   },
 });
+
+export const getChannelById = query({
+  args: {
+    channelId: v.id("channels"),
+  },
+  handler: async (ctx, { channelId }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      return null;
+    }
+
+    const channel = await ctx.db.get(channelId);
+
+    console.log("channel:", channel);
+    if (!channel) {
+      return null;
+    }
+
+    const member = await ctx.db
+      .query("serverMembers")
+      .withIndex("uniqueMembership", (q) =>
+        q.eq("userId", userId).eq("serverId", channel?.serverId)
+      )
+      .unique();
+
+    if (!member) {
+      return null;
+    }
+    return channel;
+  },
+});
+
+export const renameChannel = mutation({
+  args: {
+    channelId: v.id("channels"),
+    name: v.string(),
+  },
+  handler: async (ctx, { channelId, name }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError("User unauthorized");
+    }
+
+    const channel = await ctx.db.get(channelId);
+
+    if (!channel) {
+      throw new ConvexError("Channel not found");
+    }
+
+    const member = await ctx.db
+      .query("serverMembers")
+      .withIndex("uniqueMembership", (q) =>
+        q.eq("userId", userId).eq("serverId", channel?.serverId)
+      )
+      .unique();
+
+    if (!member) {
+      throw new ConvexError("User is not a server member");
+    }
+
+    const isPermitted = await checkPermission({
+      ctx,
+      memberId: member._id,
+      permission: "MANAGE_CHANNELS",
+    });
+
+    if (!isPermitted) {
+      throw new ConvexError("User is not allowed to create new channels");
+    }
+
+    const parsedName = name.replace(/\s+/g, "-").toLowerCase();
+
+    await ctx.db.patch(channelId, {
+      name: parsedName,
+    });
+
+    return channelId;
+  },
+});
+
+export const removeChannel = mutation({
+  args: {
+    channelId: v.id("channels"),
+  },
+  handler: async (ctx, { channelId }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError("User unauthorized");
+    }
+
+    const channel = await ctx.db.get(channelId);
+
+    if (!channel) {
+      throw new ConvexError("Channel not found");
+    }
+
+    const member = await ctx.db
+      .query("serverMembers")
+      .withIndex("uniqueMembership", (q) =>
+        q.eq("userId", userId).eq("serverId", channel?.serverId)
+      )
+      .unique();
+
+    if (!member) {
+      throw new ConvexError("User is not a server member");
+    }
+
+    const isPermitted = await checkPermission({
+      ctx,
+      memberId: member._id,
+      permission: "MANAGE_CHANNELS",
+    });
+
+    if (!isPermitted) {
+      throw new ConvexError("User is not allowed to create new channels");
+    }
+
+    await ctx.db.delete(channelId);
+    return channelId;
+  },
+});
