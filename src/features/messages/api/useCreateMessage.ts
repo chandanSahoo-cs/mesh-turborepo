@@ -4,12 +4,16 @@ import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 
 interface ResponseType {
-  id: Id<"channels"> | null;
+  id: Id<"messages"> | null;
 }
 
 interface RequestType {
+  body?: string;
+  image?: Id<"_storage">;
   serverId: Id<"servers">;
-  name: string;
+  channelId?: Id<"channels">;
+  parentMessageId?: Id<"messages">;
+  conversationId?: Id<"conversations">;
 }
 
 interface Options {
@@ -21,7 +25,7 @@ interface Options {
 
 type Status = "success" | "error" | "settled" | "pending" | null;
 
-export const useCreateChannel = () => {
+export const useCreateMessage = () => {
   const [data, setData] = useState<ResponseType | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
@@ -32,11 +36,18 @@ export const useCreateChannel = () => {
   const isError = useMemo(() => status === "error", [status]);
   const isSettled = useMemo(() => status === "settled", [status]);
 
-  const create = useMutation(api.channels.createChannel);
+  const create = useMutation(api.messages.createMessage);
 
-  const createChannel = useCallback(
+  const createMessage = useCallback(
     async (
-      { serverId, name }: RequestType,
+      {
+        body,
+        image,
+        serverId,
+        channelId,
+        parentMessageId,
+        conversationId,
+      }: RequestType,
       { onSuccess, onSettled, onError, throwError }: Options
     ) => {
       try {
@@ -44,7 +55,14 @@ export const useCreateChannel = () => {
         setError(null);
 
         setStatus("pending");
-        const response = await create({ serverId, name });
+        const response = await create({
+          body,
+          image,
+          serverId,
+          channelId,
+          parentMessageId,
+          conversationId,
+        });
 
         onSuccess?.({ id: response });
       } catch (error) {
@@ -65,7 +83,7 @@ export const useCreateChannel = () => {
   );
 
   return {
-    createChannel,
+    createMessage,
     data,
     error,
     isPending,

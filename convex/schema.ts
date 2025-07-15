@@ -87,6 +87,7 @@ const schema = defineSchema({
     userId: v.id("users"),
     serverId: v.id("servers"),
     roleIds: v.array(v.id("roles")),
+    isMuted: v.boolean(),
   })
     .index("byUserId", ["userId"])
     .index("byServerId", ["serverId"])
@@ -112,6 +113,48 @@ const schema = defineSchema({
     .index("byServerId", ["serverId"])
     .index("byParentId", ["parentId"])
     .index("byServerAndParentId", ["serverId", "parentId"]),
+
+  conversations: defineTable({
+    serverId: v.optional(v.id("servers")),
+    user1: v.id("users"),
+    user2: v.id("users"),
+    lastMessageAt: v.optional(v.number()),
+  })
+    .index("byUserPair", ["user1", "user2"])
+    .index("byUser1", ["user1"])
+    .index("byUser2", ["user2"])
+    .index("byServerId", ["serverId"]),
+
+  messages: defineTable({
+    body: v.optional(v.string()),
+    image: v.optional(v.id("_storage")),
+    serverMemberId: v.id("serverMembers"),
+    serverId: v.id("servers"),
+    channelId: v.optional(v.id("channels")),
+    parentMessageId: v.optional(v.id("messages")),
+    conversationId: v.optional(v.id("conversations")),
+    updatedAt: v.number(),
+  })
+    .index("byServerMemberId", ["serverMemberId"])
+    .index("byServerId", ["serverId"])
+    .index("byChannelId", ["channelId"])
+    .index("byParentMessageId", ["parentMessageId"])
+    .index("byConversationId", ["conversationId"])
+    .index("threadConversation", [
+      "channelId",
+      "parentMessageId",
+      "conversationId",
+    ]),
+
+  reactions: defineTable({
+    serverId: v.id("servers"),
+    messageId: v.id("messages"),
+    serverMemberId: v.id("serverMembers"),
+    value: v.string(),
+  })
+    .index("byServerId", ["serverId"])
+    .index("byMessageId", ["messageId"])
+    .index("byMemberId", ["serverMemberId"]),
 });
 
 export default schema;

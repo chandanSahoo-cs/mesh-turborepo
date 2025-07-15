@@ -58,6 +58,7 @@ export const createServer = mutation({
         serverId,
         userId,
         roleIds: [everyoneRoleId],
+        isMuted: false,
       });
 
       if (!everyoneRoleId) {
@@ -341,6 +342,7 @@ export const joinServer = mutation({
       serverId: serverId,
       userId: userId,
       roleIds: [everyoneRole?._id],
+      isMuted: false,
     });
 
     // console.log("serverId: ",serverId)
