@@ -1,8 +1,176 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
 import { checkMember } from "../src/lib/checkMember";
 import { checkPermission } from "../src/lib/permissions";
-import { mutation } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
+import { mutation, query, QueryCtx } from "./_generated/server";
+
+type ReactionMap = {
+  count: number;
+  members: Id<"serverMembers">[];
+};
+
+export type DedupedReaction = {
+  value: string;
+  count: number;
+  memberIds: Id<"serverMembers">[];
+};
+
+const populateUser = (ctx: QueryCtx, userId: Id<"users">) => {
+  return ctx.db.get(userId);
+};
+
+const populateMember = (ctx: QueryCtx, memberId: Id<"serverMembers">) => {
+  return ctx.db.get(memberId);
+};
+
+const populateReactions = (ctx: QueryCtx, messageId: Id<"messages">) => {
+  return ctx.db
+    .query("reactions")
+    .withIndex("byMessageId", (q) => q.eq("messageId", messageId))
+    .collect();
+};
+
+const populateThread = async (ctx: QueryCtx, messageId: Id<"messages">) => {
+  const messages = await ctx.db
+    .query("messages")
+    .withIndex("byParentMessageId", (q) => q.eq("parentMessageId", messageId))
+    .collect();
+
+  if (messages.length === 0) {
+    return {
+      count: 0,
+      image: undefined,
+      timeStamp: 0,
+    };
+  }
+
+  const lastMessage = messages[messages.length - 1];
+  const lastMessageMember = await populateMember(
+    ctx,
+    lastMessage.serverMemberId
+  );
+
+  if (!lastMessageMember) {
+    return {
+      count: 0,
+      image: undefined,
+      timeStamp: 0,
+    };
+  }
+
+  const lastMessageUser = await populateUser(ctx, lastMessageMember.userId);
+
+  return {
+    count: messages.length,
+    image: lastMessageUser?.image,
+    timeStamp: lastMessage._creationTime,
+  };
+};
+
+export const getMessages = query({
+  args: {
+    channelId: v.optional(v.id("channels")),
+    conversationId: v.optional(v.id("conversations")),
+    parentMessageId: v.optional(v.id("messages")),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (
+    ctx,
+    { channelId, conversationId, parentMessageId, paginationOpts }
+  ) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError("Unauthorized user");
+    }
+
+    let _conversationId = conversationId;
+
+    if (!channelId && !conversationId && parentMessageId) {
+      const parentMessage = await ctx.db.get(parentMessageId);
+      if (!parentMessage) {
+        throw new ConvexError("No link found to the message");
+      }
+      _conversationId = parentMessage?.conversationId;
+    }
+
+    const results = await ctx.db
+      .query("messages")
+      .withIndex("byChannelIdAndParentMessageIdAndConversationId", (q) =>
+        q
+          .eq("channelId", channelId)
+          .eq("parentMessageId", parentMessageId)
+          .eq("conversationId", _conversationId)
+      )
+      .order("desc")
+      .paginate(paginationOpts);
+
+    return {
+      ...results,
+      page: (
+        await Promise.all(
+          results.page.map(async (message) => {
+            const member = await populateMember(ctx, message.serverMemberId);
+            const user = member ? await populateUser(ctx, member.userId) : null;
+
+            if (!member || !user) {
+              return null;
+            }
+
+            const reactions = await populateReactions(ctx, message._id);
+            const thread = await populateThread(ctx, message._id);
+            const image = message.image
+              ? await ctx.storage.getUrl(message.image)
+              : undefined;
+
+            let reactionMap = new Map<string, ReactionMap>();
+
+            for (const reaction of reactions) {
+              const entry = reactionMap.get(reaction.value);
+
+              if (entry) {
+                entry.count++;
+                entry.members.push(reaction.serverMemberId);
+              } else {
+                reactionMap.set(reaction.value, {
+                  count: 1,
+                  members: [reaction.serverMemberId],
+                });
+              }
+            }
+
+            const dedupedReactions: DedupedReaction[] = [];
+
+            for (const [key, value] of reactionMap) {
+              const reaction = {
+                value: key,
+                count: value.count,
+                memberIds: value.members,
+              };
+
+              dedupedReactions.push(reaction);
+            }
+
+            return {
+              ...message,
+              image,
+              serverMember: member,
+              user,
+              reactions: dedupedReactions,
+              threadCount: thread.count,
+              threadImage: thread.image,
+              threadTimestamp: thread.timeStamp,
+            };
+          })
+        )
+      ).filter(
+        (message): message is NonNullable<typeof message> => message !== null
+      ),
+    };
+  },
+});
 
 export const createMessage = mutation({
   args: {
@@ -63,7 +231,6 @@ export const createMessage = mutation({
       conversationId: _conversationId,
       serverMemberId: member._id,
       channelId,
-      updatedAt: Date.now(),
     });
 
     return messageId;
