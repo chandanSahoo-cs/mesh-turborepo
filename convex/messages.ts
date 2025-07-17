@@ -323,3 +323,88 @@ export const deleteMessage = mutation({
     return messageId;
   },
 });
+
+export const getMessageById = query({
+  args: {
+    messageId: v.id("messages"),
+  },
+  handler: async (ctx, { messageId }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      return null;
+    }
+
+    const message = await ctx.db.get(messageId);
+
+    if (!message) {
+      return null;
+    }
+    const currentMemeber = await checkMember({
+      ctx,
+      serverId: message.serverId,
+      userId,
+    });
+
+    if (!currentMemeber) {
+      return null;
+    }
+
+    //member who actually wrote the message
+    const member = await populateMember(ctx, message.serverMemberId);
+
+    if (!member) {
+      return null;
+    }
+
+    const user = await populateUser(ctx, member.userId);
+
+    if (!user) {
+      return null;
+    }
+
+    const reactions = await populateReactions(ctx, message._id);
+
+    const reactionMap = new Map<string, ReactionMap>();
+
+    for (const reaction of reactions) {
+      const entry = reactionMap.get(reaction.value);
+
+      if (entry) {
+        entry.count++;
+        entry.members.push(reaction.serverMemberId);
+      } else {
+        reactionMap.set(reaction.value, {
+          count: 1,
+          reaction: reaction,
+          members: [reaction.serverMemberId],
+        });
+      }
+    }
+
+    const dedupedReactions: DedupedReaction[] = [];
+
+    for (const [key, value] of reactionMap) {
+      const reaction = {
+        reactionDetails: value.reaction,
+        value: key,
+        count: value.count,
+        memberIds: value.members,
+      };
+
+      dedupedReactions.push(reaction);
+    }
+
+    const messageImage = message.image
+      ? await ctx.storage.getUrl(message.image)
+      : undefined;
+
+    return {
+      ...message,
+      image: messageImage,
+      user,
+      member,
+      reactions: dedupedReactions,
+    };
+  },
+});
