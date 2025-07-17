@@ -114,15 +114,19 @@ const schema = defineSchema({
     .index("byParentId", ["parentId"])
     .index("byServerAndParentId", ["serverId", "parentId"]),
 
-  conversations: defineTable({
-    serverId: v.optional(v.id("servers")),
-    user1: v.id("users"),
-    user2: v.id("users"),
+  serverConversations: defineTable({
+    serverId: v.id("servers"),
+    member1Id: v.id("serverMembers"),
+    member2Id: v.id("serverMembers"),
     lastMessageAt: v.optional(v.number()),
   })
-    .index("byUserPair", ["user1", "user2"])
-    .index("byUser1", ["user1"])
-    .index("byUser2", ["user2"])
+    .index("byUser1AndByUser2AndByServerId", [
+      "member1Id",
+      "member2Id",
+      "serverId",
+    ])
+    .index("byMember1", ["member1Id"])
+    .index("byMember2", ["member2Id"])
     .index("byServerId", ["serverId"]),
 
   messages: defineTable({
@@ -155,7 +159,11 @@ const schema = defineSchema({
     .index("byServerId", ["serverId"])
     .index("byMessageId", ["messageId"])
     .index("byMemberId", ["serverMemberId"])
-    .index("byMemberIdAndbyMessageIdAndbyValue", ["serverMemberId", "messageId","value"]),
+    .index("byMemberIdAndbyMessageIdAndbyValue", [
+      "serverMemberId",
+      "messageId",
+      "value",
+    ]),
 });
 
 export default schema;
