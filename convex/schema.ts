@@ -154,7 +154,8 @@ const schema = defineSchema({
   })
     .index("byServerId", ["serverId"])
     .index("byMessageId", ["messageId"])
-    .index("byMemberId", ["serverMemberId"]),
+    .index("byMemberId", ["serverMemberId"])
+    .index("byMemberIdAndbyMessageIdAndbyValue", ["serverMemberId", "messageId","value"]),
 });
 
 export default schema;

@@ -38,7 +38,7 @@ const JoinPage = () => {
   const isMember = useMemo(() => data?.isMember, [data?.isMember]);
 
   useEffect(() => {
-    router.push(`/servers/${serverId}`);
+    if(isMember) router.push(`/servers/${serverId}`);
   }, [isMember]);
 
   if (isLoading) {

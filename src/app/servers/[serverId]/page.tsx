@@ -26,12 +26,12 @@ const ServerIdPage = () => {
     serverId,
   });
 
-  const { isPermitted} = useMemberPermissions({
+  const { isPermitted } = useMemberPermissions({
     memberId: member?._id,
     permission: "MANAGE_CHANNELS",
   });
 
-  const firstChannelId = useMemo(() => channels?.[0]?._id, [channels]);
+  const firstChannelId = useMemo(() => channels?.[1]?._id, [channels]);
 
   useEffect(() => {
     console.log("Inside useEffect");

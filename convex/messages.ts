@@ -3,10 +3,11 @@ import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
 import { checkMember } from "../src/lib/checkMember";
 import { checkPermission } from "../src/lib/permissions";
-import { Id } from "./_generated/dataModel";
+import { Doc, Id } from "./_generated/dataModel";
 import { mutation, query, QueryCtx } from "./_generated/server";
 
 type ReactionMap = {
+  reaction: Doc<"reactions">;
   count: number;
   members: Id<"serverMembers">[];
 };
@@ -15,6 +16,7 @@ export type DedupedReaction = {
   value: string;
   count: number;
   memberIds: Id<"serverMembers">[];
+  reactionDetails: Doc<"reactions">;
 };
 
 const populateUser = (ctx: QueryCtx, userId: Id<"users">) => {
@@ -135,6 +137,7 @@ export const getMessages = query({
                 entry.members.push(reaction.serverMemberId);
               } else {
                 reactionMap.set(reaction.value, {
+                  reaction: reaction,
                   count: 1,
                   members: [reaction.serverMemberId],
                 });
@@ -145,6 +148,7 @@ export const getMessages = query({
 
             for (const [key, value] of reactionMap) {
               const reaction = {
+                reactionDetails: value.reaction,
                 value: key,
                 count: value.count,
                 memberIds: value.members,
@@ -232,6 +236,89 @@ export const createMessage = mutation({
       serverMemberId: member._id,
       channelId,
     });
+
+    return messageId;
+  },
+});
+
+export const updateMessage = mutation({
+  args: {
+    messageId: v.id("messages"),
+    body: v.string(),
+  },
+  handler: async (ctx, { messageId, body }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError("Unauthorized user");
+    }
+
+    const message = await ctx.db.get(messageId);
+
+    if (!message) {
+      throw new Error("Message not found");
+    }
+    const memeber = await checkMember({
+      ctx,
+      serverId: message.serverId,
+      userId,
+    });
+
+    if (!memeber) {
+      throw new Error("Member not found");
+    }
+
+    if (message.serverMemberId !== memeber._id) {
+      throw new Error("User is not allowed to edit the message");
+    }
+
+    await ctx.db.patch(messageId, {
+      body: body,
+      updatedAt: Date.now(),
+    });
+
+    return messageId;
+  },
+});
+
+export const deleteMessage = mutation({
+  args: {
+    messageId: v.id("messages"),
+  },
+  handler: async (ctx, { messageId }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError("Unauthorized user");
+    }
+
+    const message = await ctx.db.get(messageId);
+
+    if (!message) {
+      throw new Error("Message not found");
+    }
+    const memeber = await checkMember({
+      ctx,
+      serverId: message.serverId,
+      userId,
+    });
+
+    if (!memeber) {
+      throw new Error("Member not found");
+    }
+
+    if (message.serverMemberId !== memeber._id) {
+      throw new Error("User is not allowed to edit the message");
+    }
+
+    const reactions = await ctx.db
+      .query("reactions")
+      .withIndex("byMessageId", (q) => q.eq("messageId", messageId))
+      .collect();
+
+    Promise.all(reactions.map((reaction) => ctx.db.delete(reaction._id)));
+
+    await ctx.db.delete(messageId);
 
     return messageId;
   },

@@ -6,8 +6,16 @@
 //   canLoadMore=
 
 import { GetMessagesReturnType } from "@/features/messages/api/useGetMessages";
-import { format, isToday, isYesterday } from "date-fns";
+import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
+import { useServerId } from "@/hooks/useServerId";
+import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
+import { LoaderIcon } from "lucide-react";
+import { useState } from "react";
+import { Id } from "../../convex/_generated/dataModel";
+import { ChannelHero } from "./ChannelHero";
 import { Message } from "./Message";
+
+const TIME_THRESHOLD = 5;
 
 interface MessageListProps {
   memberName?: string;
@@ -39,6 +47,10 @@ export const MessageList = ({
   isLoadingMore,
   canLoadMore,
 }: MessageListProps) => {
+  const [editingId, setEditingId] = useState<Id<"messages"> | null>(null);
+  const serverId = useServerId();
+  const { data: currentMember, isLoading: currentMemberLoading } =
+    useCurrentMember({ serverId });
   const groupedMessages = data?.reduce(
     (groups, message) => {
       const date = new Date(message._creationTime);
@@ -63,6 +75,14 @@ export const MessageList = ({
             </span>
           </div>
           {messages.map((message, index) => {
+            const prevMessage = messages[index - 1];
+            const isCompact =
+              prevMessage &&
+              prevMessage.user._id === message.user._id &&
+              differenceInMinutes(
+                new Date(message._creationTime),
+                new Date(prevMessage._creationTime)
+              ) < TIME_THRESHOLD;
             return (
               <Message
                 key={message._id}
@@ -70,19 +90,15 @@ export const MessageList = ({
                 serverMemberId={message.serverMemberId}
                 authorImage={message.user.image}
                 authorName={message.user.name}
-                // isAuthor={message.memberId === currentMember?._id}
-                isAuthor={false}
+                isAuthor={message.serverMemberId === currentMember?._id}
                 reactions={message.reactions}
                 body={message.body}
                 image={message.image}
                 updatedAt={message.updatedAt}
                 createdAt={message._creationTime}
-                // isEditing={editingId === message._id}
-                isEditing={false}
-                // setEditingId={setEditingId}
-                setEditingId={() => {}}
-                // isCompact={isCompact}
-                isCompact={false}
+                isEditing={editingId === message._id}
+                setEditingId={setEditingId}
+                isCompact={isCompact}
                 hideThreadButton={variant === "thread"}
                 threadCount={message.threadCount}
                 threadImage={message.threadImage}
@@ -93,6 +109,34 @@ export const MessageList = ({
           })}
         </div>
       ))}
+      <div
+        className="h-1"
+        ref={(el) => {
+          if (el) {
+            const observer = new IntersectionObserver(
+              ([entry]) => {
+                if (entry.isIntersecting && canLoadMore) {
+                  loadMore();
+                }
+              },
+              { threshold: 1.0 }
+            );
+            observer.observe(el);
+            return () => observer.disconnect();
+          }
+        }}
+      />
+      {isLoadingMore && (
+        <div className="text-center my-2 relative">
+          <hr className="absolute top-1/2 left-0 right-0 border-t border-gray-300" />
+          <span className="relative inline-block bg-white px-4 py-1 rounded-full text-xs border border-gray-300 shadow-sm">
+            <LoaderIcon className="size-4 animate-spin" />
+          </span>
+        </div>
+      )}
+      {variant === "channel" && channelName && channelCreationTime && (
+        <ChannelHero name={channelName} creationTime={channelCreationTime} />
+      )}
     </div>
   );
 };

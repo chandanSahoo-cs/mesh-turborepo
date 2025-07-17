@@ -81,11 +81,6 @@ export const getServers = query({
       if (!userId) {
         throw new ConvexError("Unauthorized User");
       }
-      const ownedServers = await ctx.db
-        .query("servers")
-        .withIndex("byOwnerId", (q) => q.eq("ownerId", userId))
-        .collect();
-
       const membership = await ctx.db
         .query("serverMembers")
         .withIndex("byUserId", (q) => q.eq("userId", userId))
@@ -97,15 +92,7 @@ export const getServers = query({
         memberServerId.map((id) => ctx.db.get(id))
       );
 
-      const allServers = [...ownedServers];
-
-      for (const server of memberServer) {
-        if (server && !allServers.some((s) => s._id !== server._id)) {
-          allServers.push(server);
-        }
-      }
-
-      return allServers;
+      return memberServer;
     } catch (error) {
       console.log(error);
     }

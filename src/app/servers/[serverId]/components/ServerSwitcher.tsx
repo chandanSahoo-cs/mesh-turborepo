@@ -21,12 +21,11 @@ export const ServerSwitcher = () => {
   const { data: server, isLoading: serverLoading } = useGetServerById({
     id: serverId,
   });
-  const { serverData: servers, isLoading: worksapcesLoading } =
-    useGetServers();
+  const { serverData: servers, isLoading: worksapcesLoading } = useGetServers();
 
-  const filteredServers = servers?.filter(
-    (server) => server?._id !== serverId
-  );
+  const filteredServers = servers?.filter((server) => server?._id !== serverId);
+
+  console.log({ servers });
 
   return (
     <DropdownMenu>
@@ -44,21 +43,22 @@ export const ServerSwitcher = () => {
           onClick={() => router.push(`/servers/${serverId}`)}
           className="cursor-pointer flex-col justify-start items-start capitalize">
           {server?.name}
-          <span className="text-xs text-muted-foreground">
-            Active server
-          </span>
+          <span className="text-xs text-muted-foreground">Active server</span>
         </DropdownMenuItem>
-        {filteredServers?.map((server) => (
-          <DropdownMenuItem
-            onClick={() => router.push(`/servers/${server._id}`)}
-            key={server._id}
-            className="cursor-pointer capitalize">
-            <div className="size-9 relative overflow-hidden bg-[#616061] text-white font-semibold text-lg rounded-md flex items-center justify-center mr-2">
-              {server.name.charAt(0).toUpperCase()}
-            </div>
-            {server.name}
-          </DropdownMenuItem>
-        ))}
+        {filteredServers?.map(
+          (server) =>
+            server && (
+              <DropdownMenuItem
+                onClick={() => router.push(`/servers/${server._id}`)}
+                key={server._id}
+                className="cursor-pointer capitalize">
+                <div className="size-9 relative overflow-hidden bg-[#616061] text-white font-semibold text-lg rounded-md flex items-center justify-center mr-2">
+                  {server.name.charAt(0).toUpperCase()}
+                </div>
+                {server.name}
+              </DropdownMenuItem>
+            )
+        )}
         <DropdownMenuItem
           className="cursor-pointer"
           onClick={() => setIsOpen(true)}>
