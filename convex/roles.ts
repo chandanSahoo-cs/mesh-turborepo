@@ -1,7 +1,9 @@
-import { v } from "convex/values";
-import { query } from "./_generated/server";
+import { getAuthUserId } from "@convex-dev/auth/server";
+import { ConvexError, v } from "convex/values";
+import { checkMember } from "../src/lib/checkMember";
+import { checkPermission } from "../src/lib/permissions";
+import { mutation, query } from "./_generated/server";
 import { serverPermissionValidator } from "./schema";
-import {checkPermission} from "../src/lib/permissions"
 
 // export const SERVER_PERMISSIONS = [
 //   // Server management
@@ -41,13 +43,144 @@ import {checkPermission} from "../src/lib/permissions"
 // merge all perms from those role
 // and validate from the given role
 
+export const EVERYONE_ROLE = "@everyone";
+
 export const hasPermission = query({
   args: {
-    memberId: v.id("serverMembers"),
+    serverMemberId: v.id("serverMembers"),
     permission: serverPermissionValidator,
   },
-  handler: async (ctx, { memberId, permission }) => {
-    const isPermitted = await checkPermission({ctx,memberId,permission});
+  handler: async (ctx, { serverMemberId, permission }) => {
+    const isPermitted = await checkPermission({
+      ctx,
+      serverMemberId,
+      permission,
+    });
     return isPermitted;
+  },
+});
+
+export const updateRole = mutation({
+  args: {
+    serverMemberId: v.id("serverMembers"),
+    roleId: v.id("roles"),
+  },
+  handler: async (ctx, { serverMemberId, roleId }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new Error("User Unauthorized");
+    }
+
+    const role = await ctx.db.get(roleId);
+
+    if (!role) {
+      throw new ConvexError("Role not found");
+    }
+
+    const member = await ctx.db.get(serverMemberId);
+
+    if (!member) {
+      throw new Error("Member not found");
+    }
+
+    const currentMember = await checkMember({
+      ctx,
+      serverId: member.serverId,
+      userId,
+    });
+
+    if (!currentMember) {
+      throw new ConvexError("User is not a server member");
+    }
+
+    const isPermitted = await checkPermission({
+      ctx,
+      serverMemberId: currentMember?._id,
+      permission: "MANAGE_ROLES",
+    });
+
+    if (!isPermitted) {
+      throw new ConvexError("User is not allowed to change roles");
+    }
+
+    await ctx.db.patch(serverMemberId, {
+      roleIds: [...member.roleIds, roleId],
+    });
+
+    serverMemberId;
+  },
+});
+
+export const deleteRole = mutation({
+  args: {
+    serverMemberId: v.id("serverMembers"),
+    roleId: v.id("roles"),
+  },
+  handler: async (ctx, { serverMemberId, roleId }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new Error("User Unauthorized");
+    }
+
+    const role = await ctx.db.get(roleId);
+
+    if (!role) {
+      throw new ConvexError("Role not found");
+    }
+
+    const member = await ctx.db.get(serverMemberId);
+
+    if (!member) {
+      throw new Error("Member not found");
+    }
+
+    const currentMember = await checkMember({
+      ctx,
+      serverId: member.serverId,
+      userId,
+    });
+
+    if (!currentMember) {
+      throw new ConvexError("User is not a server member");
+    }
+
+    const everyoneRole = await ctx.db
+      .query("roles")
+      .withIndex("byNameAndServerId", (q) =>
+        q.eq("name", EVERYONE_ROLE).eq("serverId", member.serverId)
+      )
+      .unique();
+
+    if (!everyoneRole) {
+      throw new ConvexError("Everyone role not found");
+    }
+
+    const isEveryoneRole = everyoneRole?._id === roleId;
+
+    if (isEveryoneRole) {
+      throw new ConvexError("'Everyone' is not allowed to be deleted");
+    }
+
+    const isPermitted = await checkPermission({
+      ctx,
+      serverMemberId: currentMember?._id,
+      permission: "MANAGE_ROLES",
+    });
+
+    if (!isPermitted) {
+      throw new ConvexError("User is not allowed to change roles");
+    }
+
+    const newUserRole = member.roleIds.filter(
+      (userRoleId) => userRoleId !== roleId
+    );
+
+    await ctx.db.patch(serverMemberId, {
+      roleIds: newUserRole,
+    });
+
+    serverMemberId;
   },
 });

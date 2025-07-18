@@ -59,7 +59,7 @@ export const createChannel = mutation({
 
     const isPermitted = await checkPermission({
       ctx,
-      memberId: member._id,
+      serverMemberId: member._id,
       permission: "MANAGE_CHANNELS",
     });
 
@@ -142,7 +142,7 @@ export const renameChannel = mutation({
 
     const isPermitted = await checkPermission({
       ctx,
-      memberId: member._id,
+      serverMemberId: member._id,
       permission: "MANAGE_CHANNELS",
     });
 
@@ -190,7 +190,7 @@ export const removeChannel = mutation({
 
     const isPermitted = await checkPermission({
       ctx,
-      memberId: member._id,
+      serverMemberId: member._id,
       permission: "MANAGE_CHANNELS",
     });
 

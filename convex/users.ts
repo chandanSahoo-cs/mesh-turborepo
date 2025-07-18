@@ -1,6 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { query } from "./_generated/server";
 import { ConvexError } from "convex/values";
+import { query } from "./_generated/server";
 
 export const currentUser = query({
   args: {},
@@ -13,7 +13,7 @@ export const currentUser = query({
 
       return await ctx.db.get(userId);
     } catch (error) {
-        console.error(error)
+      console.error(error);
     }
   },
 });

@@ -2,8 +2,8 @@
 
 import { useGetChannels } from "@/features/channels/api/useGetChannels";
 import { useCreateChannelModal } from "@/features/channels/store/useCreateChannelModal";
+import { useHasPermission } from "@/features/roles/api/useHasPermission";
 import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
-import { useMemberPermissions } from "@/features/serverMembers/api/useMemberPermissions";
 import { useGetServerById } from "@/features/servers/api/useGetServerById";
 import { useServerId } from "@/hooks/useServerId";
 import { LoaderIcon, TriangleAlertIcon } from "lucide-react";
@@ -26,8 +26,8 @@ const ServerIdPage = () => {
     serverId,
   });
 
-  const { isPermitted } = useMemberPermissions({
-    memberId: member?._id,
+  const { data:isPermitted } = useHasPermission({
+    serverMemberId: member?._id,
     permission: "MANAGE_CHANNELS",
   });
 

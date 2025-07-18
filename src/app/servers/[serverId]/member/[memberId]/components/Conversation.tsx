@@ -2,10 +2,11 @@ import { MessageList } from "@/components/MessageList";
 import { useGetMessages } from "@/features/messages/api/useGetMessages";
 import { useGetMemberById } from "@/features/serverMembers/api/useGetMemberById";
 import { useMemberId } from "@/hooks/useMemberId";
+import { usePanel } from "@/hooks/usePanel";
 import { LoaderIcon, TriangleAlertIcon } from "lucide-react";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
-import { Header } from "./Header";
 import { ChatInput } from "./ChatInput";
+import { Header } from "./Header";
 
 interface ConversationProps {
   serverConversationId: Id<"serverConversations">;
@@ -13,6 +14,8 @@ interface ConversationProps {
 
 export const Conversation = ({ serverConversationId }: ConversationProps) => {
   const serverMemberId = useMemberId();
+
+  const { onOpenProfile } = usePanel();
 
   const { data: serverMember, isLoading: serverMemberLoading } =
     useGetMemberById({ serverMemberId });
@@ -43,6 +46,7 @@ export const Conversation = ({ serverConversationId }: ConversationProps) => {
       <Header
         memberImage={serverMember.user?.image}
         memberName={serverMember.user?.name}
+        onClick={() => onOpenProfile(serverMemberId)}
       />
       <MessageList
         data={results}
@@ -53,7 +57,10 @@ export const Conversation = ({ serverConversationId }: ConversationProps) => {
         isLoadingMore={status === "LoadingMore"}
         canLoadMore={status === "CanLoadMore"}
       />
-      <ChatInput placeholder={`Message ${serverMember.user?.name as string}`} conversationId={serverConversationId}/>
+      <ChatInput
+        placeholder={`Message ${serverMember.user?.name as string}`}
+        conversationId={serverConversationId}
+      />
     </div>
   );
 };

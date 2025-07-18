@@ -5,15 +5,15 @@ import { ServerPermission } from "../../convex/schema"
 
 interface CheckPermissionProps {
     ctx: MutationCtx | QueryCtx
-    memberId: Id<"serverMembers">
+    serverMemberId: Id<"serverMembers">
     permission: ServerPermission
 }
 
-export const checkPermission = async({ctx,memberId,permission}:CheckPermissionProps) =>{
+export const checkPermission = async({ctx,serverMemberId,permission}:CheckPermissionProps) =>{
 
     const userId = await getAuthUserId(ctx);
 
-    const serverMember = await ctx.db.get(memberId);
+    const serverMember = await ctx.db.get(serverMemberId);
     if(!serverMember) return false;
 
     const server = await ctx.db.get(serverMember?.serverId);

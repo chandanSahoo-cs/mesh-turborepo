@@ -6,7 +6,7 @@ import { useDeleteMessage } from "@/features/messages/api/useDeleteMessage";
 import { useEditMessage } from "@/features/messages/api/useEditMessage";
 import { useToggleReaction } from "@/features/reactions/api/useToggleReaction";
 import { useConfirm } from "@/hooks/useConfirm";
-import { usePanel } from "@/hooks/usePanelId";
+import { usePanel } from "@/hooks/usePanel";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";

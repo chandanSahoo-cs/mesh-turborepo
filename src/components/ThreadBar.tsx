@@ -28,7 +28,7 @@ export const ThreadBar = ({
       <div className="flex items-center gap-2 overflow-hidden">
         <Avatar className="size-6 shrink-0">
           <AvatarImage src={image} />
-          <AvatarFallback>{avatarFallback}</AvatarFallback>
+          <AvatarFallback className="rounded-md bg-sky-500 text-white">{avatarFallback}</AvatarFallback>
         </Avatar>
         <span className="text-xs text-sky-700 hover:underline font-bold truncate">
           {count} {count > 1 ? "replies" : "reply"}

@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMemberPermissions } from "@/features/serverMembers/api/useMemberPermissions";
+import { useHasPermission } from "@/features/roles/api/useHasPermission";
 import { ChevronDownIcon, ListFilterIcon, SquarePenIcon } from "lucide-react";
 import { useState } from "react";
 import { Doc } from "../../../../../convex/_generated/dataModel";
@@ -20,8 +20,8 @@ interface ServerHeaderProps {
 }
 
 export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
-  const { isPermitted: isAdmin } = useMemberPermissions({
-    memberId: member._id,
+  const { data: isAdmin } = useHasPermission({
+    serverMemberId: member._id,
     permission: "ADMINISTRATOR",
   });
 
@@ -30,7 +30,7 @@ export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
 
   return (
     <>
-      <InviteModal open={inviteOpen} setOpen={setInviteOpen} server ={server} />
+      <InviteModal open={inviteOpen} setOpen={setInviteOpen} server={server} />
       <PreferencesModal
         open={preferencesOpen}
         setOpen={setPreferencesOpen}

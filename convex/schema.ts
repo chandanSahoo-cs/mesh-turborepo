@@ -128,6 +128,7 @@ const schema = defineSchema({
     .index("byMember1", ["member1Id"])
     .index("byMember2", ["member2Id"])
     .index("byServerId", ["serverId"]),
+    
 
   messages: defineTable({
     body: v.optional(v.string()),
@@ -158,12 +159,13 @@ const schema = defineSchema({
   })
     .index("byServerId", ["serverId"])
     .index("byMessageId", ["messageId"])
-    .index("byMemberId", ["serverMemberId"])
+    .index("byServerMemberId", ["serverMemberId"])
     .index("byMemberIdAndbyMessageIdAndbyValue", [
       "serverMemberId",
       "messageId",
       "value",
     ]),
+    
 });
 
 export default schema;

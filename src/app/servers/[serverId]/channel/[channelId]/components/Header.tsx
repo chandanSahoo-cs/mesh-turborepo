@@ -10,8 +10,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useRemoveChannel } from "@/features/channels/api/useRemoveChannel";
 import { useRenameChannel } from "@/features/channels/api/useUpdateChannel";
+import { useHasPermission } from "@/features/roles/api/useHasPermission";
 import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
-import { useMemberPermissions } from "@/features/serverMembers/api/useMemberPermissions";
 import { useChannelId } from "@/hooks/useChannelId";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useServerId } from "@/hooks/useServerId";
@@ -47,8 +47,8 @@ export const Header = ({ channelName }: HeaderProps) => {
     setValue(value);
   };
 
-  const { isPermitted, isLoading } = useMemberPermissions({
-    memberId: member?._id,
+  const { data: isPermitted, isLoading } = useHasPermission({
+    serverMemberId: member?._id,
     permission: "MANAGE_CHANNELS",
   });
 

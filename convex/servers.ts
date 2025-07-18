@@ -164,7 +164,7 @@ export const renameServer = mutation({
 
       const isPermitted = await checkPermission({
         ctx,
-        memberId: member._id,
+        serverMemberId: member._id,
         permission: "MANAGE_SERVER",
       });
 
@@ -260,7 +260,7 @@ export const generateNewJoinCode = mutation({
 
       const isPermitted = checkPermission({
         ctx,
-        memberId: member._id,
+        serverMemberId: member._id,
         permission: "ADMINISTRATOR",
       });
 
