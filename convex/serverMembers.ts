@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import { checkMember } from "../src/lib/checkMember";
 import { query } from "./_generated/server";
 
 export const getCurrentMember = query({
@@ -66,5 +67,40 @@ export const getMembers = query({
     ).filter(Boolean);
 
     return serverMemberInfo;
+  },
+});
+
+export const getMemberById = query({
+  args: {
+    serverMemberId: v.id("serverMembers"),
+  },
+  handler: async (ctx, { serverMemberId }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      return null;
+    }
+
+    const serverMember = await ctx.db.get(serverMemberId);
+
+    if (!serverMember) {
+      return null;
+    }
+    const user = await ctx.db.get(serverMember?.userId);
+
+    const currentMember = await checkMember({
+      ctx,
+      serverId: serverMember?.serverId,
+      userId,
+    });
+
+    if (!currentMember) {
+      return null;
+    }
+
+    return {
+      ...serverMember,
+      user,
+    };
   },
 });

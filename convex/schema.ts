@@ -136,7 +136,7 @@ const schema = defineSchema({
     serverId: v.id("servers"),
     channelId: v.optional(v.id("channels")),
     parentMessageId: v.optional(v.id("messages")),
-    conversationId: v.optional(v.id("conversations")),
+    conversationId: v.optional(v.id("serverConversations")),
     updatedAt: v.optional(v.number()),
   })
     .index("byServerMemberId", ["serverMemberId"])

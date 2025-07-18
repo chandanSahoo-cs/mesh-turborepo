@@ -1,23 +1,19 @@
 import { useMutation } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
 import { api } from "../../../../convex/_generated/api";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Doc, Id } from "../../../../convex/_generated/dataModel";
 
 interface ResponseType {
-  id: Id<"messages"> | null;
+  serverConversation?: Doc<"serverConversations"> | null;
 }
 
 interface RequestType {
-  body?: string;
-  image?: Id<"_storage">;
   serverId: Id<"servers">;
-  channelId?: Id<"channels">;
-  parentMessageId?: Id<"messages">;
-  conversationId?: Id<"serverConversations">;
+  memberId: Id<"serverMembers">;
 }
 
 interface Options {
-  onSuccess?: ({ id }: ResponseType) => void;
+  onSuccess?: ({ serverConversation }: ResponseType) => void;
   onError?: (error: Error) => void;
   onSettled?: () => void;
   throwError?: boolean;
@@ -25,7 +21,7 @@ interface Options {
 
 type Status = "success" | "error" | "settled" | "pending" | null;
 
-export const useCreateMessage = () => {
+export const useCreateOrGetConversation = () => {
   const [data, setData] = useState<ResponseType | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
@@ -36,18 +32,13 @@ export const useCreateMessage = () => {
   const isError = useMemo(() => status === "error", [status]);
   const isSettled = useMemo(() => status === "settled", [status]);
 
-  const create = useMutation(api.messages.createMessage);
+  const createOrGet = useMutation(
+    api.serverConversation.createOrGetConversation
+  );
 
-  const createMessage = useCallback(
+  const createOrGetConversation = useCallback(
     async (
-      {
-        body,
-        image,
-        serverId,
-        channelId,
-        parentMessageId,
-        conversationId,
-      }: RequestType,
+      { serverId, memberId }: RequestType,
       { onSuccess, onSettled, onError, throwError }: Options
     ) => {
       try {
@@ -55,16 +46,13 @@ export const useCreateMessage = () => {
         setError(null);
 
         setStatus("pending");
-        const response = await create({
-          body,
-          image,
+        const response = await createOrGet({
           serverId,
-          channelId,
-          parentMessageId,
-          conversationId,
+          memberId,
         });
 
-        onSuccess?.({ id: response });
+        setData({ serverConversation: response });
+        onSuccess?.({ serverConversation: response });
       } catch (error) {
         setError(error as Error);
         onError?.(error as Error);
@@ -79,11 +67,11 @@ export const useCreateMessage = () => {
         onSettled?.();
       }
     },
-    [create]
+    [createOrGet]
   );
 
   return {
-    createMessage,
+    createOrGetConversation,
     data,
     error,
     isPending,

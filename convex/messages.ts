@@ -74,7 +74,7 @@ const populateThread = async (ctx: QueryCtx, messageId: Id<"messages">) => {
 export const getMessages = query({
   args: {
     channelId: v.optional(v.id("channels")),
-    conversationId: v.optional(v.id("conversations")),
+    conversationId: v.optional(v.id("serverConversations")),
     parentMessageId: v.optional(v.id("messages")),
     paginationOpts: paginationOptsValidator,
   },
@@ -182,7 +182,7 @@ export const createMessage = mutation({
     image: v.optional(v.id("_storage")),
     serverId: v.id("servers"),
     channelId: v.optional(v.id("channels")),
-    conversationId: v.optional(v.id("conversations")),
+    conversationId: v.optional(v.id("serverConversations")),
     parentMessageId: v.optional(v.id("messages")),
   },
   handler: async (

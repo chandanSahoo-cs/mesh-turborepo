@@ -5,6 +5,7 @@ import { useGetMembers } from "@/features/serverMembers/api/useGetMembers";
 import { useMemberPermissions } from "@/features/serverMembers/api/useMemberPermissions";
 import { useGetServerById } from "@/features/servers/api/useGetServerById";
 import { useChannelId } from "@/hooks/useChannelId";
+import { useMemberId } from "@/hooks/useMemberId";
 import { useServerId } from "@/hooks/useServerId";
 import {
   AlertTriangleIcon,
@@ -21,6 +22,7 @@ import { UserItem } from "./UserItem";
 export const ServerSidebar = () => {
   const serverId = useServerId();
   const channelID = useChannelId();
+  const memberId = useMemberId();
 
   const { data: currentMember, isLoading: currentMemberLoading } =
     useCurrentMember({
@@ -102,6 +104,7 @@ export const ServerSidebar = () => {
               id={serverMember._id}
               label={serverMember.memberInfo?.name}
               image={serverMember.memberInfo?.image}
+              variant={serverMember._id === memberId ? "active" : "default"}
             />
           </div>
         ))}

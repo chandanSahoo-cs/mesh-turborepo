@@ -6,7 +6,7 @@ const BATCH_SIZE = 20;
 
 interface UseGetMessageProps {
   channelId?: Id<"channels">;
-  conversationId?: Id<"conversations">;
+  conversationId?: Id<"serverConversations">;
   parentMessageId?: Id<"messages">;
 }
 

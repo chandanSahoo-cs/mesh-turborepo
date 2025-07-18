@@ -49,11 +49,11 @@ export const createOrGetConversation = mutation({
     });
 
     const newConverstaion = await ctx.db.get(conversationId);
-    
-    if(!newConverstaion){
-        throw new ConvexError("Conversation not found")
+
+    if (!newConverstaion) {
+      throw new ConvexError("Conversation not found");
     }
 
-    return newConverstaion
+    return newConverstaion;
   },
 });

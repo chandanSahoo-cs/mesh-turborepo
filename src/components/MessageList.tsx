@@ -14,14 +14,15 @@ import { useState } from "react";
 import { Id } from "../../convex/_generated/dataModel";
 import { ChannelHero } from "./ChannelHero";
 import { Message } from "./Message";
+import { ConversationHero } from "./ConversationHero";
 
 const TIME_THRESHOLD = 5;
 
 interface MessageListProps {
   memberName?: string;
   memberImage?: string;
-  channelName: string;
-  channelCreationTime: number;
+  channelName?: string;
+  channelCreationTime?: number;
   variant?: "channel" | "thread" | "conversation";
   data: GetMessagesReturnType | undefined;
   loadMore: () => void;
@@ -136,6 +137,9 @@ export const MessageList = ({
       )}
       {variant === "channel" && channelName && channelCreationTime && (
         <ChannelHero name={channelName} creationTime={channelCreationTime} />
+      )}
+      {variant === "conversation" && memberName && (
+        <ConversationHero name={memberName} image={memberImage} />
       )}
     </div>
   );
