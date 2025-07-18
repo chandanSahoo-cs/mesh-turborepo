@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { Hint } from "./Hint";
 import { Reactions } from "./Reactions";
+import { ThreadBar } from "./ThreadBar";
 import { Thumbnail } from "./Thumbnail";
 import { Toolbar } from "./Toolbar";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -165,6 +166,13 @@ export const Message = ({
                   </span>
                 ) : null}
                 <Reactions data={reactions} onChange={handleReaction} />
+                <ThreadBar
+                  count={threadCount}
+                  image={threadImage}
+                  timestamp={threadTimestamp}
+                  name={threadName}
+                  onClick={() => onOpenMessage(id)}
+                />
               </div>
             )}
           </div>
@@ -234,6 +242,13 @@ export const Message = ({
                 <span className="text-xs text-muted-foreground">(edited)</span>
               ) : null}
               <Reactions data={reactions} onChange={handleReaction} />
+              <ThreadBar
+                count={threadCount}
+                image={threadImage}
+                timestamp={threadTimestamp}
+                name={threadName}
+                onClick={() => onOpenMessage(id)}
+              />
             </div>
           )}
         </div>
