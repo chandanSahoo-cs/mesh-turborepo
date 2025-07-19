@@ -27,16 +27,13 @@ export const useNewJoinCode = () => {
   const [status, setStatus] = useState<Status>(null);
 
   const isPending = useMemo(() => status === "pending", [status]);
-  const isSuccess = useMemo(() => status === "success", [status]);
-  const isError = useMemo(() => status === "error", [status]);
-  const isSettled = useMemo(() => status === "settled", [status]);
 
   const generate = useMutation(api.servers.generateNewJoinCode);
 
   const generateNewJoinCode = useCallback(
     async (
       { serverId }: RequestType,
-      { onSuccess, onSettled, onError, throwError }: Options
+      { onSuccess, onSettled, onError }: Options
     ) => {
       try {
         setData(null);
@@ -51,10 +48,6 @@ export const useNewJoinCode = () => {
         onError?.(error as Error);
 
         setStatus("error");
-
-        if (throwError) {
-          throw error;
-        }
       } finally {
         setStatus("settled");
         onSettled?.();
@@ -68,8 +61,5 @@ export const useNewJoinCode = () => {
     data,
     error,
     isPending,
-    isSuccess,
-    isError,
-    isSettled,
   };
 };

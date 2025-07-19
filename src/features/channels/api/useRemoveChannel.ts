@@ -27,16 +27,13 @@ export const useRemoveChannel = () => {
   const [status, setStatus] = useState<Status>(null);
 
   const isPending = useMemo(() => status === "pending", [status]);
-  const isSuccess = useMemo(() => status === "success", [status]);
-  const isError = useMemo(() => status === "error", [status]);
-  const isSettled = useMemo(() => status === "settled", [status]);
 
   const remove = useMutation(api.channels.removeChannel);
 
   const removeChannel = useCallback(
     async (
       { channelId }: RequestType,
-      { onSuccess, onSettled, onError, throwError }: Options
+      { onSuccess, onSettled, onError }: Options
     ) => {
       try {
         setData(null);
@@ -51,10 +48,6 @@ export const useRemoveChannel = () => {
         onError?.(error as Error);
 
         setStatus("error");
-
-        if (throwError) {
-          throw error;
-        }
       } finally {
         setStatus("settled");
         onSettled?.();
@@ -68,8 +61,5 @@ export const useRemoveChannel = () => {
     data,
     error,
     isPending,
-    isSuccess,
-    isError,
-    isSettled,
   };
 };

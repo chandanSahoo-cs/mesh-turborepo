@@ -28,16 +28,13 @@ export const useRenameServer = () => {
   const [status, setStatus] = useState<Status>(null);
 
   const isPending = useMemo(() => status === "pending", [status]);
-  const isSuccess = useMemo(() => status === "success", [status]);
-  const isError = useMemo(() => status === "error", [status]);
-  const isSettled = useMemo(() => status === "settled", [status]);
 
   const rename = useMutation(api.servers.renameServer);
 
   const renameServer = useCallback(
     async (
-      { serverId,name }: RequestType,
-      { onSuccess, onSettled, onError, throwError }: Options
+      { serverId, name }: RequestType,
+      { onSuccess, onSettled, onError }: Options
     ) => {
       try {
         setData(null);
@@ -45,7 +42,7 @@ export const useRenameServer = () => {
 
         setStatus("pending");
         console.log("Creating server");
-        const response = await rename({serverId, name });
+        const response = await rename({ serverId, name });
 
         onSuccess?.({ id: response });
       } catch (error) {
@@ -53,10 +50,6 @@ export const useRenameServer = () => {
         onError?.(error as Error);
 
         setStatus("error");
-
-        if (throwError) {
-          throw error;
-        }
       } finally {
         setStatus("settled");
         onSettled?.();
@@ -70,8 +63,5 @@ export const useRenameServer = () => {
     data,
     error,
     isPending,
-    isSuccess,
-    isError,
-    isSettled,
   };
 };

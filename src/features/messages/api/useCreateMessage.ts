@@ -32,9 +32,6 @@ export const useCreateMessage = () => {
   const [status, setStatus] = useState<Status>(null);
 
   const isPending = useMemo(() => status === "pending", [status]);
-  const isSuccess = useMemo(() => status === "success", [status]);
-  const isError = useMemo(() => status === "error", [status]);
-  const isSettled = useMemo(() => status === "settled", [status]);
 
   const create = useMutation(api.messages.createMessage);
 
@@ -48,7 +45,7 @@ export const useCreateMessage = () => {
         parentMessageId,
         conversationId,
       }: RequestType,
-      { onSuccess, onSettled, onError, throwError }: Options
+      { onSuccess, onSettled, onError }: Options
     ) => {
       try {
         setData(null);
@@ -71,9 +68,7 @@ export const useCreateMessage = () => {
 
         setStatus("error");
 
-        if (throwError) {
-          throw error;
-        }
+
       } finally {
         setStatus("settled");
         onSettled?.();
@@ -87,8 +82,5 @@ export const useCreateMessage = () => {
     data,
     error,
     isPending,
-    isSuccess,
-    isError,
-    isSettled,
   };
 };

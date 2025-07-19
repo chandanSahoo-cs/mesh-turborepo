@@ -1,3 +1,5 @@
+"use client";
+
 import { Loader } from "@/components/Loader";
 import { useGetChannels } from "@/features/channels/api/useGetChannels";
 import { useCreateChannelModal } from "@/features/channels/store/useCreateChannelModal";
@@ -7,6 +9,7 @@ import { useGetServerById } from "@/features/servers/api/useGetServerById";
 import { useChannelId } from "@/hooks/useChannelId";
 import { useMemberId } from "@/hooks/useMemberId";
 import { useServerId } from "@/hooks/useServerId";
+import { motion } from "framer-motion";
 import {
   AlertTriangleIcon,
   HashIcon,
@@ -39,11 +42,6 @@ export const ServerSidebar = () => {
     serverId,
   });
 
-  // const { data: isPermitted, isLoading } = useHasPermission({
-  //   serverMemberId: currentMember?._id,
-  //   permission: "MANAGE_CHANNELS",
-  // });
-
   const { setIsOpen } = useCreateChannelModal();
 
   if (serverLoading || currentMemberLoading) {
@@ -52,17 +50,30 @@ export const ServerSidebar = () => {
 
   if (!server || !currentMember) {
     return (
-      <div className="flex flex-col gap-y-2 bg-[#5E2C5F] h-full items-center justify-center">
-        <AlertTriangleIcon className="size-5  text-white" />
-        <p className="text-white text-sm">Workspace not found</p>
+      <div className="flex flex-col gap-y-4 bg-white h-full items-center justify-center p-6">
+        <motion.div
+          className="bg-red-100 border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_#000000]"
+          animate={{
+            rotate: [0, 5, -5, 0],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}>
+          <AlertTriangleIcon className="size-8 text-red-600" />
+        </motion.div>
+        <p className="text-black text-sm font-mono font-bold uppercase tracking-wide text-center">
+          Server not found
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col bg-[#5e2c5f] h-full">
+    <div className="flex flex-col bg-white h-full border-r-4 border-black">
       <ServerHeader server={server} member={currentMember} />
-      <div className="flex flex-col px-2 mt-3">
+      <div className="flex flex-col px-3 mt-4">
         <SidebarItem
           label="Threads"
           icon={MessageSquareTextIcon}

@@ -28,16 +28,13 @@ export const useToggleReaction = () => {
   const [status, setStatus] = useState<Status>(null);
 
   const isPending = useMemo(() => status === "pending", [status]);
-  const isSuccess = useMemo(() => status === "success", [status]);
-  const isError = useMemo(() => status === "error", [status]);
-  const isSettled = useMemo(() => status === "settled", [status]);
 
   const toggle = useMutation(api.reactions.toggleReaction);
 
   const toggleReaction = useCallback(
     async (
       { value, messageId }: RequestType,
-      { onSuccess, onSettled, onError, throwError }: Options
+      { onSuccess, onSettled, onError }: Options
     ) => {
       try {
         setData(null);
@@ -48,7 +45,7 @@ export const useToggleReaction = () => {
         setStatus("pending");
         const response = await toggle({ messageId, value });
 
-        console.log({response})
+        console.log({ response });
 
         onSuccess?.({ id: response });
       } catch (error) {
@@ -56,10 +53,6 @@ export const useToggleReaction = () => {
         onError?.(error as Error);
 
         setStatus("error");
-
-        if (throwError) {
-          throw error;
-        }
       } finally {
         setStatus("settled");
         onSettled?.();
@@ -73,8 +66,5 @@ export const useToggleReaction = () => {
     data,
     error,
     isPending,
-    isSuccess,
-    isError,
-    isSettled,
   };
 };

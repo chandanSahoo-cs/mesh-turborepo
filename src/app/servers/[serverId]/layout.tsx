@@ -1,60 +1,46 @@
-"use client";
+"use client"
 
-import { Loader } from "@/components/Loader";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { Thread } from "@/features/messages/components/Thread";
-import { Profile } from "@/features/serverMembers/components/Profile";
-import { usePanel } from "@/hooks/usePanel";
-import { Id } from "../../../../convex/_generated/dataModel";
-import { ServerSidebar } from "./components/ServerSidebar";
-import { Sidebar } from "./components/Sidebar";
-import { Toolbar } from "./components/Tootlbar";
+import type React from "react"
+
+import { Loader } from "@/components/Loader"
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
+import { Thread } from "@/features/messages/components/Thread"
+import { Profile } from "@/features/serverMembers/components/Profile"
+import { usePanel } from "@/hooks/usePanel"
+import type { Id } from "../../../../convex/_generated/dataModel"
+import { ServerSidebar } from "./components/ServerSidebar"
+import { Sidebar } from "./components/Sidebar"
+import { Toolbar } from "./components/Tootlbar"
 
 interface ServerIdLayoutProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 const ServerIdLayout = ({ children }: ServerIdLayoutProps) => {
-  const { parentMessageId, profileMemberId, onClose } = usePanel();
-
-  const showPanel = !!parentMessageId || !!profileMemberId;
+  const { parentMessageId, profileMemberId, onClose } = usePanel()
+  const showPanel = !!parentMessageId || !!profileMemberId
 
   return (
-    <div className="h-full">
+    <div className="h-full bg-[#fffce9]">
       <Toolbar />
       <div className="flex h-[calc(100vh-40px)]">
         <Sidebar />
-        <ResizablePanelGroup
-          direction="horizontal"
-          autoSaveId="mesh_server_layout">
-          <ResizablePanel
-            defaultSize={20}
-            minSize={11}
-            className="bg-[#5e2c5f]">
+        <ResizablePanelGroup direction="horizontal" autoSaveId="mesh_server_layout">
+          <ResizablePanel defaultSize={20} minSize={11} className="bg-white border-r-4 border-black">
             <ServerSidebar />
           </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel minSize={20} defaultSize={80}>
+          <ResizableHandle  className="bg-transparent w-2 hover:bg-[#5170ff] transition-colors duration-200" />
+          <ResizablePanel minSize={20} defaultSize={80} className="bg-white">
             {children}
           </ResizablePanel>
           {showPanel && (
             <>
-              <ResizableHandle withHandle />
-              <ResizablePanel minSize={20} defaultSize={29}>
+              <ResizableHandle  className="bg-transparent w-2 hover:bg-[#7ed957] transition-colors duration-200" />
+              <ResizablePanel minSize={20} defaultSize={29} className="bg-white border-l-4 border-black">
                 {parentMessageId ? (
-                  <Thread
-                    messageId={parentMessageId as Id<"messages">}
-                    onClose={onClose}
-                  />
+                  <Thread messageId={parentMessageId as Id<"messages">} onClose={onClose} />
                 ) : profileMemberId ? (
-                  <Profile
-                    serverMemberId={profileMemberId as Id<"serverMembers">}
-                    onClose={onClose}
-                  />
+                  <Profile serverMemberId={profileMemberId as Id<"serverMembers">} onClose={onClose} />
                 ) : (
                   <Loader />
                 )}
@@ -64,7 +50,7 @@ const ServerIdLayout = ({ children }: ServerIdLayoutProps) => {
         </ResizablePanelGroup>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ServerIdLayout;
+export default ServerIdLayout

@@ -27,16 +27,13 @@ export const useDeleteServer = () => {
   const [status, setStatus] = useState<Status>(null);
 
   const isPending = useMemo(() => status === "pending", [status]);
-  const isSuccess = useMemo(() => status === "success", [status]);
-  const isError = useMemo(() => status === "error", [status]);
-  const isSettled = useMemo(() => status === "settled", [status]);
 
   const deleteCascade = useMutation(api.servers.deleteServer);
 
   const deleteServer = useCallback(
     async (
-      { serverId}: RequestType,
-      { onSuccess, onSettled, onError, throwError }: Options
+      { serverId }: RequestType,
+      { onSuccess, onSettled, onError }: Options
     ) => {
       try {
         setData(null);
@@ -44,7 +41,7 @@ export const useDeleteServer = () => {
 
         setStatus("pending");
         console.log("Creating server");
-        const response = await deleteCascade({serverId});
+        const response = await deleteCascade({ serverId });
 
         onSuccess?.({ id: response });
       } catch (error) {
@@ -52,10 +49,6 @@ export const useDeleteServer = () => {
         onError?.(error as Error);
 
         setStatus("error");
-
-        if (throwError) {
-          throw error;
-        }
       } finally {
         setStatus("settled");
         onSettled?.();
@@ -69,8 +62,5 @@ export const useDeleteServer = () => {
     data,
     error,
     isPending,
-    isSuccess,
-    isError,
-    isSettled,
   };
 };

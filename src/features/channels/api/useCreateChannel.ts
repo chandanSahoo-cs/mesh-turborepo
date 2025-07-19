@@ -16,7 +16,6 @@ interface Options {
   onSuccess?: ({ id }: ResponseType) => void;
   onError?: (error: Error) => void;
   onSettled?: () => void;
-  throwError?: boolean;
 }
 
 type Status = "success" | "error" | "settled" | "pending" | null;
@@ -28,16 +27,13 @@ export const useCreateChannel = () => {
   const [status, setStatus] = useState<Status>(null);
 
   const isPending = useMemo(() => status === "pending", [status]);
-  const isSuccess = useMemo(() => status === "success", [status]);
-  const isError = useMemo(() => status === "error", [status]);
-  const isSettled = useMemo(() => status === "settled", [status]);
 
   const create = useMutation(api.channels.createChannel);
 
   const createChannel = useCallback(
     async (
       { serverId, name }: RequestType,
-      { onSuccess, onSettled, onError, throwError }: Options
+      { onSuccess, onSettled, onError }: Options
     ) => {
       try {
         setData(null);
@@ -52,10 +48,6 @@ export const useCreateChannel = () => {
         onError?.(error as Error);
 
         setStatus("error");
-
-        if (throwError) {
-          throw error;
-        }
       } finally {
         setStatus("settled");
         onSettled?.();
@@ -69,8 +61,5 @@ export const useCreateChannel = () => {
     data,
     error,
     isPending,
-    isSuccess,
-    isError,
-    isSettled,
   };
 };
