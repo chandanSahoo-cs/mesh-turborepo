@@ -15,6 +15,7 @@ import { useCurrentUser } from "../api/useCurrentUser";
 export const UserButton = () => {
   const { signOut } = useAuthActions();
   const { isLoading, userData } = useCurrentUser();
+
   if (isLoading) {
     return <Loader />;
   }
@@ -24,7 +25,6 @@ export const UserButton = () => {
   }
 
   const { image, name } = userData;
-
   const avatarFallback = name?.charAt(0).toUpperCase();
   const nameToNumber = (name || "Anonymous")
     .split("")
@@ -35,17 +35,26 @@ export const UserButton = () => {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger className="outline-none relative">
-        <Avatar className="size-10 hover:opacity-75 transition">
-          <AvatarImage alt={name} src={image} />
+        <Avatar className="size-12 border-4 border-black shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] transition-all hover:scale-105 rounded-xl">
+          <AvatarImage
+            alt={name}
+            src={image || "/placeholder.svg"}
+            className="rounded-lg"
+          />
           <AvatarFallback
-            className="text-white"
+            className="text-white font-mono font-black text-lg rounded-lg"
             style={{ backgroundColor: color }}>
             {avatarFallback}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="center" side="right" className="w-60">
-        <DropdownMenuItem onClick={() => signOut()}>
+      <DropdownMenuContent
+        align="center"
+        side="right"
+        className="w-60 bg-white border-4 border-black shadow-[6px_6px_0px_0px_#000000] rounded-xl p-2">
+        <DropdownMenuItem
+          onClick={() => signOut()}
+          className="font-mono font-bold text-black hover:bg-red-100 rounded-lg p-3 cursor-pointer transition-colors">
           <LogOut className="size-4 mr-2" />
           Log out
         </DropdownMenuItem>
