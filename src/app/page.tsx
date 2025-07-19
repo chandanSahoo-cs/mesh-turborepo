@@ -1,8 +1,8 @@
 "use client";
 
-import { UserButton } from "@/features/auth/components/UserButton";
 import { useGetServers } from "@/features/servers/api/useGetServers";
 import { useCreateServerModal } from "@/features/servers/store/useCreateServerModal";
+import { LoaderIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
@@ -24,11 +24,13 @@ export default function Home() {
       console.log("Open modal");
       console.log("isOpen: ", isOpen);
     }
-  }, [serverId, isLoading, isOpen,router]);
+  }, [serverId, isLoading, isOpen, router]);
 
   return (
     <div>
-      <UserButton />
+      <div className="h-full flex items-center justify-center">
+        <LoaderIcon className="size-6 animate-spin text-muted-foreground" />
+      </div>
     </div>
   );
 }
