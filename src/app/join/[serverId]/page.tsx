@@ -38,8 +38,8 @@ const JoinPage = () => {
   const isMember = useMemo(() => data?.isMember, [data?.isMember]);
 
   useEffect(() => {
-    if(isMember) router.push(`/servers/${serverId}`);
-  }, [isMember,router, serverId]);
+    if (isMember) router.push(`/servers/${serverId}`);
+  }, [isMember, router, serverId]);
 
   if (isLoading) {
     return (
@@ -50,7 +50,7 @@ const JoinPage = () => {
   }
   return (
     <div className="h-full flex flex-col gap-y-8 items-center justify-center bg-white p-8 rounded-lg shadow-md">
-      <Image alt="mesh" src="/logo.svg" width={60} height={60} />
+      <Image alt="mesh" src="/logo.svg" width={200} height={200} />
       <div className="felx flex-col gap-y-4 items-center justify-center max-w-md">
         <div className="flex flex-col gap-y-2 items-center justify-center">
           <h1 className="text-2xl font-bold">Join {data?.serverName}</h1>
