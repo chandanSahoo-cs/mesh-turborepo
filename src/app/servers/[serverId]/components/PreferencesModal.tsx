@@ -62,10 +62,9 @@ export const PreferencesModal = ({
     );
   };
 
-  const handleDelete = async() => {
-
-    const ok = await confirm()
-    if(!ok) return;
+  const handleDelete = async () => {
+    const ok = await confirm();
+    if (!ok) return;
     deleteServer(
       {
         serverId: serverId,
@@ -84,7 +83,7 @@ export const PreferencesModal = ({
   };
   return (
     <>
-    <ConfirmDialog/>
+      <ConfirmDialog />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="p-0 bg-gray-50 overflow-hidden">
           <DialogHeader className="p-4 border-b bg-white">
@@ -131,7 +130,7 @@ export const PreferencesModal = ({
               </DialogContent>
             </Dialog>
             <Button
-              disabled={false}
+              disabled={isDeletingWorkspace}
               onClick={handleDelete}
               className="flex items-center gap-x-2 px-5 py-4 bg-white rounded-lg border cursor-pointer hover:bg-gray-50 text-rose-600">
               <TrashIcon className="size-4" />

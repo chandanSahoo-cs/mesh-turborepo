@@ -2,7 +2,6 @@ import { useMutation } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { removeMember } from "../../../../convex/serverMembers";
 
 interface ResponseType {
   id: Id<"serverMembers"> | null;

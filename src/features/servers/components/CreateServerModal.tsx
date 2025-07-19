@@ -50,7 +50,7 @@ export const CreateServerModal = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            disabled={false}
+            disabled={isPending}
             autoFocus
             minLength={3}
             placeholder="Server name e.g. 'Work', 'Personal', 'Home'"

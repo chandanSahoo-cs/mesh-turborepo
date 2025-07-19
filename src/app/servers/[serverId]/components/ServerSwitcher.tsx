@@ -21,7 +21,7 @@ export const ServerSwitcher = () => {
   const { data: server, isLoading: serverLoading } = useGetServerById({
     id: serverId,
   });
-  const { serverData: servers, isLoading: worksapcesLoading } = useGetServers();
+  const { serverData: servers} = useGetServers();
 
   const filteredServers = servers?.filter((server) => server?._id !== serverId);
 

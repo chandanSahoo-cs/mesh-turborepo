@@ -1,6 +1,5 @@
 import { useGetChannels } from "@/features/channels/api/useGetChannels";
 import { useCreateChannelModal } from "@/features/channels/store/useCreateChannelModal";
-import { useHasPermission } from "@/features/roles/api/useHasPermission";
 import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
 import { useGetMembers } from "@/features/serverMembers/api/useGetMembers";
 import { useGetServerById } from "@/features/servers/api/useGetServerById";
@@ -32,20 +31,20 @@ export const ServerSidebar = () => {
     id: serverId,
   });
 
-  const { data: channels, isLoading: channelsLoading } = useGetChannels({
+  const { data: channels} = useGetChannels({
     serverId,
   });
 
-  const { data: serverMembers, isLoading: serverMembersLoading } =
+  const { data: serverMembers} =
     useGetMembers({
       serverId,
     });
 
-  const { data: isPermitted, isLoading } = useHasPermission({
-    serverMemberId: currentMember?._id,
-    permission: "MANAGE_CHANNELS",
-  });
-  
+  // const { data: isPermitted, isLoading } = useHasPermission({
+  //   serverMemberId: currentMember?._id,
+  //   permission: "MANAGE_CHANNELS",
+  // });
+
   const { setIsOpen } = useCreateChannelModal();
 
   if (serverLoading || currentMemberLoading) {

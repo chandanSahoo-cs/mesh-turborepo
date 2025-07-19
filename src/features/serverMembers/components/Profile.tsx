@@ -2,13 +2,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useHasPermission } from "@/features/roles/api/useHasPermission";
-import { useUpdateRole } from "@/features/roles/api/useUpdateRole";
 import { useGetServerById } from "@/features/servers/api/useGetServerById";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useServerId } from "@/hooks/useServerId";
 import { AlertTriangleIcon, LoaderIcon, MailIcon, XIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useCurrentMember } from "../api/useCurrentMember";
@@ -21,7 +19,7 @@ interface ProfileProps {
 }
 
 export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
-  const router = useRouter();
+  // const router = useRouter();
   const serverId = useServerId();
 
   const { data: server, isLoading: isLoadingServer } = useGetServerById({
@@ -38,7 +36,7 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
     "Are you sure you want to remove this member?"
   );
 
-  const [UpdateDialog, confirmUpdate] = useConfirm(
+  const [UpdateDialog] = useConfirm(
     "Change role",
     "Are you sure you want to change this members role?"
   );
@@ -48,8 +46,8 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
   const { data: profileMember, isLoading: isLoadingProfileMember } =
     useGetMemberById({ serverMemberId });
 
-  const { removeMember, isPending: isRemovingPending } = useRemoveMember();
-  const { updateRole, isPending: isUpdatingRole } = useUpdateRole();
+  const { removeMember } = useRemoveMember();
+  // const { updateRole, isPending: isUpdatingRole } = useUpdateRole();
   const isCurrent =
     currentMember && profileMember
       ? currentMember?._id === profileMember._id

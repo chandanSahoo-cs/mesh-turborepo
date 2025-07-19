@@ -24,7 +24,7 @@ export default function Home() {
       console.log("Open modal");
       console.log("isOpen: ", isOpen);
     }
-  }, [serverId, isLoading, isOpen]);
+  }, [serverId, isLoading, isOpen,router]);
 
   return (
     <div>

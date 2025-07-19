@@ -38,7 +38,7 @@ export const Header = ({ channelName }: HeaderProps) => {
 
   const channelId = useChannelId();
   const serverId = useServerId();
-  const { data: member, isLoading: memberLoading } = useCurrentMember({
+  const { data: member} = useCurrentMember({
     serverId,
   });
 
@@ -47,7 +47,7 @@ export const Header = ({ channelName }: HeaderProps) => {
     setValue(value);
   };
 
-  const { data: isPermitted, isLoading } = useHasPermission({
+  const { data: isPermitted} = useHasPermission({
     serverMemberId: member?._id,
     permission: "MANAGE_CHANNELS",
   });
@@ -149,11 +149,11 @@ export const Header = ({ channelName }: HeaderProps) => {
                       />
                       <DialogFooter>
                         <DialogClose asChild>
-                          <Button variant="outline" disabled={false}>
+                          <Button variant="outline" disabled={isRenamePending}>
                             Cancel
                           </Button>
                         </DialogClose>
-                        <Button disabled={false}>Save</Button>
+                        <Button disabled={isRenamePending}>Save</Button>
                       </DialogFooter>
                     </form>
                   </DialogContent>

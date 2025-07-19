@@ -66,14 +66,14 @@ export const Message = ({
   threadTimestamp,
 }: MessageProps) => {
   const { parentMessageId, onOpenMessage, onClose } = usePanel();
-
+  console.log(serverMemberId)
   const [ConfirmDialog, confirm] = useConfirm(
     "Delete message",
     "Are you sure you want to delete this message? This cannot be undone"
   );
   const { editMessage, isPending: isEditingMessage } = useEditMessage();
   const { deleteMessage, isPending: isDeletingMessage } = useDeleteMessage();
-  const { toggleReaction, isPending: isTogglingReaction } = useToggleReaction();
+  const { toggleReaction} = useToggleReaction();
 
   const handleUpdate = ({ body }: { body: string }) => {
     editMessage(
@@ -112,6 +112,7 @@ export const Message = ({
     );
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleReaction = (value: any) => {
     console.log({ value });
     toggleReaction(

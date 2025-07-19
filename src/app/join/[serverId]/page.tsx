@@ -28,7 +28,7 @@ const JoinPage = () => {
           router.replace(`/servers/${id}`);
           toast.success("Successfully joined the server");
         },
-        onError: (error) => {
+        onError: () => {
           toast.error("Failed to join the server");
         },
       }
@@ -39,7 +39,7 @@ const JoinPage = () => {
 
   useEffect(() => {
     if(isMember) router.push(`/servers/${serverId}`);
-  }, [isMember]);
+  }, [isMember,router, serverId]);
 
   if (isLoading) {
     return (

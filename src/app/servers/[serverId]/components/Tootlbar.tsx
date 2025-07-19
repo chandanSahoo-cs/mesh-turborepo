@@ -16,14 +16,13 @@ import { InfoIcon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-interface ToolbarProps {}
-export const Toolbar = ({}: ToolbarProps) => {
+export const Toolbar = () => {
   const serverId = useServerId();
-  const { data, isLoading } = useGetServerById({ id: serverId });
-  const { data: channels, isLoading: isLoadingChannels } = useGetChannels({
+  const { data } = useGetServerById({ id: serverId });
+  const { data: channels } = useGetChannels({
     serverId,
   });
-  const { data: members, isLoading: isLoadingMembers } = useGetMembers({
+  const { data: members } = useGetMembers({
     serverId,
   });
 

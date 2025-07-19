@@ -13,8 +13,8 @@ import { LoaderIcon } from "lucide-react";
 import { useState } from "react";
 import { Id } from "../../convex/_generated/dataModel";
 import { ChannelHero } from "./ChannelHero";
-import { Message } from "./Message";
 import { ConversationHero } from "./ConversationHero";
+import { Message } from "./Message";
 
 const TIME_THRESHOLD = 5;
 
@@ -50,8 +50,7 @@ export const MessageList = ({
 }: MessageListProps) => {
   const [editingId, setEditingId] = useState<Id<"messages"> | null>(null);
   const serverId = useServerId();
-  const { data: currentMember, isLoading: currentMemberLoading } =
-    useCurrentMember({ serverId });
+  const { data: currentMember } = useCurrentMember({ serverId });
   const groupedMessages = data?.reduce(
     (groups, message) => {
       const date = new Date(message._creationTime);

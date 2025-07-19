@@ -42,7 +42,7 @@ const Editor = ({
 
   const submitRef = useRef(onSubmit);
   const placeholderRef = useRef(placeholder);
-  const cancelRef = useRef(onCancel);
+  // const cancelRef = useRef(onCancel);
   const quillRef = useRef<Quill | null>(null);
   const defaultValueRef = useRef(defaultValue);
   const disabledRef = useRef(disabled);
@@ -141,7 +141,7 @@ const Editor = ({
       toolbarElement.classList.toggle("hidden");
     }
   };
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onEmojiSelect = (emoji: any) => {
     const quill = quillRef.current;
     quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);
