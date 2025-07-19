@@ -198,6 +198,17 @@ export const removeChannel = mutation({
       throw new ConvexError("User is not allowed to create new channels");
     }
 
+    const [messages] = await Promise.all([
+      ctx.db
+        .query("messages")
+        .withIndex("byChannelId", (q) => q.eq("channelId", channelId))
+        .collect(),
+    ]);
+
+    await Promise.all([
+      ...messages.map((message) => ctx.db.delete(message._id)),
+    ]);
+
     await ctx.db.delete(channelId);
     return channelId;
   },

@@ -205,25 +205,36 @@ export const deleteServer = mutation({
         throw new ConvexError("User is not permitted to delee the server");
       }
 
-      const [serverMembers, roles, channels] = await Promise.all([
-        ctx.db
-          .query("serverMembers")
-          .withIndex("byServerId", (q) => q.eq("serverId", serverId))
-          .collect(),
-        ctx.db
-          .query("roles")
-          .withIndex("byServerId", (q) => q.eq("serverId", serverId))
-          .collect(),
-        ctx.db
-          .query("channels")
-          .withIndex("byServerId", (q) => q.eq("serverId", serverId))
-          .collect(),
-      ]);
+      const [serverMembers, roles, channels, messages, conversations] =
+        await Promise.all([
+          ctx.db
+            .query("serverMembers")
+            .withIndex("byServerId", (q) => q.eq("serverId", serverId))
+            .collect(),
+          ctx.db
+            .query("roles")
+            .withIndex("byServerId", (q) => q.eq("serverId", serverId))
+            .collect(),
+          ctx.db
+            .query("channels")
+            .withIndex("byServerId", (q) => q.eq("serverId", serverId))
+            .collect(),
+          ctx.db
+            .query("messages")
+            .withIndex("byServerId", (q) => q.eq("serverId", serverId))
+            .collect(),
+          ctx.db
+            .query("serverConversations")
+            .withIndex("byServerId", (q) => q.eq("serverId", serverId))
+            .collect(),
+        ]);
 
       await Promise.all([
         ...serverMembers.map((serverMember) => ctx.db.delete(serverMember._id)),
         ...roles.map((role) => ctx.db.delete(role._id)),
         ...channels.map((channel) => ctx.db.delete(channel._id)),
+        ...messages.map((message) => ctx.db.delete(message._id)),
+        ...conversations.map((conversation) => ctx.db.delete(conversation._id)),
       ]);
 
       await ctx.db.delete(serverId);
