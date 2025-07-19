@@ -1,8 +1,8 @@
 "use client";
 
+import { Loader } from "@/components/Loader";
 import { useGetServers } from "@/features/servers/api/useGetServers";
 import { useCreateServerModal } from "@/features/servers/store/useCreateServerModal";
-import { LoaderIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
@@ -28,9 +28,7 @@ export default function Home() {
 
   return (
     <div>
-      <div className="h-full flex items-center justify-center">
-        <LoaderIcon className="size-6 animate-spin text-muted-foreground" />
-      </div>
+      <Loader />
     </div>
   );
 }

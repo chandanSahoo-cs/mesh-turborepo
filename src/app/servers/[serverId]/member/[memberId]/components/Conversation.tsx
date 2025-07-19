@@ -1,9 +1,10 @@
+import { Loader } from "@/components/Loader";
 import { MessageList } from "@/components/MessageList";
 import { useGetMessages } from "@/features/messages/api/useGetMessages";
 import { useGetMemberById } from "@/features/serverMembers/api/useGetMemberById";
 import { useMemberId } from "@/hooks/useMemberId";
 import { usePanel } from "@/hooks/usePanel";
-import { LoaderIcon, TriangleAlertIcon } from "lucide-react";
+import { TriangleAlertIcon } from "lucide-react";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
 import { ChatInput } from "./ChatInput";
 import { Header } from "./Header";
@@ -25,11 +26,7 @@ export const Conversation = ({ serverConversationId }: ConversationProps) => {
   });
 
   if (serverMemberLoading || status === "LoadingFirstPage") {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <LoaderIcon className="size-6 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <Loader />;
   }
 
   if (!serverMember) {

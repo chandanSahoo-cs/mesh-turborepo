@@ -1,11 +1,11 @@
 "use client";
 
+import { Loader } from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { useGetServerInfo } from "@/features/servers/api/useGetServerInfo";
 import { useJoinServer } from "@/features/servers/api/useJoinServer";
 import { useServerId } from "@/hooks/useServerId";
 import { cn } from "@/lib/utils";
-import { Loader } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -42,11 +42,7 @@ const JoinPage = () => {
   }, [isMember, router, serverId]);
 
   if (isLoading) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <Loader className="size-6 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <Loader />;
   }
   return (
     <div className="h-full flex flex-col gap-y-8 items-center justify-center bg-white p-8 rounded-lg shadow-md">

@@ -1,3 +1,4 @@
+import { Loader } from "@/components/Loader";
 import { useGetChannels } from "@/features/channels/api/useGetChannels";
 import { useCreateChannelModal } from "@/features/channels/store/useCreateChannelModal";
 import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
@@ -9,7 +10,6 @@ import { useServerId } from "@/hooks/useServerId";
 import {
   AlertTriangleIcon,
   HashIcon,
-  LoaderIcon,
   MessageSquareTextIcon,
   SendHorizonalIcon,
 } from "lucide-react";
@@ -31,14 +31,13 @@ export const ServerSidebar = () => {
     id: serverId,
   });
 
-  const { data: channels} = useGetChannels({
+  const { data: channels } = useGetChannels({
     serverId,
   });
 
-  const { data: serverMembers} =
-    useGetMembers({
-      serverId,
-    });
+  const { data: serverMembers } = useGetMembers({
+    serverId,
+  });
 
   // const { data: isPermitted, isLoading } = useHasPermission({
   //   serverMemberId: currentMember?._id,
@@ -48,11 +47,7 @@ export const ServerSidebar = () => {
   const { setIsOpen } = useCreateChannelModal();
 
   if (serverLoading || currentMemberLoading) {
-    return (
-      <div className="flex flex-col bg-[#5E2C5F] h-full items-center justify-center">
-        <LoaderIcon className="size-5 animate-spin text-white" />
-      </div>
-    );
+    return <Loader />;
   }
 
   if (!server || !currentMember) {

@@ -1,3 +1,4 @@
+import { Loader } from "@/components/Loader";
 import { Message } from "@/components/Message";
 import { Button } from "@/components/ui/button";
 import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
@@ -5,7 +6,7 @@ import { useGenerateUploadUrl } from "@/features/upload/api/useGenerateUploadUrl
 import { useChannelId } from "@/hooks/useChannelId";
 import { useServerId } from "@/hooks/useServerId";
 import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
-import { AlertTriangleIcon, LoaderIcon, XIcon } from "lucide-react";
+import { AlertTriangleIcon, XIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import Quill from "quill";
 import { useRef, useState } from "react";
@@ -141,9 +142,7 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
             <XIcon className="size-5 stroke-[1.5]" />
           </Button>
         </div>
-        <div className="flex flex-col gap-y-2 h-full items-center justify-center">
-          <LoaderIcon className="size-5 animate-spin text-muted-foreground" />
-        </div>
+        <Loader />
       </div>
     );
   }
@@ -235,14 +234,7 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
             }
           }}
         />
-        {isLoadingMore && (
-          <div className="text-center my-2 relative">
-            <hr className="absolute top-1/2 left-0 right-0 border-t border-gray-300" />
-            <span className="relative inline-block bg-white px-4 py-1 rounded-full text-xs border border-gray-300 shadow-sm">
-              <LoaderIcon className="size-4 animate-spin" />
-            </span>
-          </div>
-        )}
+        {isLoadingMore && <Loader />}
         <Message
           hideThreadButton
           serverMemberId={parentMessage.serverMemberId}

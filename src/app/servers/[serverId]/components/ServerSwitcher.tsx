@@ -1,3 +1,4 @@
+import { Loader } from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,7 +11,7 @@ import { useGetServers } from "@/features/servers/api/useGetServers";
 import { useCreateServerModal } from "@/features/servers/store/useCreateServerModal";
 import { useServerId } from "@/hooks/useServerId";
 
-import { Loader, PlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export const ServerSwitcher = () => {
@@ -32,7 +33,7 @@ export const ServerSwitcher = () => {
       <DropdownMenuTrigger asChild>
         <Button className="size-9 relative overflow-hidden bg-[#ABABAD] hover:bg-[#ABABAD]/80 text-slate-800 font-semibold text-xl">
           {serverLoading ? (
-            <Loader className="size-5 animate-spin shrink-0" />
+            <Loader/>
           ) : (
             server?.name.charAt(0).toUpperCase()
           )}

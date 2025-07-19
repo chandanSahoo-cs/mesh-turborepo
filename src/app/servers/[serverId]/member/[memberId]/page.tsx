@@ -1,9 +1,10 @@
 "use client";
 
+import { Loader } from "@/components/Loader";
 import { useCreateOrGetConversation } from "@/features/conversations/api/useCreateOrGetConversation";
 import { useMemberId } from "@/hooks/useMemberId";
 import { useServerId } from "@/hooks/useServerId";
-import { AlertTriangleIcon, LoaderIcon } from "lucide-react";
+import { AlertTriangleIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Id } from "../../../../../../convex/_generated/dataModel";
@@ -36,11 +37,7 @@ const MemberIdPage = () => {
   }, [memberId, serverId, createOrGetConversation]);
 
   if (isPending) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <LoaderIcon className="size-6 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <Loader />;
   }
 
   if (!serverConversationId) {

@@ -1,3 +1,4 @@
+import { Loader } from "@/components/Loader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -5,7 +6,7 @@ import { useHasPermission } from "@/features/roles/api/useHasPermission";
 import { useGetServerById } from "@/features/servers/api/useGetServerById";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useServerId } from "@/hooks/useServerId";
-import { AlertTriangleIcon, LoaderIcon, MailIcon, XIcon } from "lucide-react";
+import { AlertTriangleIcon, MailIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Id } from "../../../../convex/_generated/dataModel";
@@ -146,9 +147,7 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
             <XIcon className="size-5 stroke-[1.5]" />
           </Button>
         </div>
-        <div className="flex flex-col gap-y-2 h-full items-center justify-center">
-          <LoaderIcon className="size-5 animate-spin text-muted-foreground" />
-        </div>
+        <Loader />
       </div>
     );
   }

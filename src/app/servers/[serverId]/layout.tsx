@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader } from "@/components/Loader";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -8,7 +9,6 @@ import {
 import { Thread } from "@/features/messages/components/Thread";
 import { Profile } from "@/features/serverMembers/components/Profile";
 import { usePanel } from "@/hooks/usePanel";
-import { LoaderIcon } from "lucide-react";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { ServerSidebar } from "./components/ServerSidebar";
 import { Sidebar } from "./components/Sidebar";
@@ -38,7 +38,9 @@ const ServerIdLayout = ({ children }: ServerIdLayoutProps) => {
             <ServerSidebar />
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel minSize={20} defaultSize={80}>{children}</ResizablePanel>
+          <ResizablePanel minSize={20} defaultSize={80}>
+            {children}
+          </ResizablePanel>
           {showPanel && (
             <>
               <ResizableHandle withHandle />
@@ -54,9 +56,7 @@ const ServerIdLayout = ({ children }: ServerIdLayoutProps) => {
                     onClose={onClose}
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <LoaderIcon className="size-5 animate-spin text-muted-foreground" />
-                  </div>
+                  <Loader />
                 )}
               </ResizablePanel>
             </>

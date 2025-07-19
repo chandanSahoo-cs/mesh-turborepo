@@ -1,12 +1,13 @@
 "use client";
 
+import { Loader } from "@/components/Loader";
 import { useGetChannels } from "@/features/channels/api/useGetChannels";
 import { useCreateChannelModal } from "@/features/channels/store/useCreateChannelModal";
 import { useHasPermission } from "@/features/roles/api/useHasPermission";
 import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
 import { useGetServerById } from "@/features/servers/api/useGetServerById";
 import { useServerId } from "@/hooks/useServerId";
-import { LoaderIcon, TriangleAlertIcon } from "lucide-react";
+import { TriangleAlertIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
@@ -26,7 +27,7 @@ const ServerIdPage = () => {
     serverId,
   });
 
-  const { data:isPermitted } = useHasPermission({
+  const { data: isPermitted } = useHasPermission({
     serverMemberId: member?._id,
     permission: "MANAGE_CHANNELS",
   });
@@ -57,11 +58,7 @@ const ServerIdPage = () => {
   ]);
 
   if (serverLoading || channelsLoading || memberLoading) {
-    return (
-      <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
-        <LoaderIcon className="size-6 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <Loader />;
   }
 
   if (!server || !member) {
