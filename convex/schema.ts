@@ -71,8 +71,9 @@ const schema = defineSchema({
   }).index("email", ["email"]),
 
   friendRequests: defineTable({
-    fromUserId: v.id("users"),
-    toUserId: v.id("users"),
+    userOne: v.id("users"),
+    userTwo: v.id("users"),
+    intiatedBy: v.id("users"),
     status: v.union(
       v.literal("pending"),
       v.literal("accepted"),
@@ -80,8 +81,9 @@ const schema = defineSchema({
       v.literal("blocked")
     ),
   })
-    .index("toUser", ["toUserId"])
-    .index("fromUser", ["fromUserId"]),
+    .index("byUserOne", ["userOne"])
+    .index("byUserTwo", ["userTwo"])
+    .index("byUserOneAndUserTwo", ["userOne", "userTwo"]),
 
   servers: defineTable({
     name: v.string(),
@@ -135,7 +137,6 @@ const schema = defineSchema({
     .index("byMember1", ["member1Id"])
     .index("byMember2", ["member2Id"])
     .index("byServerId", ["serverId"]),
-    
 
   messages: defineTable({
     body: v.optional(v.string()),
@@ -172,7 +173,6 @@ const schema = defineSchema({
       "messageId",
       "value",
     ]),
-    
 });
 
 export default schema;
