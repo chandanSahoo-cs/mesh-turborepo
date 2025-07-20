@@ -5,16 +5,44 @@ import { mutation, query } from "./_generated/server";
 export const currentUser = query({
   args: {},
   handler: async (ctx) => {
-    try {
-      const userId = await getAuthUserId(ctx);
-      if (!userId) {
-        throw new ConvexError("User is not authenticated!");
-      }
-
-      return await ctx.db.get(userId);
-    } catch (error) {
-      console.error(error);
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new ConvexError("User unauthorized");
     }
+
+    return await ctx.db.get(userId);
+  },
+});
+
+export const userDetailsById = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, { userId }) => {
+    const currentUserId = await getAuthUserId(ctx);
+
+    if (!currentUserId) {
+      throw new ConvexError("User unauthorized");
+    }
+
+    const user = await ctx.db.get(userId);
+
+    if (!user) {
+      throw new ConvexError("User not found");
+    }
+
+    return {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      image: user.image,
+      lastSeen: user.lastSeen,
+      manualStatus: user.manualStatus,
+      effectiveStatus: user.effectiveStatus,
+      isAnonymous: user.isAnonymous,
+      _creationTime: user._creationTime,
+    };
   },
 });
 

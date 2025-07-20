@@ -73,7 +73,7 @@ const schema = defineSchema({
   friendRequests: defineTable({
     userOne: v.id("users"),
     userTwo: v.id("users"),
-    intiatedBy: v.id("users"),
+    initiatedBy: v.id("users"),
     status: v.union(
       v.literal("pending"),
       v.literal("accepted"),

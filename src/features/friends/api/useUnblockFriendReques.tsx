@@ -20,7 +20,7 @@ interface Options {
 
 type Status = "success" | "error" | "settled" | "pending" | null;
 
-export const useAcceptFriendRequest = () => {
+export const useUnblockFriendRequest = () => {
   const [data, setData] = useState<ResponseType | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
@@ -28,9 +28,9 @@ export const useAcceptFriendRequest = () => {
 
   const isPending = useMemo(() => status === "pending", [status]);
 
-  const accept = useMutation(api.friendRequests.acceptFriendRequest);
+  const unblock = useMutation(api.friendRequests.unblockFriendRequest);
 
-  const acceptFriendRequest = useCallback(
+  const unblockFriendRequest = useCallback(
     async (
       { friendRequestId }: RequestType,
       { onSuccess, onSettled, onError }: Options
@@ -41,7 +41,7 @@ export const useAcceptFriendRequest = () => {
 
         setStatus("pending");
         console.log("Creating server");
-        const response = await accept({ friendRequestId });
+        const response = await unblock({ friendRequestId });
 
         onSuccess?.({ id: response });
       } catch (error) {
@@ -54,11 +54,11 @@ export const useAcceptFriendRequest = () => {
         onSettled?.();
       }
     },
-    [accept]
+    [unblock]
   );
 
   return {
-    acceptFriendRequest,
+    unblockFriendRequest,
     data,
     error,
     isPending,

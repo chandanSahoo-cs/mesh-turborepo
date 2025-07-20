@@ -20,7 +20,7 @@ interface Options {
 
 type Status = "success" | "error" | "settled" | "pending" | null;
 
-export const useCreateServer = () => {
+export const useBlockFriendRequest = () => {
   const [data, setData] = useState<ResponseType | null>(null);
   const [error, setError] = useState<Error | null>(null);
 

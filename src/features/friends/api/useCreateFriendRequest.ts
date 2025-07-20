@@ -1,10 +1,11 @@
+
 import { useMutation } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 
 interface RequestType {
-  toUserId: Id<"users">;
+  toUserEmail: string;
 }
 
 interface ResponseType {
@@ -20,7 +21,7 @@ interface Options {
 
 type Status = "success" | "error" | "settled" | "pending" | null;
 
-export const useCreateServer = () => {
+export const useCreateFriendRequest = () => {
   const [data, setData] = useState<ResponseType | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
@@ -32,7 +33,7 @@ export const useCreateServer = () => {
 
   const createFriendRequest = useCallback(
     async (
-      { toUserId }: RequestType,
+      { toUserEmail }: RequestType,
       { onSuccess, onSettled, onError }: Options
     ) => {
       try {
@@ -41,7 +42,7 @@ export const useCreateServer = () => {
 
         setStatus("pending");
         console.log("Creating server");
-        const response = await create({ toUserId });
+        const response = await create({ toUserEmail });
 
         onSuccess?.({ id: response });
       } catch (error) {

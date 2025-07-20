@@ -1,25 +1,42 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
+import { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+
+export type friendUserRequestsType = Doc<"friendRequests"> & {
+  friendUserInfo: Doc<"users"> | null;
+};
+
+export type FriendRequestInfoType =
+  | {
+      incomingRequests: Array<friendUserRequestsType>;
+      outgoingRequests: Array<friendUserRequestsType>;
+      acceptedFriendRequest: Array<friendUserRequestsType>;
+      blockedFriendRequest: Array<friendUserRequestsType>;
+    }
+  | undefined;
 
 export const createFriendRequest = mutation({
   args: {
-    toUserId: v.id("users"),
+    toUserEmail: v.string(),
   },
-  handler: async (ctx, { toUserId }) => {
+  handler: async (ctx, { toUserEmail }) => {
     const userId = await getAuthUserId(ctx);
 
     if (!userId) {
       throw new ConvexError("Unauthorized User");
     }
 
-    const toUser = await ctx.db.get(toUserId);
+    const toUser = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", toUserEmail))
+      .unique();
 
     if (!toUser) {
       throw new ConvexError("Other user doesn't exist");
     }
 
-    const [userOne, userTwo] = [toUserId, userId].sort();
+    const [userOne, userTwo] = [toUser._id, userId].sort();
 
     const isFriendRequestExists = await ctx.db
       .query("friendRequests")
@@ -35,7 +52,7 @@ export const createFriendRequest = mutation({
     const friendRequestId = await ctx.db.insert("friendRequests", {
       userOne,
       userTwo,
-      intiatedBy: userId,
+      initiatedBy: userId,
       status: "pending",
     });
 
@@ -103,7 +120,10 @@ export const rejectFriendRequest = mutation({
       throw new ConvexError("This request doesn't belong to you");
     }
 
-    if (friendRequest.status !== "pending") {
+    if (
+      friendRequest.status !== "pending" &&
+      friendRequest.status !== "accepted"
+    ) {
       throw new ConvexError("Friend request is already resolved");
     }
 
@@ -137,13 +157,43 @@ export const blockFriendRequest = mutation({
       throw new ConvexError("This request doesn't belong to you");
     }
 
-    if (friendRequest.status !== "pending") {
-      throw new ConvexError("Friend request is already resolved");
-    }
-
     await ctx.db.patch(friendRequestId, {
       status: "blocked",
     });
+
+    return friendRequestId;
+  },
+});
+
+export const unblockFriendRequest = mutation({
+  args: {
+    friendRequestId: v.id("friendRequests"),
+  },
+  handler: async (ctx, { friendRequestId }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError("Unauthorized User");
+    }
+
+    const friendRequest = await ctx.db.get(friendRequestId);
+
+    if (!friendRequest) {
+      throw new ConvexError("Friend request doesn't exist");
+    }
+
+    if (
+      friendRequest?.userOne !== userId &&
+      friendRequest?.userTwo !== userId
+    ) {
+      throw new ConvexError("This request doesn't belong to you");
+    }
+
+    if (friendRequest.status !== "blocked") {
+      throw new ConvexError("Friend request is already resolved");
+    }
+
+    await ctx.db.delete(friendRequestId);
 
     return friendRequestId;
   },
@@ -169,9 +219,71 @@ export const getFriendRequests = query({
         .collect(),
     ]);
 
-    const friendRequest = [...userOneFriendRequests, ...userTwoFriendRequests];
+    const friendRequests = [...userOneFriendRequests, ...userTwoFriendRequests];
 
-    return friendRequest;
+    const incomingRequests = [];
+    const outgoingRequests = [];
+    const acceptedFriendRequest = [];
+    const blockedFriendRequest = [];
+
+    for (const request of friendRequests) {
+      const { status, initiatedBy, userOne, userTwo } = request;
+
+      const otherUserId = userOne === userId ? userTwo : userOne;
+
+      if (status === "pending") {
+        if (initiatedBy === userId) {
+          outgoingRequests.push({
+            ...request,
+            friendUserInfo: ctx.db.get(otherUserId),
+          });
+        } else {
+          incomingRequests.push({
+            ...request,
+            friendUserInfo: ctx.db.get(initiatedBy),
+          });
+        }
+      } else if (status === "accepted") {
+        acceptedFriendRequest.push({
+          ...request,
+          friendUserInfo: ctx.db.get(otherUserId),
+        });
+      } else if (status === "blocked") {
+        blockedFriendRequest.push({
+          ...request,
+          friendUserInfo: ctx.db.get(otherUserId),
+        });
+      }
+    }
+
+    const friendRequestInfo = {
+      incomingRequests: await Promise.all(
+        incomingRequests.map(async (r) => ({
+          ...r,
+          friendUserInfo: await r.friendUserInfo,
+        }))
+      ),
+      outgoingRequests: await Promise.all(
+        outgoingRequests.map(async (r) => ({
+          ...r,
+          friendUserInfo: await r.friendUserInfo,
+        }))
+      ),
+      acceptedFriendRequest: await Promise.all(
+        acceptedFriendRequest.map(async (r) => ({
+          ...r,
+          friendUserInfo: await r.friendUserInfo,
+        }))
+      ),
+      blockedFriendRequest: await Promise.all(
+        blockedFriendRequest.map(async (r) => ({
+          ...r,
+          friendUserInfo: await r.friendUserInfo,
+        }))
+      ),
+    };
+
+    return friendRequestInfo;
   },
 });
 
