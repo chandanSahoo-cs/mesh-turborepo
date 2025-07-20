@@ -20,6 +20,8 @@ export const UserButton = () => {
     return <Loader />;
   }
 
+  console.log({ userData });
+
   if (!userData) {
     return null;
   }
@@ -35,7 +37,7 @@ export const UserButton = () => {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger className="outline-none relative">
-        <Avatar className="size-12 border-4 border-black shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] transition-all hover:scale-105 rounded-xl">
+        <Avatar className="size-12 relative overflow-hidden font-mono font-black text-xl rounded-xl flex items-center justify-center border-4 border-black transition-all duration-200 shadow-[2px_2px_0px_0px_#000000] hover:bg-black hover:shadow-[4px_4px_0px_0px_#000000]">
           <AvatarImage
             alt={name}
             src={image || "/placeholder.svg"}
@@ -51,10 +53,10 @@ export const UserButton = () => {
       <DropdownMenuContent
         align="center"
         side="right"
-        className="w-60 bg-white border-4 border-black shadow-[6px_6px_0px_0px_#000000] rounded-xl p-2">
+        className="w-60 bg-white border-4 border-black shadow-[6px_6px_0px_0px_#000000] rounded-xl p-2 mb-2">
         <DropdownMenuItem
           onClick={() => signOut()}
-          className="font-mono font-bold text-black hover:bg-red-100 rounded-lg p-3 cursor-pointer transition-colors">
+          className="font-mono font-bold text-black hover:bg-red-100 rounded-lg p-3 cursor-pointer transition-colors ">
           <LogOut className="size-4 mr-2" />
           Log out
         </DropdownMenuItem>

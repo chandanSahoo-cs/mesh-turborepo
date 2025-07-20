@@ -51,7 +51,15 @@ const schema = defineSchema({
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.number()),
     isAnonymous: v.optional(v.boolean()),
-    status: v.optional(
+    effectiveStatus: v.optional(
+      v.union(
+        v.literal("online"),
+        v.literal("idle"),
+        v.literal("dnd"),
+        v.literal("offline")
+      )
+    ),
+    manualStatus: v.optional(
       v.union(
         v.literal("online"),
         v.literal("idle"),
@@ -60,7 +68,6 @@ const schema = defineSchema({
       )
     ),
     lastSeen: v.optional(v.number()),
-    // Add your custom fields here
   }).index("email", ["email"]),
 
   friendRequests: defineTable({

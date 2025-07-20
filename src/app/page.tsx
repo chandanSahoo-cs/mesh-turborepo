@@ -1,5 +1,6 @@
 "use client";
 
+import { BackgroundAnimations } from "@/components/BackgroundAnimations";
 import { Loader } from "@/components/Loader";
 import { useGetServers } from "@/features/servers/api/useGetServers";
 import { useCreateServerModal } from "@/features/servers/store/useCreateServerModal";
@@ -26,9 +27,9 @@ export default function Home() {
     }
   }, [serverId, isLoading, isOpen, router]);
 
-  return (
-    <div>
-      <Loader />
-    </div>
-  );
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  return <BackgroundAnimations />;
 }

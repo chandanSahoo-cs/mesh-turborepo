@@ -19,7 +19,12 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
     async afterUserCreatedOrUpdated(ctx, { userId }) {
       const user = await ctx.db.get(userId);
       if (user && user.status === undefined) {
-        await ctx.db.patch(userId, { status: "online", lastSeen: Date.now() });
+        await ctx.db.patch(userId, {
+          effectiveStatus: "online",
+          manualStatus: "online",
+          lastSeen: Date.now(),
+        });
+        await ctx.db.patch(userId, {});
       }
     },
   },
