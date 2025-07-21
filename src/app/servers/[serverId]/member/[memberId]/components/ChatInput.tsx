@@ -6,6 +6,7 @@ import Quill from "quill";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
+import { motion } from "framer-motion";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 
@@ -49,9 +50,7 @@ export const ChatInput = ({ placeholder, conversationId }: ChatInputProps) => {
         image: undefined,
       };
 
-      console.log("Hello");
 
-      console.log("Image:", image);
 
       if (image) {
         const url = await generateUploadUrl();
@@ -66,7 +65,6 @@ export const ChatInput = ({ placeholder, conversationId }: ChatInputProps) => {
           body: image,
         });
 
-        console.log("Test-5");
 
         if (!result.ok) {
           throw new Error("Failed to upload file");
@@ -89,7 +87,11 @@ export const ChatInput = ({ placeholder, conversationId }: ChatInputProps) => {
     }
   };
   return (
-    <div className="px-5 w-full">
+    <motion.div
+      className="px-6 py-4 bg-[#fffce9] border-t-4 border-black"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}>
       <Editor
         key={editorKey}
         placeholder={placeholder}
@@ -97,6 +99,6 @@ export const ChatInput = ({ placeholder, conversationId }: ChatInputProps) => {
         disabled={isPending}
         innerRef={editorRef}
       />
-    </div>
+    </motion.div>
   );
 };

@@ -15,6 +15,7 @@ import {
   MessageSquareIcon,
   XIcon,
 } from "lucide-react";
+import React from "react";
 import { toast } from "sonner";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { friendUserRequestsType } from "../../../../convex/friendRequests";
@@ -155,7 +156,12 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}>
                 <Button
-                  onClick={() => handleAccepted(friend._id)}
+                  onClick={(
+                    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                  ) => {
+                    e.stopPropagation();
+                    handleAccepted(friend._id);
+                  }}
                   disabled={acceptingFriendRequest}
                   className="bg-[#7ed957] hover:bg-[#7ed957] text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
                   <CheckIcon className="size-4" />
@@ -165,7 +171,12 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}>
                 <Button
-                  onClick={() => handleRejected(friend._id)}
+                  onClick={(
+                    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                  ) => {
+                    e.stopPropagation();
+                    handleRejected(friend._id);
+                  }}
                   disabled={rejectingFriendRequest}
                   className="bg-red-400 hover:bg-red-400 text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
                   <XIcon className="size-4" />
@@ -176,7 +187,13 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
 
           {type === "accepted" && (
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button className="bg-[#5170ff] hover:bg-[#5170ff] text-white font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
+              <Button
+                onClick={(
+                  e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                ) => {
+                  e.stopPropagation();
+                }}
+                className="bg-[#5170ff] hover:bg-[#5170ff] text-white font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
                 <MessageSquareIcon className="size-4" />
               </Button>
             </motion.div>
@@ -185,7 +202,12 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
           {type === "blocked" && (
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
-                onClick={() => handleUnblocked(friend._id)}
+                onClick={(
+                  e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                ) => {
+                  e.stopPropagation();
+                  handleUnblocked(friend._id);
+                }}
                 disabled={unblockingFriendRequest}
                 className="bg-[#7ed957] hover:bg-[#7ed957] text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
                 Unblock
@@ -199,7 +221,12 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}>
                 <Button
-                  onClick={() => handleBlocked(friend._id)}
+                  onClick={(
+                    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                  ) => {
+                    e.stopPropagation();
+                    handleBlocked(friend._id);
+                  }}
                   disabled={blockingFriendRequest}
                   className="bg-white hover:bg-white text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
                   <BanIcon className="size-4" />
@@ -210,7 +237,12 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}>
                   <Button
-                    onClick={() => handleRemoved(friend._id)}
+                    onClick={(
+                      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                    ) => {
+                      e.stopPropagation();
+                      handleRemoved(friend._id);
+                    }}
                     disabled={rejectingFriendRequest}
                     className="bg-white hover:bg-white text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
                     <CircleMinusIcon className="size-4" />

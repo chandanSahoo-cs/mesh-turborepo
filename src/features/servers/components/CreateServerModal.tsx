@@ -97,20 +97,6 @@ export const CreateServerModal = () => {
             </div>
           </form>
         </motion.div>
-
-        {/* Decorative floating elements */}
-        <motion.div
-          className="absolute top-4 right-4 w-6 h-6 bg-[#5170ff] border-2 border-black rounded-lg"
-          animate={{
-            rotate: [0, 180, 360],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-        />
         <motion.div
           className="absolute bottom-4 left-4 w-4 h-4 bg-[#7ed957] border-2 border-black rounded-full"
           animate={{

@@ -7,9 +7,9 @@ interface useGetServerByIdProps {
 }
 
 export const useGetServerById = ({id}:useGetServerByIdProps) =>{
-    const data = useQuery(api.servers.getServerById,{
+    const data = useQuery(api.servers.getServerById,id ?{
         id
-    })
+    }:"skip")
     const isLoading = data === undefined;
 
     return {data, isLoading}

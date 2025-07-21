@@ -109,19 +109,6 @@ export const FriendProfile = ({ friendId, onClose }: FriendProfileProps) => {
                 {avatarFallback}
               </AvatarFallback>
             </Avatar>
-            {/* Decorative elements */}
-            <motion.div
-              className="absolute -top-2 -right-2 w-6 h-6 bg-[#7ed957] border-2 border-black rounded-full"
-              animate={{
-                scale: [1, 1.2, 1],
-                rotate: [0, 180, 360],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: "easeInOut",
-              }}
-            />
           </motion.div>
         </div>
 
@@ -163,19 +150,6 @@ export const FriendProfile = ({ friendId, onClose }: FriendProfileProps) => {
           </motion.div>
         </div>
 
-        {/* Decorative floating elements */}
-        <motion.div
-          className="absolute bottom-4 right-4 w-4 h-4 bg-[#7ed957] border-2 border-black rounded-lg opacity-30"
-          animate={{
-            y: [0, -10, 0],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-        />
       </div>
     </>
   );

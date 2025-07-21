@@ -1,11 +1,10 @@
 "use client";
 
+import { MemberRoom } from "@/components/rooms/MemberRoom";
 import type React from "react";
 
-import { ChannelRoom } from "@/components/rooms/ChannelRoom";
-
 const ChannelLayout = ({ children }: { children: React.ReactNode }) => {
-  return <ChannelRoom>{children}</ChannelRoom>;
+  return <MemberRoom>{children}</MemberRoom>;
 };
 
 export default ChannelLayout;

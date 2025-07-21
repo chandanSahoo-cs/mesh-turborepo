@@ -6,8 +6,8 @@ import {
   LiveblocksProvider,
   RoomProvider,
 } from "@liveblocks/react/suspense";
-import { Loader } from "./Loader";
-import { PresenceTracker } from "./PresenceTracker";
+import { Loader } from "../Loader";
+import { PresenceTracker } from "../PresenceTracker";
 
 export const Room = ({ children }: { children: React.ReactNode }) => {
   const { userData, isLoading } = useCurrentUser();

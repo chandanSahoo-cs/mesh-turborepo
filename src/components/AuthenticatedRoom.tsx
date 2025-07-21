@@ -1,7 +1,7 @@
 "use client";
 
 import { useCurrentUser } from "@/features/auth/api/useCurrentUser";
-import { Room } from "./Room";
+import { Room } from "./rooms/Room";
 
 export const AuthenticatedRoom = ({
   children,

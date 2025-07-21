@@ -214,19 +214,6 @@ export const Header = ({ channelName }: HeaderProps) => {
         </>
       )}
 
-      {/* Decorative Elements */}
-      <motion.div
-        className="absolute top-2 right-4 w-3 h-3 bg-[#5170ff] border-2 border-black rounded-full opacity-20"
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.2, 0.5, 0.2],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "easeInOut",
-        }}
-      />
     </div>
   );
 };

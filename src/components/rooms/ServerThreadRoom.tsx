@@ -1,27 +1,30 @@
 "use client";
 
 import { useCurrentUser } from "@/features/auth/api/useCurrentUser";
-import { useGetChannelById } from "@/features/channels/api/useGetChannelById";
-import { useChannelId } from "@/hooks/useChannelId";
+import { useGetMessageById } from "@/features/messages/api/useGetMessageById";
+import { useParentMessageId } from "@/features/messages/store/useParentMessageId";
 import {
   ClientSideSuspense,
   LiveblocksProvider,
   RoomProvider,
 } from "@liveblocks/react";
-import { Loader } from "./Loader";
-import { PresenceTracker } from "./PresenceTracker";
+import { Id } from "../../../convex/_generated/dataModel";
+import { Loader } from "../Loader";
+import { PresenceTracker } from "../PresenceTracker";
 
-export const ConversationRoom = ({
+export const ServerThreadRoom = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
   const { userData, isLoading: isLoadingUserData } = useCurrentUser();
-  const channelId = useChannelId();
-  const { data: channelData, isLoading: isLoadingChannelData } =
-    useGetChannelById({ channelId });
 
-  const isLoading = isLoadingChannelData || isLoadingUserData;
+  const [parentMessageId, _setParentMessageId] = useParentMessageId();
+
+  const { data: parentMessageData, isLoading: isLoadingParentMessageData } =
+    useGetMessageById({ messageId: parentMessageId as Id<"messages"> });
+
+  const isLoading = isLoadingUserData || isLoadingParentMessageData;
 
   if (isLoading) {
     return <Loader message="Loading channel" />;
@@ -31,15 +34,15 @@ export const ConversationRoom = ({
     <LiveblocksProvider
       throttle={16}
       authEndpoint={async () => {
-        const endpoint = "/api/liveblock-server-auth";
-        const body = JSON.stringify({ userData, channelData });
+        const endpoint = "/api/liveblock-server-thread-auth";
+        const body = JSON.stringify({ userData, parentMessageData });
         const response = await fetch(endpoint, { method: "POST", body: body });
 
         return await response.json();
       }}>
       <RoomProvider
         initialPresence={{ isTyping: false }}
-        id={String(channelData?._id)}>
+        id={"parentMessage" + String(parentMessageData?._id)}>
         <ClientSideSuspense
           fallback={<Loader message="Loading your session" />}>
           <PresenceTracker />

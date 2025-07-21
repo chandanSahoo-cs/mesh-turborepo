@@ -1,41 +1,37 @@
-//   channelName={channel.name}
-//   channelCreationTime={channel._creationTime}
-//   data={results}
-//   loadMore={loadMore}
-//   isLoadingMore={status === "LoadingMore"}
-//   canLoadMore=
+"use client"
 
-import { GetMessagesReturnType } from "@/features/messages/api/useGetMessages";
-import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
-import { useServerId } from "@/hooks/useServerId";
-import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
-import { useState } from "react";
-import { Id } from "../../convex/_generated/dataModel";
-import { ChannelHero } from "./ChannelHero";
-import { ConversationHero } from "./ConversationHero";
-import { Loader } from "./Loader";
-import { Message } from "./Message";
+import type { GetMessagesReturnType } from "@/features/messages/api/useGetMessages"
+import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember"
+import { useServerId } from "@/hooks/useServerId"
+import { differenceInMinutes, format, isToday, isYesterday } from "date-fns"
+import { useState } from "react"
+import { motion } from "framer-motion"
+import type { Id } from "../../convex/_generated/dataModel"
+import { ChannelHero } from "./ChannelHero"
+import { ConversationHero } from "./ConversationHero"
+import { Loader } from "./Loader"
+import { Message } from "./Message"
 
-const TIME_THRESHOLD = 5;
+const TIME_THRESHOLD = 5
 
 interface MessageListProps {
-  memberName?: string;
-  memberImage?: string;
-  channelName?: string;
-  channelCreationTime?: number;
-  variant?: "channel" | "thread" | "conversation";
-  data: GetMessagesReturnType | undefined;
-  loadMore: () => void;
-  isLoadingMore: boolean;
-  canLoadMore: boolean;
+  memberName?: string
+  memberImage?: string
+  channelName?: string
+  channelCreationTime?: number
+  variant?: "channel" | "thread" | "conversation"
+  data: GetMessagesReturnType | undefined
+  loadMore: () => void
+  isLoadingMore: boolean
+  canLoadMore: boolean
 }
 
 const formatDateLabel = (dateStr: string) => {
-  const date = new Date(dateStr);
-  if (isToday(date)) return "today";
-  if (isYesterday(date)) return "yesterday";
-  return format(date, "EEEE, MMMM d");
-};
+  const date = new Date(dateStr)
+  if (isToday(date)) return "Today"
+  if (isYesterday(date)) return "Yesterday"
+  return format(date, "EEEE, MMMM d")
+}
 
 export const MessageList = ({
   memberName,
@@ -48,41 +44,49 @@ export const MessageList = ({
   isLoadingMore,
   canLoadMore,
 }: MessageListProps) => {
-  const [editingId, setEditingId] = useState<Id<"messages"> | null>(null);
-  const serverId = useServerId();
-  const { data: currentMember } = useCurrentMember({ serverId });
+  const [editingId, setEditingId] = useState<Id<"messages"> | null>(null)
+  const serverId = useServerId()
+  const { data: currentMember } = useCurrentMember({ serverId })
+
   const groupedMessages = data?.reduce(
     (groups, message) => {
-      const date = new Date(message._creationTime);
-      const dateKey = format(date, "yyyy-MM-dd");
+      const date = new Date(message._creationTime)
+      const dateKey = format(date, "yyyy-MM-dd")
       if (!groups[dateKey]) {
-        groups[dateKey] = [];
+        groups[dateKey] = []
       }
 
-      groups[dateKey].unshift(message);
-      return groups;
+      groups[dateKey].unshift(message)
+      return groups
     },
-    {} as Record<string, typeof data>
-  );
+    {} as Record<string, typeof data>,
+  )
+
   return (
-    <div className="flex-1 flex flex-col-reverse pb-4 overflow-y-auto messages-scrollbar">
+    <div className="flex-1 flex flex-col-reverse pb-4 overflow-y-auto messages-scrollbar bg-[#fffce9]">
       {Object.entries(groupedMessages || {}).map(([dateKey, messages]) => (
         <div key={dateKey}>
-          <div className="text-center my-2 relative">
-            <hr className="absolute top-1/2 left-0 right-0 border-t border-gray-300" />
-            <span className="relative inline-block bg-white px-4 py-1 rounded-full text-xs border border-gray-300 shadow-sm">
+          <motion.div
+            className="text-center my-4 relative"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <hr className="absolute top-1/2 left-0 right-0 border-t-2 border-black" />
+            <motion.span
+              className="relative inline-block bg-white px-4 py-2 rounded-xl text-sm font-mono font-black text-black border-4 border-black shadow-[4px_4px_0px_0px_#000000] uppercase tracking-wide"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
               {formatDateLabel(dateKey)}
-            </span>
-          </div>
+            </motion.span>
+          </motion.div>
           {messages.map((message, index) => {
-            const prevMessage = messages[index - 1];
+            const prevMessage = messages[index - 1]
             const isCompact =
               prevMessage &&
               prevMessage.user._id === message.user._id &&
-              differenceInMinutes(
-                new Date(message._creationTime),
-                new Date(prevMessage._creationTime)
-              ) < TIME_THRESHOLD;
+              differenceInMinutes(new Date(message._creationTime), new Date(prevMessage._creationTime)) < TIME_THRESHOLD
             return (
               <Message
                 key={message._id}
@@ -105,7 +109,7 @@ export const MessageList = ({
                 threadName={message.threadName}
                 threadTimestamp={message.threadTimestamp}
               />
-            );
+            )
           })}
         </div>
       ))}
@@ -116,23 +120,21 @@ export const MessageList = ({
             const observer = new IntersectionObserver(
               ([entry]) => {
                 if (entry.isIntersecting && canLoadMore) {
-                  loadMore();
+                  loadMore()
                 }
               },
-              { threshold: 1.0 }
-            );
-            observer.observe(el);
-            return () => observer.disconnect();
+              { threshold: 1.0 },
+            )
+            observer.observe(el)
+            return () => observer.disconnect()
           }
         }}
       />
-      {isLoadingMore && <Loader />}
+      {isLoadingMore && <Loader message="Loading more messages..." />}
       {variant === "channel" && channelName && channelCreationTime && (
         <ChannelHero name={channelName} creationTime={channelCreationTime} />
       )}
-      {variant === "conversation" && memberName && (
-        <ConversationHero name={memberName} image={memberImage} />
-      )}
+      {variant === "conversation" && memberName && <ConversationHero name={memberName} image={memberImage} />}
     </div>
-  );
-};
+  )
+}

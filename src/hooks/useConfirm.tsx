@@ -96,32 +96,6 @@ export const useConfirm = (
             </motion.div>
           </DialogFooter>
         </motion.div>
-
-        {/* Decorative floating elements */}
-        <motion.div
-          className="absolute top-4 right-4 w-3 h-3 bg-[#5170ff] border-2 border-black rounded-full opacity-40"
-          animate={{
-            scale: [1, 1.3, 1],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-4 left-4 w-2 h-2 bg-[#7ed957] border-2 border-black rounded-lg opacity-50"
-          animate={{
-            y: [0, -5, 0],
-            x: [0, 5, 0],
-          }}
-          transition={{
-            duration: 2.5,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-        />
       </DialogContent>
     </Dialog>
   );

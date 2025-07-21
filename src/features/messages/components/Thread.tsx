@@ -1,5 +1,6 @@
 import { Loader } from "@/components/Loader";
 import { Message } from "@/components/Message";
+import { ServerThreadRoom } from "@/components/rooms/ServerThreadRoom";
 import { Button } from "@/components/ui/button";
 import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
 import { useGenerateUploadUrl } from "@/features/upload/api/useGenerateUploadUrl";
@@ -165,101 +166,103 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="h-[49px] flex justify-between items-center px-4 border-b">
-        <p className="text-lg font-bold">Thread</p>
-        <Button onClick={onClose} size="iconSm" variant="ghost">
-          <XIcon className="size-5 stroke-[1.5]" />
-        </Button>
-      </div>
-      <div className="flex-1 flex flex-col-reverse pb-4 overflow-y-auto messages-scrollbar">
-        {Object.entries(groupedMessages || {}).map(([dateKey, messages]) => (
-          <div key={dateKey}>
-            <div className="text-center my-2 relative">
-              <hr className="absolute top-1/2 left-0 right-0 border-t border-gray-300" />
-              <span className="relative inline-block bg-white px-4 py-1 rounded-full text-xs border border-gray-300 shadow-sm">
-                {formatDateLabel(dateKey)}
-              </span>
-            </div>
-            {messages.map((message, index) => {
-              const previousMessage = messages[index - 1];
-              const isCompact =
-                previousMessage &&
-                previousMessage.user?._id === message.user?._id &&
-                differenceInMinutes(
-                  new Date(message._creationTime),
-                  new Date(previousMessage._creationTime)
-                ) < TIME_THRESHOLD;
+    <ServerThreadRoom>
+      <div className="h-full flex flex-col">
+        <div className="h-[49px] flex justify-between items-center px-4 border-b">
+          <p className="text-lg font-bold">Thread</p>
+          <Button onClick={onClose} size="iconSm" variant="ghost">
+            <XIcon className="size-5 stroke-[1.5]" />
+          </Button>
+        </div>
+        <div className="flex-1 flex flex-col-reverse pb-4 overflow-y-auto messages-scrollbar">
+          {Object.entries(groupedMessages || {}).map(([dateKey, messages]) => (
+            <div key={dateKey}>
+              <div className="text-center my-2 relative">
+                <hr className="absolute top-1/2 left-0 right-0 border-t border-gray-300" />
+                <span className="relative inline-block bg-white px-4 py-1 rounded-full text-xs border border-gray-300 shadow-sm">
+                  {formatDateLabel(dateKey)}
+                </span>
+              </div>
+              {messages.map((message, index) => {
+                const previousMessage = messages[index - 1];
+                const isCompact =
+                  previousMessage &&
+                  previousMessage.user?._id === message.user?._id &&
+                  differenceInMinutes(
+                    new Date(message._creationTime),
+                    new Date(previousMessage._creationTime)
+                  ) < TIME_THRESHOLD;
 
-              return (
-                <Message
-                  key={message._id}
-                  id={message._id}
-                  serverMemberId={message.serverMemberId}
-                  authorImage={message.user.image}
-                  authorName={message.user.name}
-                  isAuthor={message.serverMemberId === currentMember?._id}
-                  reactions={message.reactions}
-                  body={message.body}
-                  image={message.image}
-                  updatedAt={message.updatedAt}
-                  createdAt={message._creationTime}
-                  isEditing={editingId === message._id}
-                  setEditingId={setEditingId}
-                  isCompact={isCompact}
-                  hideThreadButton
-                  threadCount={message.threadCount}
-                  threadImage={message.threadImage}
-                  threadName={message.threadName}
-                  threadTimestamp={message.threadTimestamp}
-                />
-              );
-            })}
-          </div>
-        ))}
-        <div
-          className="h-1"
-          ref={(el) => {
-            if (el) {
-              const observer = new IntersectionObserver(
-                ([entry]) => {
-                  if (entry.isIntersecting && canLoadMore) {
-                    loadMore();
-                  }
-                },
-                { threshold: 1.0 }
-              );
-              observer.observe(el);
-              return () => observer.disconnect();
-            }
-          }}
-        />
-        {isLoadingMore && <Loader />}
-        <Message
-          hideThreadButton
-          serverMemberId={parentMessage.serverMemberId}
-          authorImage={parentMessage.user.image}
-          authorName={parentMessage.user.name}
-          isAuthor={parentMessage.serverMemberId === currentMember?._id}
-          body={parentMessage.body}
-          image={parentMessage.image}
-          createdAt={parentMessage._creationTime}
-          updatedAt={parentMessage.updatedAt}
-          id={parentMessage._id}
-          reactions={parentMessage.reactions}
-          isEditing={editingId === parentMessage._id}
-          setEditingId={setEditingId}
-        />
+                return (
+                  <Message
+                    key={message._id}
+                    id={message._id}
+                    serverMemberId={message.serverMemberId}
+                    authorImage={message.user.image}
+                    authorName={message.user.name}
+                    isAuthor={message.serverMemberId === currentMember?._id}
+                    reactions={message.reactions}
+                    body={message.body}
+                    image={message.image}
+                    updatedAt={message.updatedAt}
+                    createdAt={message._creationTime}
+                    isEditing={editingId === message._id}
+                    setEditingId={setEditingId}
+                    isCompact={isCompact}
+                    hideThreadButton
+                    threadCount={message.threadCount}
+                    threadImage={message.threadImage}
+                    threadName={message.threadName}
+                    threadTimestamp={message.threadTimestamp}
+                  />
+                );
+              })}
+            </div>
+          ))}
+          <div
+            className="h-1"
+            ref={(el) => {
+              if (el) {
+                const observer = new IntersectionObserver(
+                  ([entry]) => {
+                    if (entry.isIntersecting && canLoadMore) {
+                      loadMore();
+                    }
+                  },
+                  { threshold: 1.0 }
+                );
+                observer.observe(el);
+                return () => observer.disconnect();
+              }
+            }}
+          />
+          {isLoadingMore && <Loader />}
+          <Message
+            hideThreadButton
+            serverMemberId={parentMessage.serverMemberId}
+            authorImage={parentMessage.user.image}
+            authorName={parentMessage.user.name}
+            isAuthor={parentMessage.serverMemberId === currentMember?._id}
+            body={parentMessage.body}
+            image={parentMessage.image}
+            createdAt={parentMessage._creationTime}
+            updatedAt={parentMessage.updatedAt}
+            id={parentMessage._id}
+            reactions={parentMessage.reactions}
+            isEditing={editingId === parentMessage._id}
+            setEditingId={setEditingId}
+          />
+        </div>
+        <div className="px-4">
+          <Editor
+            key={editorKey}
+            onSubmit={handleSubmit}
+            innerRef={editorRef}
+            disabled={isPending}
+            placeholder="Reply.."
+          />
+        </div>
       </div>
-      <div className="px-4">
-        <Editor
-          key={editorKey}
-          onSubmit={handleSubmit}
-          innerRef={editorRef}
-          disabled={isPending}
-          placeholder="Reply.."
-        />
-      </div>
-    </div>
+    </ServerThreadRoom>
   );
 };
