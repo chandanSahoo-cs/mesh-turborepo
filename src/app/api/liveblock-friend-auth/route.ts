@@ -1,5 +1,12 @@
 import { Liveblocks } from "@liveblocks/node";
 import { ConvexHttpClient } from "convex/browser";
+import { Doc } from "../../../../convex/_generated/dataModel";
+
+type RequestType = {
+  userData: Doc<"users">;
+  channelData: Doc<"channels">;
+  type: "conversation" | "status";
+};
 
 const liveblocks = new Liveblocks({
   secret: process.env.LIVEBLOCKS_SECRET_KEY!,
@@ -8,11 +15,8 @@ const liveblocks = new Liveblocks({
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export async function POST(req: Request) {
-  // const user
-  // const user = await convex.query(api.users.currentUser);
+  const { userData }: RequestType = await req.json();
 
-  const { userData } = await req.json();
-  // console.log("user:", user);
   if (!userData) {
     return new Response("Unauthorized", { status: 401 });
   }

@@ -4,6 +4,28 @@ import { checkMember } from "../src/lib/checkMember";
 import { checkPermission } from "../src/lib/permissions";
 import { mutation, query } from "./_generated/server";
 
+export const checkMembership = query({
+  args: {
+    serverId: v.id("servers"),
+    userId: v.id("users"),
+  },
+  handler: async (ctx, { serverId, userId }) => {
+    if (!userId) {
+      return false;
+    }
+
+    const serverMembership = await ctx.db
+      .query("serverMembers")
+      .withIndex("uniqueMembership", (q) =>
+        q.eq("userId", userId).eq("serverId", serverId)
+      )
+      .unique();
+
+    if (serverMembership) return true;
+    else return false;
+  },
+});
+
 export const getCurrentMember = query({
   args: { serverId: v.id("servers") },
   handler: async (ctx, { serverId }) => {

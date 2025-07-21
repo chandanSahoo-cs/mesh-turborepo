@@ -6,6 +6,7 @@ import { api } from "../../convex/_generated/api";
 
 export const PresenceTracker = () => {
   const self = useSelf();
+  console.log("self: ", self);
 
   const markStatus = useMutation(api.users.updateEffectiveStatus);
   const { userData } = useCurrentUser();
@@ -16,7 +17,7 @@ export const PresenceTracker = () => {
     if (self) {
       markStatus({ status: "online", userId: userData?._id });
     }
-    console.log("self: ", self);
+    // console.log("self: ", self);
 
     const handleUnload = () => {
       markStatus({ status: "offline", userId: userData?._id });

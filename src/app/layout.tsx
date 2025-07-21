@@ -2,7 +2,6 @@ import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
-import { AuthenticatedRoom } from "@/components/AuthenticatedRoom";
 import { Modals } from "@/components/Modals";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -39,11 +38,9 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <NuqsAdapter>
             <ConvexClientProvider>
-              <AuthenticatedRoom>
-                <Toaster richColors />
-                <Modals />
-                {children}
-              </AuthenticatedRoom>
+              <Toaster richColors />
+              <Modals />
+              {children}
             </ConvexClientProvider>
           </NuqsAdapter>
         </body>

@@ -20,8 +20,8 @@ export const Room = ({ children }: { children: React.ReactNode }) => {
     <LiveblocksProvider
       throttle={16}
       authEndpoint={async () => {
-        const endpoint = "/api/liveblock-status-auth";
-        const body = JSON.stringify({userData});
+        const endpoint = "/api/liveblock-friend-auth";
+        const body = JSON.stringify({ userData });
         const response = await fetch(endpoint, { method: "POST", body: body });
 
         return await response.json();

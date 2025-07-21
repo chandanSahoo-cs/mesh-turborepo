@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useCurrentUser } from "@/features/auth/api/useCurrentUser";
 import { Room } from "./Room";

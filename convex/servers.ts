@@ -11,6 +11,29 @@ const generateCode = () => {
   return code;
 };
 
+export const checkMembership = query({
+  args: {
+    serverId: v.id("servers"),
+  },
+  handler: async (ctx, { serverId }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      return false;
+    }
+
+    const serverMembership = await ctx.db
+      .query("serverMembers")
+      .withIndex("uniqueMembership", (q) =>
+        q.eq("userId", userId).eq("serverId", serverId)
+      )
+      .unique();
+
+    if (serverMembership) return true;
+    else return false;
+  },
+});
+
 export const createServer = mutation({
   args: {
     name: v.string(),

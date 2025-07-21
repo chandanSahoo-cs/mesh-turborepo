@@ -8,6 +8,7 @@ import { useChannelId } from "@/hooks/useChannelId";
 import { TriangleAlertIcon } from "lucide-react";
 import { ChatInput } from "./components/ChatInput";
 import { Header } from "./components/Header";
+import { useMyPresence, useSelf } from "@liveblocks/react";
 
 const ChannelIdPage = () => {
   const channelId = useChannelId();
@@ -29,6 +30,13 @@ const ChannelIdPage = () => {
       </div>
     );
   }
+
+  // const self = useSelf()
+  // const [myPresence,updateMyPresence] = useMyPresence();
+
+  // console.log("self: ",self);
+  
+
   return (
     <div className="flex flex-col h-full">
       <Header channelName={channel.name} />
