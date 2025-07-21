@@ -19,9 +19,6 @@ export const UserButton = () => {
   if (isLoading) {
     return <Loader />;
   }
-
-  console.log({ userData });
-
   if (!userData) {
     return null;
   }

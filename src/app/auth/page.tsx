@@ -1,9 +1,7 @@
 import { AuthScreen } from "@/features/auth/components/AuthScreen";
 
 const Auth = () => {
-  return (
-    <AuthScreen/>
-  )
+  return <AuthScreen />;
 };
 
-export default Auth
+export default Auth;
