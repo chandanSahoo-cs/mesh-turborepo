@@ -173,6 +173,45 @@ const schema = defineSchema({
       "messageId",
       "value",
     ]),
+
+  // Additional field need to change this
+  friendReactions: defineTable({
+    friendMessageId: v.id("friendMessages"),
+    userId: v.id("users"),
+    value: v.string(),
+  })
+    .index("byMessageId", ["friendMessageId"])
+    .index("byUserId", ["userId"])
+    .index("byUserIdAndbyMessageIdAndbyValue", [
+      "userId",
+      "friendMessageId",
+      "value",
+    ]),
+
+  friendConversations: defineTable({
+    user1Id: v.id("users"),
+    user2Id: v.id("users"),
+    lastMessageAt: v.optional(v.number()),
+  })
+    .index("byUser1AndByUser2", ["user1Id", "user2Id"])
+    .index("byUser1", ["user1Id"])
+    .index("byUser2", ["user2Id"]),
+
+  friendMessages: defineTable({
+    body: v.optional(v.string()),
+    image: v.optional(v.id("_storage")),
+    userId: v.id("users"),
+    parentMessageId: v.optional(v.id("friendMessages")),
+    friendConversationId: v.optional(v.id("friendConversations")),
+    updatedAt: v.optional(v.number()),
+  })
+    .index("byUserId", ["userId"])
+    .index("byParentMessageId", ["parentMessageId"])
+    .index("byConversationId", ["friendConversationId"])
+    .index("byParentMessageIdAndConversationId", [
+      "parentMessageId",
+      "friendConversationId",
+    ]),
 });
 
 export default schema;

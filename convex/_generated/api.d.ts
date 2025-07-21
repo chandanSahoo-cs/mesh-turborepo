@@ -15,6 +15,8 @@ import type {
 } from "convex/server";
 import type * as auth from "../auth.js";
 import type * as channels from "../channels.js";
+import type * as friendConversation from "../friendConversation.js";
+import type * as friendMessages from "../friendMessages.js";
 import type * as friendRequests from "../friendRequests.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
@@ -37,6 +39,8 @@ import type * as users from "../users.js";
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   channels: typeof channels;
+  friendConversation: typeof friendConversation;
+  friendMessages: typeof friendMessages;
   friendRequests: typeof friendRequests;
   http: typeof http;
   messages: typeof messages;

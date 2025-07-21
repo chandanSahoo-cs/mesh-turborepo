@@ -24,7 +24,13 @@ export async function POST(req: Request) {
   const room = String(userData._id);
 
   const session = liveblocks.prepareSession(userData._id, {
-    userInfo: userData,
+    userInfo: {
+      name: userData.name,
+      email: userData.email,
+      image: userData.image,
+      effectiveStatus: userData.effectiveStatus,
+      manualStatus: userData.manualStatus,
+    },
   });
 
   session.allow(room, session.FULL_ACCESS);
