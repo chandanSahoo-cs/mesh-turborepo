@@ -16,7 +16,6 @@ export const Modals = () => {
 
   return (
     <>
-      <CreateChannelModal />
       <CreateServerModal />
     </>
   );

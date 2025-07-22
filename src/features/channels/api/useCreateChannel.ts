@@ -10,6 +10,8 @@ interface ResponseType {
 interface RequestType {
   serverId: Id<"servers">;
   name: string;
+  type: "text" | "voice" | "category";
+  categoryId?: Id<"channels">;
 }
 
 interface Options {
@@ -32,7 +34,7 @@ export const useCreateChannel = () => {
 
   const createChannel = useCallback(
     async (
-      { serverId, name }: RequestType,
+      { serverId, name, type, categoryId }: RequestType,
       { onSuccess, onSettled, onError }: Options
     ) => {
       try {
@@ -40,7 +42,7 @@ export const useCreateChannel = () => {
         setError(null);
 
         setStatus("pending");
-        const response = await create({ serverId, name });
+        const response = await create({ serverId, name, type, categoryId });
 
         onSuccess?.({ id: response });
       } catch (error) {

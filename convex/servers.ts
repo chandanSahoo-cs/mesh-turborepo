@@ -70,6 +70,19 @@ export const createServer = mutation({
         type: "category",
       });
 
+      const voiceChannels = await ctx.db.insert("channels", {
+        serverId,
+        name: "Voice Channels",
+        type: "category",
+      });
+
+      await ctx.db.insert("channels", {
+        serverId,
+        name: "general",
+        type: "voice",
+        parentId: voiceChannels,
+      });
+
       await ctx.db.insert("channels", {
         serverId,
         name: "general",

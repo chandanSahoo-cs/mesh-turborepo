@@ -15,7 +15,7 @@ import { useGetServerById } from "@/features/servers/api/useGetServerById";
 import { useServerId } from "@/hooks/useServerId";
 import { CommandItem } from "cmdk";
 import { motion } from "framer-motion";
-import { InfoIcon, SearchIcon, UsersIcon } from "lucide-react";
+import { SearchIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -95,9 +95,7 @@ export const Toolbar = () => {
       </div>
       <div className="ml-auto flex-1 flex items-center justify-end">
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button
-            variant="transparent"
-            className="size-10 p-2 hover:bg-[#5170ff] hover:text-white border-2 border-transparent hover:border-black hover:rounded-xl hover:shadow-[2px_2px_0px_0px_#000000] transition-all duration-200">
+          <Button className="bg-transparent text-black size-10 p-2 hover:bg-[#5170ff] hover:text-white border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] transition-all duration-200">
             <UsersIcon className="size-5" />
           </Button>
         </motion.div>

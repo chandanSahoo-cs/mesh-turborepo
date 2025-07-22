@@ -12,7 +12,7 @@ import type { IconType } from "react-icons/lib";
 interface SidebarItemProps {
   label: string;
   icon: LucideIcon | IconType;
-  id: string;
+  id?: string;
   variant?: VariantProps<typeof sidebarItemVariants>["variant"];
 }
 
@@ -50,12 +50,21 @@ export const SidebarItem = ({
         size="sm"
         className={cn(sidebarItemVariants({ variant }))}
         asChild>
-        <Link href={`/servers/${serverId}/channel/${id}`}>
-          <Icon className="size-4 mr-1 shrink-0" />
-          <span className="text-sm truncate uppercase tracking-wide">
-            {label}
-          </span>
-        </Link>
+        {id ? (
+          <Link href={`/servers/${serverId}/channel/${id}`}>
+            <Icon className="size-4 mr-1 shrink-0" />
+            <span className="text-sm truncate uppercase tracking-wide">
+              {label}
+            </span>
+          </Link>
+        ) : (
+          <div>
+            <Icon className="size-4 mr-1 shrink-0" />
+            <span className="text-sm truncate uppercase tracking-wide">
+              {label}
+            </span>
+          </div>
+        )}
       </Button>
     </motion.div>
   );

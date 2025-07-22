@@ -38,8 +38,10 @@ export const createChannel = mutation({
   args: {
     serverId: v.id("servers"),
     name: v.string(),
+    type: v.union(v.literal("category"), v.literal("text"), v.literal("voice")),
+    categoryId: v.optional(v.id("channels")),
   },
-  handler: async (ctx, { serverId, name }) => {
+  handler: async (ctx, { serverId, name, type, categoryId }) => {
     const userId = await getAuthUserId(ctx);
 
     if (!userId) {
@@ -71,8 +73,9 @@ export const createChannel = mutation({
 
     const newChannelId = await ctx.db.insert("channels", {
       name: parsedName,
-      type: "text",
+      type: type,
       serverId: serverId,
+      parentId: categoryId,
     });
 
     return newChannelId;

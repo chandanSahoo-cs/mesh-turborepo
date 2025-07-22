@@ -1,8 +1,10 @@
 "use client";
 
 import { Loader } from "@/components/Loader";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { useGetChannels } from "@/features/channels/api/useGetChannels";
-import { useCreateChannelModal } from "@/features/channels/store/useCreateChannelModal";
+import { CreateCategoryModal } from "@/features/channels/components/CreateCategoryModal";
 import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
 import { useGetMembers } from "@/features/serverMembers/api/useGetMembers";
 import { useGetServerById } from "@/features/servers/api/useGetServerById";
@@ -13,9 +15,11 @@ import { motion } from "framer-motion";
 import {
   AlertTriangleIcon,
   HashIcon,
-  MessageSquareTextIcon,
-  SendHorizonalIcon,
+  PlusIcon,
+  Volume2Icon,
 } from "lucide-react";
+import { useState } from "react";
+import { Doc, Id } from "../../../../../convex/_generated/dataModel";
 import { ServerHeader } from "./ServerHeader";
 import { ServerSection } from "./ServerSection";
 import { SidebarItem } from "./SidebarItem";
@@ -42,10 +46,24 @@ export const ServerSidebar = () => {
     serverId,
   });
 
-  const { setIsOpen } = useCreateChannelModal();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const categoryInfoMap = new Map<Id<"channels">, Doc<"channels">>();
+  const categoryChannelMap = new Map<Id<"channels">, Array<Doc<"channels">>>();
+
+  for (const category of channels || []) {
+    if (category.type !== "category") continue;
+    categoryInfoMap.set(category._id, category);
+    categoryChannelMap.set(category._id, []);
+  }
+
+  for (const channel of channels || []) {
+    if (channel.type === "category") continue;
+    categoryChannelMap.get(channel.parentId!)?.push(channel);
+  }
 
   if (serverLoading || currentMemberLoading) {
-    return <Loader />;
+    return <Loader message="Loading channel list..." />;
   }
 
   if (!server || !currentMember) {
@@ -73,23 +91,40 @@ export const ServerSidebar = () => {
   return (
     <div className="flex flex-col bg-white h-full border-r-4 border-black">
       <ServerHeader server={server} member={currentMember} />
-      <ServerSection
-        label="Channels"
-        hint="New channel"
-        onNew={() => setIsOpen(true)}>
-        {channels?.map(
-          (channelItem) =>
-            channelItem.type !== "category" && (
-              <SidebarItem
-                key={channelItem._id}
-                icon={HashIcon}
-                label={channelItem.name}
-                id={channelItem._id}
-                variant={channelID === channelItem._id ? "active" : "default"}
-              />
-            )
-        )}
-      </ServerSection>
+      <div className="p-3 space-y-2">
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+          <Button
+            onClick={() => {
+              setIsOpen(true);
+            }}
+            className="w-full bg-[#7ed957] text-black border-4 border-black rounded-xl shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] hover:bg-[#4060ef] font-mono font-black uppercase tracking-wide py-2 h-10 transition-all duration-200 flex items-center justify-center gap-2 text-xs">
+            <PlusIcon className="size-4" />
+            Create Category
+          </Button>
+        </motion.div>
+      </div>
+      <CreateCategoryModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      {Array.from(categoryChannelMap.entries()).map(
+        ([categoryId, channels]) => (
+          <div key={categoryId}>
+            <ServerSection
+              label={categoryInfoMap.get(categoryId)?.name || "Category"}
+              hint="New channel"
+              categoryId={categoryId}>
+              {channels?.map((channelItem) => (
+                <SidebarItem
+                  key={channelItem._id}
+                  icon={channelItem.type === "text" ? HashIcon : Volume2Icon}
+                  label={channelItem.name}
+                  id={channelItem._id}
+                  variant={channelID === channelItem._id ? "active" : "default"}
+                />
+              ))}
+            </ServerSection>
+            <Separator className="border-2 border-black" />
+          </div>
+        )
+      )}
       <ServerSection label="Members" hint="Members">
         {serverMembers?.map((serverMember) => (
           <div key={serverMember._id}>
