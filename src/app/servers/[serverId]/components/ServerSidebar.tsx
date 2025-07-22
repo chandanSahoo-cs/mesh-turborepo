@@ -125,18 +125,6 @@ export const ServerSidebar = () => {
           </div>
         )
       )}
-      <ServerSection label="Members" hint="Members">
-        {serverMembers?.map((serverMember) => (
-          <div key={serverMember._id}>
-            <UserItem
-              id={serverMember._id}
-              label={serverMember.memberInfo?.name}
-              image={serverMember.memberInfo?.image}
-              variant={serverMember._id === memberId ? "active" : "default"}
-            />
-          </div>
-        ))}
-      </ServerSection>
     </div>
   );
 };

@@ -46,7 +46,7 @@ export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
         setOpen={setPreferencesOpen}
         initialValue={server.name}
       />
-      <div className="flex items-center justify-between px-4 h-[60px] gap-2 border-b-4 border-black bg-[#fffce9]">
+      <div className="flex items-center justify-between px-4 h-16 gap-2 border-b-4 border-black bg-[#fffce9]">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>

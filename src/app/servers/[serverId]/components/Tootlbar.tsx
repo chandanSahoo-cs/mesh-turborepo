@@ -12,7 +12,10 @@ import {
 import { useGetChannels } from "@/features/channels/api/useGetChannels";
 import { useGetMembers } from "@/features/serverMembers/api/useGetMembers";
 import { useGetServerById } from "@/features/servers/api/useGetServerById";
+import { useMemberPanel } from "@/features/servers/store/useMemberPanel";
+import { usePanel } from "@/hooks/usePanel";
 import { useServerId } from "@/hooks/useServerId";
+import { cn } from "@/lib/utils";
 import { CommandItem } from "cmdk";
 import { motion } from "framer-motion";
 import { SearchIcon, UsersIcon } from "lucide-react";
@@ -30,6 +33,8 @@ export const Toolbar = () => {
   });
 
   const [open, setOpen] = useState(false);
+  const { onOpenMemberPanel } = usePanel();
+  const { isOpen } = useMemberPanel();
 
   return (
     <div className="bg-[#fffce9] border-b-4 border-black flex items-center justify-between h-16  p-4">
@@ -94,11 +99,17 @@ export const Toolbar = () => {
         </CommandDialog>
       </div>
       <div className="ml-auto flex-1 flex items-center justify-end">
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button className="bg-transparent text-black size-10 p-2 hover:bg-[#5170ff] hover:text-white border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] transition-all duration-200">
-            <UsersIcon className="size-5" />
-          </Button>
-        </motion.div>
+        <Button
+          onClick={() => {
+            onOpenMemberPanel(!isOpen);
+            console.log("Member Panel button is clicked");
+          }}
+          className={cn(
+            "bg-transparent hover:bg-transparent text-black size-10 p-2  border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000]",
+            isOpen && "bg-[#5170ff] hover:bg-[#5170ff] text-white"
+          )}>
+          <UsersIcon className="size-5" />
+        </Button>
       </div>
     </div>
   );
