@@ -3,8 +3,8 @@
 import { MemberRoom } from "@/components/rooms/MemberRoom";
 import type React from "react";
 
-const ChannelLayout = ({ children }: { children: React.ReactNode }) => {
+const MemberLayout = ({ children }: { children: React.ReactNode }) => {
   return <MemberRoom>{children}</MemberRoom>;
 };
 
-export default ChannelLayout;
+export default MemberLayout;

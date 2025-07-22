@@ -15,6 +15,7 @@ import {
   MessageSquareIcon,
   XIcon,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 import type { Id } from "../../../../convex/_generated/dataModel";
@@ -26,6 +27,7 @@ interface RenderFriendCardProps {
 }
 
 export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
+  const router = useRouter();
   const { onOpenFriendProfile, onClose } = usePanel();
   const getStatusColor = () => {
     switch (type) {
@@ -192,6 +194,7 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
                   e: React.MouseEvent<HTMLButtonElement, MouseEvent>
                 ) => {
                   e.stopPropagation();
+                  router.push(`/friends/${friend.friendUserInfo?._id}`);
                 }}
                 className="bg-[#5170ff] hover:bg-[#5170ff] text-white font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
                 <MessageSquareIcon className="size-4" />

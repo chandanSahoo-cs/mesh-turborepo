@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader } from "@/components/Loader";
-import { useCreateOrGetConversation } from "@/features/conversations/api/useCreateOrGetConversation";
 import { useMemberId } from "@/hooks/useMemberId";
 import { useServerId } from "@/hooks/useServerId";
 import { motion } from "framer-motion";
@@ -10,6 +9,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { Conversation } from "./components/Conversation";
+import { useCreateOrGetServerConversation } from "@/features/conversations/api/useCreateOrGetConversation";
 
 const MemberIdPage = () => {
   const serverId = useServerId();
@@ -17,7 +17,7 @@ const MemberIdPage = () => {
 
   const [serverConversationId, setServerConversationId] =
     useState<Id<"serverConversations"> | null>(null);
-  const { createOrGetConversation, isPending } = useCreateOrGetConversation();
+  const { createOrGetConversation, isPending } = useCreateOrGetServerConversation();
 
   useEffect(() => {
     createOrGetConversation(

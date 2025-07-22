@@ -9,10 +9,10 @@ interface UseGetMessageProps {
   parentMessageId?: Id<"friendMessages">;
 }
 
-export type GetMessagesReturnType =
+export type GetFriendMessagesReturnType =
   (typeof api.friendMessages.getFriendMessages._returnType)["page"];
 
-export const useGetMessages = ({
+export const useGetFriendMessages = ({
   friendConversationId,
   parentMessageId,
 }: UseGetMessageProps) => {

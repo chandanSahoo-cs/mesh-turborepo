@@ -1,21 +1,18 @@
 import { useMutation } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
 import { api } from "../../../../convex/_generated/api";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Doc, Id } from "../../../../convex/_generated/dataModel";
 
 interface ResponseType {
-  id: Id<"friendMessages"> | null;
+  friendConversation?: Doc<"friendConversations"> | null;
 }
 
 interface RequestType {
-  body?: string;
-  image?: Id<"_storage">;
-  parentMessageId?: Id<"friendMessages">;
-  friendConversationId?: Id<"friendConversations">;
+  userId: Id<"users">;
 }
 
 interface Options {
-  onSuccess?: ({ id }: ResponseType) => void;
+  onSuccess?: ({ friendConversation }: ResponseType) => void;
   onError?: (error: Error) => void;
   onSettled?: () => void;
   throwError?: boolean;
@@ -23,7 +20,7 @@ interface Options {
 
 type Status = "success" | "error" | "settled" | "pending" | null;
 
-export const useCreateFriendMessage = () => {
+export const useCreateOrGetFriendConversation = () => {
   const [data, setData] = useState<ResponseType | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
@@ -31,27 +28,26 @@ export const useCreateFriendMessage = () => {
 
   const isPending = useMemo(() => status === "pending", [status]);
 
-  const create = useMutation(api.friendMessages.createFriendMessage);
+  const createOrGet = useMutation(
+    api.friendConversation.createOrGetFriendConversation
+  );
 
-  const createFriendMessage = useCallback(
+  const createOrGetFriendConversation = useCallback(
     async (
-      { body, image, parentMessageId, friendConversationId }: RequestType,
+      { userId }: RequestType,
       { onSuccess, onSettled, onError }: Options
     ) => {
-      console.log("usecreate:", friendConversationId);
       try {
         setData(null);
         setError(null);
 
         setStatus("pending");
-        const response = await create({
-          body,
-          image,
-          parentMessageId,
-          friendConversationId,
+        const response = await createOrGet({
+          userId,
         });
 
-        onSuccess?.({ id: response });
+        setData({ friendConversation: response });
+        onSuccess?.({ friendConversation: response });
       } catch (error) {
         setError(error as Error);
         onError?.(error as Error);
@@ -62,11 +58,11 @@ export const useCreateFriendMessage = () => {
         onSettled?.();
       }
     },
-    [create]
+    [createOrGet]
   );
 
   return {
-    createFriendMessage,
+    createOrGetFriendConversation,
     data,
     error,
     isPending,

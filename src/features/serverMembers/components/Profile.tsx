@@ -1,56 +1,71 @@
-"use client"
+"use client";
 
-import { Loader } from "@/components/Loader"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { useHasPermission } from "@/features/roles/api/useHasPermission"
-import { useGetServerById } from "@/features/servers/api/useGetServerById"
-import { useConfirm } from "@/hooks/useConfirm"
-import { useServerId } from "@/hooks/useServerId"
-import { AlertTriangleIcon, MailIcon, XIcon } from "lucide-react"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { toast } from "sonner"
-import type { Id } from "../../../../convex/_generated/dataModel"
-import { useCurrentMember } from "../api/useCurrentMember"
-import { useGetMemberById } from "../api/useGetMemberById"
-import { useRemoveMember } from "../api/useRemoveMember"
+import { Loader } from "@/components/Loader";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { useHasPermission } from "@/features/roles/api/useHasPermission";
+import { useGetServerById } from "@/features/servers/api/useGetServerById";
+import { useConfirm } from "@/hooks/useConfirm";
+import { useServerId } from "@/hooks/useServerId";
+import { motion } from "framer-motion";
+import { AlertTriangleIcon, MailIcon, XIcon } from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
+import type { Id } from "../../../../convex/_generated/dataModel";
+import { useCurrentMember } from "../api/useCurrentMember";
+import { useGetMemberById } from "../api/useGetMemberById";
+import { useRemoveMember } from "../api/useRemoveMember";
 
 interface ProfileProps {
-  serverMemberId: Id<"serverMembers">
-  onClose: () => void
+  serverMemberId: Id<"serverMembers">;
+  onClose: () => void;
 }
 
 export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
-  const serverId = useServerId()
+  const serverId = useServerId();
   const { data: server, isLoading: isLoadingServer } = useGetServerById({
     id: serverId,
-  })
+  });
 
-  const [LeaveDialog, confirmLeave] = useConfirm("Leave Server", "Are you sure you want to leave this server?")
-  const [RemoveDialog, confirmRemove] = useConfirm("Remove Member", "Are you sure you want to remove this member?")
-  const [UpdateDialog] = useConfirm("Change Role", "Are you sure you want to change this member's role?")
+  const [LeaveDialog, confirmLeave] = useConfirm(
+    "Leave Server",
+    "Are you sure you want to leave this server?"
+  );
+  const [RemoveDialog, confirmRemove] = useConfirm(
+    "Remove Member",
+    "Are you sure you want to remove this member?"
+  );
+  const [UpdateDialog] = useConfirm(
+    "Change Role",
+    "Are you sure you want to change this member's role?"
+  );
 
-  const { data: currentMember, isLoading: isLoadingCurrentMember } = useCurrentMember({ serverId })
-  const { data: profileMember, isLoading: isLoadingProfileMember } = useGetMemberById({ serverMemberId })
-  const { removeMember } = useRemoveMember()
+  const { data: currentMember, isLoading: isLoadingCurrentMember } =
+    useCurrentMember({ serverId });
+  const { data: profileMember, isLoading: isLoadingProfileMember } =
+    useGetMemberById({ serverMemberId });
+  const { removeMember } = useRemoveMember();
 
-  const isCurrent = currentMember && profileMember ? currentMember?._id === profileMember._id : null
+  const isCurrent =
+    currentMember && profileMember
+      ? currentMember?._id === profileMember._id
+      : null;
 
-  const { data: isPermitted, isLoading: isLoadingPermission } = useHasPermission({
-    serverMemberId,
-    permission: "MANAGE_MEMBERS",
-  })
+  const { data: isPermitted, isLoading: isLoadingPermission } =
+    useHasPermission({
+      serverMemberId,
+      permission: "MANAGE_MEMBERS",
+    });
 
   const onRemove = async () => {
-    const ok = await confirmRemove()
+    const ok = await confirmRemove();
     if (!ok) {
-      return
+      return;
     }
     if (server?.ownerId === profileMember?.userId) {
-      toast.warning("Transfer ownership before leaving the server")
-      return
+      toast.warning("Transfer ownership before leaving the server");
+      return;
     }
     removeMember(
       {
@@ -58,24 +73,24 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
       },
       {
         onSuccess: () => {
-          toast.success("Member removed")
-          onClose()
+          toast.success("Member removed");
+          onClose();
         },
         onError: () => {
-          toast.error("Failed to remove member")
+          toast.error("Failed to remove member");
         },
-      },
-    )
-  }
+      }
+    );
+  };
 
   const onLeave = async () => {
-    const ok = await confirmLeave()
+    const ok = await confirmLeave();
     if (!ok) {
-      return
+      return;
     }
     if (server?.ownerId === profileMember?.userId) {
-      toast.warning("Transfer ownership before leaving the server")
-      return
+      toast.warning("Transfer ownership before leaving the server");
+      return;
     }
     removeMember(
       {
@@ -83,26 +98,32 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
       },
       {
         onSuccess: () => {
-          toast.success("You left the server")
-          onClose()
+          toast.success("You left the server");
+          onClose();
         },
         onError: () => {
-          toast.error("Failed to leave the server")
+          toast.error("Failed to leave the server");
         },
-      },
-    )
-  }
+      }
+    );
+  };
 
-  if (isLoadingCurrentMember || isLoadingProfileMember || isLoadingServer || isLoadingPermission) {
+  if (
+    isLoadingCurrentMember ||
+    isLoadingProfileMember ||
+    isLoadingServer ||
+    isLoadingPermission
+  ) {
     return (
       <div className="h-full flex flex-col bg-white">
         <div className="h-16 flex justify-between items-center px-6 border-b-4 border-black bg-[#fffce9]">
-          <h2 className="text-lg font-mono font-black text-black uppercase tracking-wide">Profile</h2>
+          <h2 className="text-lg font-mono font-black text-black uppercase tracking-wide">
+            Profile
+          </h2>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               onClick={onClose}
-              className="size-10 p-2 bg-white text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] hover:bg-gray-50 transition-all duration-200"
-            >
+              className="size-10 p-2 bg-white text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] hover:bg-gray-50 transition-all duration-200">
               <XIcon className="size-5" />
             </Button>
           </motion.div>
@@ -111,19 +132,20 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
           <Loader message="Loading profile..." />
         </div>
       </div>
-    )
+    );
   }
 
   if (!profileMember || !server) {
     return (
       <div className="h-full flex flex-col bg-white">
         <div className="h-16 flex justify-between items-center px-6 border-b-4 border-black bg-[#fffce9]">
-          <h2 className="text-lg font-mono font-black text-black uppercase tracking-wide">Profile</h2>
+          <h2 className="text-lg font-mono font-black text-black uppercase tracking-wide">
+            Profile
+          </h2>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               onClick={onClose}
-              className="size-10 p-2 bg-white text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] hover:bg-gray-50 transition-all duration-200"
-            >
+              className="size-10 p-2 bg-white text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] hover:bg-gray-50 transition-all duration-200">
               <XIcon className="size-5" />
             </Button>
           </motion.div>
@@ -138,8 +160,7 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
               duration: 2,
               repeat: Number.POSITIVE_INFINITY,
               ease: "easeInOut",
-            }}
-          >
+            }}>
             <AlertTriangleIcon className="size-8 text-red-600" />
           </motion.div>
           <p className="text-sm font-mono font-bold text-black uppercase tracking-wide text-center">
@@ -147,10 +168,10 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
           </p>
         </div>
       </div>
-    )
+    );
   }
 
-  const avatarFallback = profileMember.user?.name?.[0] ?? "M"
+  const avatarFallback = profileMember.user?.name?.[0] ?? "M";
 
   return (
     <>
@@ -160,12 +181,13 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
       <div className="h-full flex flex-col bg-white">
         {/* Header */}
         <div className="h-16 flex justify-between items-center px-6 border-b-4 border-black bg-[#fffce9]">
-          <h2 className="text-lg font-mono font-black text-black uppercase tracking-wide">Profile</h2>
+          <h2 className="text-lg font-mono font-black text-black uppercase tracking-wide">
+            Profile
+          </h2>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               onClick={onClose}
-              className="size-10 p-2 bg-white text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] hover:bg-gray-50 transition-all duration-200"
-            >
+              className="size-10 p-2 bg-white text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] hover:bg-gray-50 transition-all duration-200">
               <XIcon className="size-5" />
             </Button>
           </motion.div>
@@ -173,9 +195,15 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
 
         {/* Avatar Section */}
         <div className="flex flex-col p-6 items-center justify-center bg-[#fffce9] border-b-4 border-black">
-          <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }} className="relative">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+            className="relative">
             <Avatar className="size-32 border-6 border-black rounded-3xl shadow-[8px_8px_0px_0px_#000000]">
-              <AvatarImage src={profileMember.user?.image || "/placeholder.svg"} className="rounded-2xl" />
+              <AvatarImage
+                src={profileMember.user?.image || "/placeholder.svg"}
+                className="rounded-2xl"
+              />
               <AvatarFallback className="rounded-2xl bg-[#5170ff] text-white font-mono font-black text-4xl">
                 {avatarFallback}
               </AvatarFallback>
@@ -189,29 +217,42 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
             <h3 className="text-2xl font-mono font-black text-black uppercase tracking-wide">
               {profileMember.user?.name}
             </h3>
-            <p className="text-sm font-mono text-gray-700 mt-1">Server Member</p>
+            <p className="text-sm font-mono text-gray-700 mt-1">
+              Server Member
+            </p>
           </div>
 
-          {/* Action Buttons */}
-          {isCurrent ? (
+          <div className="flex space-x-2 justify-around">
+            {/* Action Buttons */}
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
                 onClick={onLeave}
-                className="w-full bg-red-400 text-black font-mono font-bold py-3 px-6 border-4 border-black uppercase tracking-wide shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] rounded-xl transition-all hover:bg-red-500"
-              >
-                Leave Server
+                className="w-40 bg-[#5a78ff] text-black font-mono font-bold py-3 px-6 border-4 border-black uppercase tracking-wide shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] rounded-xl transition-all hover:bg-[#3a5eff]">
+                Add roles
               </Button>
             </motion.div>
-          ) : isPermitted ? (
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                onClick={onRemove}
-                className="w-full bg-red-400 text-black font-mono font-bold py-3 px-6 border-4 border-black uppercase tracking-wide shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] rounded-xl transition-all hover:bg-red-500"
-              >
-                Remove Member
-              </Button>
-            </motion.div>
-          ) : null}
+            {isCurrent ? (
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}>
+                <Button
+                  onClick={onLeave}
+                  className="w-40 bg-red-400 text-black font-mono font-bold py-3 px-6 border-4 border-black uppercase tracking-wide shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] rounded-xl transition-all hover:bg-red-500">
+                  Leave Server
+                </Button>
+              </motion.div>
+            ) : isPermitted ? (
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}>
+                <Button
+                  onClick={onRemove}
+                  className="w-full bg-red-400 text-black font-mono font-bold py-3 px-6 border-4 border-black uppercase tracking-wide shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] rounded-xl transition-all hover:bg-red-500">
+                  Remove Member
+                </Button>
+              </motion.div>
+            ) : null}
+          </div>
         </div>
 
         {/* Separator */}
@@ -219,29 +260,30 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
 
         {/* Contact Information */}
         <div className="flex flex-col p-6">
-          <h4 className="text-sm font-mono font-black text-black uppercase tracking-wide mb-4">Contact Information</h4>
+          <h4 className="text-sm font-mono font-black text-black uppercase tracking-wide mb-4">
+            Contact Information
+          </h4>
           <motion.div
             className="bg-white border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#5170ff] transition-all duration-200"
-            whileHover={{ scale: 1.01 }}
-          >
+            whileHover={{ scale: 1.01 }}>
             <div className="flex items-center gap-3">
               <div className="size-12 rounded-xl bg-[#5170ff] border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">
                 <MailIcon className="size-5 text-white" />
               </div>
               <div className="flex flex-col">
-                <p className="text-xs font-mono font-bold text-gray-700 uppercase tracking-wide">Email Address</p>
+                <p className="text-xs font-mono font-bold text-gray-700 uppercase tracking-wide">
+                  Email Address
+                </p>
                 <Link
                   href={`mailto:${profileMember.user?.email}`}
-                  className="text-sm font-mono font-bold text-[#5170ff] hover:text-[#4060ef] hover:underline transition-colors duration-200 uppercase tracking-wide"
-                >
+                  className="text-sm font-mono font-bold text-[#5170ff] hover:text-[#4060ef] hover:underline transition-colors duration-200 uppercase tracking-wide">
                   {profileMember.user?.email}
                 </Link>
               </div>
             </div>
           </motion.div>
         </div>
-
       </div>
     </>
-  )
-}
+  );
+};

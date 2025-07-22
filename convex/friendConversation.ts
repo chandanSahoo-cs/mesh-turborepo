@@ -5,9 +5,8 @@ import { mutation } from "./_generated/server";
 export const createOrGetFriendConversation = mutation({
   args: {
     userId: v.id("users"), // person with whom the user to want to have a conversation
-    serverId: v.id("servers"),
   },
-  handler: async (ctx, { userId, serverId }) => {
+  handler: async (ctx, { userId}) => {
     const currentUserId = await getAuthUserId(ctx);
 
     if (!currentUserId) {

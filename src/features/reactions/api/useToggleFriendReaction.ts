@@ -4,14 +4,12 @@ import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 
 interface ResponseType {
-  id: Id<"friendMessages"> | null;
+  id: Id<"friendReactions"> | null;
 }
 
 interface RequestType {
-  body?: string;
-  image?: Id<"_storage">;
-  parentMessageId?: Id<"friendMessages">;
-  friendConversationId?: Id<"friendConversations">;
+  value: string;
+  friendMessageId: Id<"friendMessages">;
 }
 
 interface Options {
@@ -23,7 +21,7 @@ interface Options {
 
 type Status = "success" | "error" | "settled" | "pending" | null;
 
-export const useCreateFriendMessage = () => {
+export const useToggleFriendReaction = () => {
   const [data, setData] = useState<ResponseType | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
@@ -31,25 +29,23 @@ export const useCreateFriendMessage = () => {
 
   const isPending = useMemo(() => status === "pending", [status]);
 
-  const create = useMutation(api.friendMessages.createFriendMessage);
+  const toggle = useMutation(api.friendReactions.toggleFriendReaction);
 
-  const createFriendMessage = useCallback(
+  const toggleFriendReaction = useCallback(
     async (
-      { body, image, parentMessageId, friendConversationId }: RequestType,
+      { value, friendMessageId }: RequestType,
       { onSuccess, onSettled, onError }: Options
     ) => {
-      console.log("usecreate:", friendConversationId);
       try {
         setData(null);
         setError(null);
 
+        console.log("Inside Toggle");
+
         setStatus("pending");
-        const response = await create({
-          body,
-          image,
-          parentMessageId,
-          friendConversationId,
-        });
+        const response = await toggle({ friendMessageId, value });
+
+        console.log({ response });
 
         onSuccess?.({ id: response });
       } catch (error) {
@@ -62,11 +58,11 @@ export const useCreateFriendMessage = () => {
         onSettled?.();
       }
     },
-    [create]
+    [toggle]
   );
 
   return {
-    createFriendMessage,
+    toggleFriendReaction,
     data,
     error,
     isPending,

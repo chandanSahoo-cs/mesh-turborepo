@@ -1,36 +1,33 @@
 import { Loader } from "@/components/Loader";
-import { Message } from "@/components/Message";
-import { ServerThreadRoom } from "@/components/rooms/ServerThreadRoom";
+import { FriendThreadRoom } from "@/components/rooms/FriendThreadRoom";
 import { Button } from "@/components/ui/button";
-import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
+import { useCurrentUser } from "@/features/auth/api/useCurrentUser";
+import { useCreateFriendMessage } from "@/features/friendMessages/api/useCreateFriendMessage";
+import { useGetFriendMessageById } from "@/features/friendMessages/api/useGetFriendMessageById";
+import { useGetFriendMessages } from "@/features/friendMessages/api/useGetFriendMessages";
 import { useGenerateUploadUrl } from "@/features/upload/api/useGenerateUploadUrl";
-import { useChannelId } from "@/hooks/useChannelId";
-import { useServerId } from "@/hooks/useServerId";
 import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
-import { motion } from "framer-motion";
 import { AlertTriangleIcon, XIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import Quill from "quill";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { useCreateMessage } from "../api/useCreateMessage";
-import { useGetMessageById } from "../api/useGetMessageById";
-import { useGetMessages } from "../api/useGetMessages";
+import { Message } from "../../../app/friends/[friendId]/components/Message";
+
+import { motion } from "framer-motion";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 
 interface ThreadProps {
-  messageId: Id<"messages">;
+  friendMessageId: Id<"friendMessages">;
   onClose: () => void;
 }
 
 type CreateMessageValue = {
-  channelId: Id<"channels">;
-  serverId: Id<"servers">;
   body?: string;
   image: Id<"_storage"> | undefined;
-  parentMessageId: Id<"messages">;
+  parentMessageId: Id<"friendMessages">;
 };
 
 const TIME_THRESHOLD = 5;
@@ -42,25 +39,22 @@ const formatDateLabel = (dateStr: string) => {
   return format(date, "EEEE, MMMM d");
 };
 
-export const Thread = ({ messageId, onClose }: ThreadProps) => {
-  const channelId = useChannelId();
-  const serverId = useServerId();
+export const FriendThread = ({ friendMessageId, onClose }: ThreadProps) => {
+  const { userData, isLoading: isLoadingUserData } = useCurrentUser();
 
-  const { createMessage } = useCreateMessage();
+  const { createFriendMessage } = useCreateFriendMessage();
   const { generateUploadUrl } = useGenerateUploadUrl();
 
-  const [editingId, setEditingId] = useState<Id<"messages"> | null>(null);
+  const [editingId, setEditingId] = useState<Id<"friendMessages"> | null>(null);
   const [isPending, setIsPending] = useState(false);
 
   const [editorKey, setEditorKey] = useState(0);
 
-  const { data: currentMember } = useCurrentMember({ serverId });
   const { data: parentMessage, isLoading: parentMessageLoading } =
-    useGetMessageById({ messageId });
+    useGetFriendMessageById({ friendMessageId });
 
-  const { results, status, loadMore } = useGetMessages({
-    channelId,
-    parentMessageId: messageId,
+  const { results, status, loadMore } = useGetFriendMessages({
+    parentMessageId: friendMessageId,
   });
 
   const canLoadMore = status === "CanLoadMore";
@@ -80,9 +74,7 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
       editorRef?.current?.enable(false);
 
       const values: CreateMessageValue = {
-        channelId,
-        serverId,
-        parentMessageId: messageId,
+        parentMessageId: friendMessageId,
         body,
         image: undefined,
       };
@@ -109,7 +101,7 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
         values.image = storageId;
       }
 
-      await createMessage(values, { throwError: true });
+      await createFriendMessage(values, { throwError: true });
 
       setEditorKey((prevKey) => prevKey + 1);
     } catch {
@@ -164,6 +156,7 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
             </Button>
           </motion.div>
         </div>
+
         <div className="flex flex-col gap-y-2 h-full items-center justify-center">
           <AlertTriangleIcon className="size-5 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">Message not found</p>
@@ -173,7 +166,7 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
   }
 
   return (
-    <ServerThreadRoom>
+    <FriendThreadRoom>
       <div className="h-full flex flex-col">
         <div className="h-16 flex justify-between items-center px-6 border-b-4 border-black bg-[#fffce9]">
           <h2 className="text-lg font-mono font-black text-black uppercase tracking-wide">
@@ -217,11 +210,11 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
                   <Message
                     key={message._id}
                     id={message._id}
-                    serverMemberId={message.serverMemberId}
+                    authorId={message.userId}
                     authorImage={message.user.image}
                     authorName={message.user.name}
-                    isAuthor={message.serverMemberId === currentMember?._id}
-                    reactions={message.reactions}
+                    isAuthor={message.userId === userData?._id}
+                    reactions={message.friendReactions}
                     body={message.body}
                     image={message.image}
                     updatedAt={message.updatedAt}
@@ -259,16 +252,16 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
           {isLoadingMore && <Loader />}
           <Message
             hideThreadButton
-            serverMemberId={parentMessage.serverMemberId}
+            authorId={parentMessage.userId}
             authorImage={parentMessage.user.image}
             authorName={parentMessage.user.name}
-            isAuthor={parentMessage.serverMemberId === currentMember?._id}
+            isAuthor={parentMessage.userId === userData?._id}
             body={parentMessage.body}
             image={parentMessage.image}
             createdAt={parentMessage._creationTime}
             updatedAt={parentMessage.updatedAt}
             id={parentMessage._id}
-            reactions={parentMessage.reactions}
+            reactions={parentMessage.friendReactions}
             isEditing={editingId === parentMessage._id}
             setEditingId={setEditingId}
           />
@@ -287,6 +280,6 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
           />
         </motion.div>
       </div>
-    </ServerThreadRoom>
+    </FriendThreadRoom>
   );
 };
