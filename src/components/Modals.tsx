@@ -1,9 +1,7 @@
 "use client";
 
+import { CreateServerModal } from "@/app/servers/[serverId]/components/CreateServerModal";
 import { CreateChannelModal } from "@/features/channels/components/CreateChannelModal";
-import { AssignServerRoleModal } from "@/features/servers/components/AssignServerRoleModal";
-import { CreateServerModal } from "@/features/servers/components/CreateServerModal";
-import { ManageServerRoleModal } from "@/features/servers/components/ManageServerRoleModal";
 import { useEffect, useState } from "react";
 
 export const Modals = () => {
@@ -20,8 +18,6 @@ export const Modals = () => {
     <>
       <CreateChannelModal />
       <CreateServerModal />
-      <ManageServerRoleModal />
-      <AssignServerRoleModal />
     </>
   );
 };

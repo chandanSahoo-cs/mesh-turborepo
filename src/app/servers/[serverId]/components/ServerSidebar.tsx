@@ -73,18 +73,6 @@ export const ServerSidebar = () => {
   return (
     <div className="flex flex-col bg-white h-full border-r-4 border-black">
       <ServerHeader server={server} member={currentMember} />
-      <div className="flex flex-col px-3 mt-4">
-        <SidebarItem
-          label="Threads"
-          icon={MessageSquareTextIcon}
-          id="threads"
-        />
-        <SidebarItem
-          label="Drafts & sent"
-          icon={SendHorizonalIcon}
-          id="drafts"
-        />
-      </div>
       <ServerSection
         label="Channels"
         hint="New channel"

@@ -1,9 +1,11 @@
 "use client";
 
+import { AssignServerRoleModal } from "@/app/servers/[serverId]/components/AssignServerRoleModal";
 import { Loader } from "@/components/Loader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useGetRoleByMemberId } from "@/features/roles/api/useGetRolesByMemberId";
 import { useHasPermission } from "@/features/roles/api/useHasPermission";
 import { useGetServerById } from "@/features/servers/api/useGetServerById";
 import { useConfirm } from "@/hooks/useConfirm";
@@ -11,6 +13,7 @@ import { useServerId } from "@/hooks/useServerId";
 import { motion } from "framer-motion";
 import { AlertTriangleIcon, MailIcon, XIcon } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { toast } from "sonner";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { useCurrentMember } from "../api/useCurrentMember";
@@ -27,6 +30,11 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
   const { data: server, isLoading: isLoadingServer } = useGetServerById({
     id: serverId,
   });
+
+  const { data: userRoles, isLoading: isLoadingUserRoles } =
+    useGetRoleByMemberId({
+      serverMemberId,
+    });
 
   const [LeaveDialog, confirmLeave] = useConfirm(
     "Leave Server",
@@ -108,6 +116,8 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
     );
   };
 
+  const [assignRoleOpen, setAssignRoleOpen] = useState(false);
+
   if (
     isLoadingCurrentMember ||
     isLoadingProfileMember ||
@@ -177,7 +187,11 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
     <>
       <RemoveDialog />
       <LeaveDialog />
-      <UpdateDialog />
+      <AssignServerRoleModal
+        open={assignRoleOpen}
+        setOpen={setAssignRoleOpen}
+        serverMemberId={serverMemberId}
+      />
       <div className="h-full flex flex-col bg-white">
         {/* Header */}
         <div className="h-16 flex justify-between items-center px-6 border-b-4 border-black bg-[#fffce9]">
@@ -226,9 +240,9 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
             {/* Action Buttons */}
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
-                onClick={onLeave}
+                onClick={() => setAssignRoleOpen(true)}
                 className="w-40 bg-[#5a78ff] text-black font-mono font-bold py-3 px-6 border-4 border-black uppercase tracking-wide shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] rounded-xl transition-all hover:bg-[#3a5eff]">
-                Add roles
+                Manage roles
               </Button>
             </motion.div>
             {isCurrent ? (

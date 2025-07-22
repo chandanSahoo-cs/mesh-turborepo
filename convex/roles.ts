@@ -394,3 +394,28 @@ export const getRoleById = query({
     return role;
   },
 });
+
+export const getRoleByMemberId = query({
+  args: {
+    serverMemberId: v.id("serverMembers"),
+  },
+  handler: async (ctx, { serverMemberId }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      return null;
+    }
+
+    const serverMember = await ctx.db.get(serverMemberId);
+
+    if (!serverMember) {
+      return null;
+    }
+
+    const roles = await Promise.all(
+      serverMember.roleIds.map((roleId) => ctx.db.get(roleId))
+    );
+
+    return roles;
+  },
+});

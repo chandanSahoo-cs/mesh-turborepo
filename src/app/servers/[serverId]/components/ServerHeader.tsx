@@ -15,6 +15,7 @@ import { ChevronDownIcon, ListFilterIcon, SquarePenIcon } from "lucide-react";
 import { useState } from "react";
 import type { Doc } from "../../../../../convex/_generated/dataModel";
 import { InviteModal } from "./InviteModal";
+import { ManageServerRoleModal } from "./ManageServerRoleModal";
 import { PreferencesModal } from "./PreferencesModal";
 
 interface ServerHeaderProps {
@@ -31,8 +32,14 @@ export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
   const [preferencesOpen, setPreferencesOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
 
+  const [manageRoleOpen, setManageRoleOpen] = useState(false);
+
   return (
     <>
+      <ManageServerRoleModal
+        open={manageRoleOpen}
+        setOpen={setManageRoleOpen}
+      />
       <InviteModal open={inviteOpen} setOpen={setInviteOpen} server={server} />
       <PreferencesModal
         open={preferencesOpen}
@@ -71,9 +78,9 @@ export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
                 </p>
               </div>
             </DropdownMenuItem>
+            <DropdownMenuSeparator className="border-2 border-black" />
             {isAdmin && (
               <>
-                <DropdownMenuSeparator className="border-2 border-black" />
                 <DropdownMenuItem
                   onClick={() => setInviteOpen(true)}
                   className="cursor-pointer py-3 px-3 hover:bg-[#7ed957] hover:text-black rounded-lg font-mono font-bold uppercase tracking-wide">
@@ -81,12 +88,18 @@ export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="border-2 border-black" />
                 <DropdownMenuItem
-                  className="cursor-pointer py-3 px-3 hover:bg-[#5170ff] hover:text-white rounded-lg font-mono font-bold uppercase tracking-wide"
-                  onClick={() => setPreferencesOpen(true)}>
-                  Preferences
+                  onClick={() => setManageRoleOpen(true)}
+                  className="cursor-pointer py-3 px-3 hover:bg-[#7ed957] hover:text-black rounded-lg font-mono font-bold uppercase tracking-wide">
+                  Manage roles
                 </DropdownMenuItem>
+                <DropdownMenuSeparator className="border-2 border-black" />
               </>
             )}
+            <DropdownMenuItem
+              className="cursor-pointer py-3 px-3 hover:bg-[#5170ff] hover:text-white rounded-lg font-mono font-bold uppercase tracking-wide"
+              onClick={() => setPreferencesOpen(true)}>
+              Preferences
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
