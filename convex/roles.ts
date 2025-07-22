@@ -60,7 +60,7 @@ export const hasPermission = query({
   },
 });
 
-export const updateRole = mutation({
+export const assignRoleToMember = mutation({
   args: {
     serverMemberId: v.id("serverMembers"),
     roleId: v.id("roles"),
@@ -112,7 +112,7 @@ export const updateRole = mutation({
   },
 });
 
-export const deleteRole = mutation({
+export const removRoleFromMember = mutation({
   args: {
     serverMemberId: v.id("serverMembers"),
     roleId: v.id("roles"),
@@ -228,6 +228,55 @@ export const addRole = mutation({
       name,
       permissions,
     });
+
+    return roleId;
+  },
+});
+
+export const removeRole = mutation({
+  args: {
+    serverId: v.id("servers"),
+    roleId: v.id("roles"),
+  },
+  handler: async (ctx, { serverId, roleId }) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError("Unauthorized user");
+    }
+
+    const serverMember = await ctx.db
+      .query("serverMembers")
+      .withIndex("uniqueMembership", (q) =>
+        q.eq("userId", userId).eq("serverId", serverId)
+      )
+      .unique();
+
+    if (!serverMember) {
+      throw new ConvexError("User is not a server member");
+    }
+
+    const isPermitted = await checkPermission({
+      ctx,
+      serverMemberId: serverMember._id,
+      permission: "MANAGE_ROLES",
+    });
+
+    if (!isPermitted) {
+      throw new ConvexError("User is not allowed to manage roles");
+    }
+
+    const role = await ctx.db.get(roleId);
+
+    if (!role) {
+      throw new ConvexError("Role not found");
+    }
+
+    if (role.name === EVERYONE_ROLE) {
+      throw new ConvexError("Everyone role can't be deleted");
+    }
+
+    await ctx.db.delete(roleId);
 
     return roleId;
   },

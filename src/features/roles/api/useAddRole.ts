@@ -2,14 +2,16 @@ import { useMutation } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
+import { ServerPermission } from "../../../../convex/schema";
 
 interface ResponseType {
-  id: Id<"serverMembers"> | null;
+  id: Id<"roles"> | null;
 }
 
 interface RequestType {
-  serverMemberId: Id<"serverMembers">;
-  roleId: Id<"roles">;
+  name: string;
+  serverId: Id<"servers">;
+  permissions: ServerPermission[];
 }
 
 interface Options {
@@ -21,7 +23,7 @@ interface Options {
 
 type Status = "success" | "error" | "settled" | "pending" | null;
 
-export const useUpdateRole = () => {
+export const useAddRole = () => {
   const [data, setData] = useState<ResponseType | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
@@ -29,19 +31,19 @@ export const useUpdateRole = () => {
 
   const isPending = useMemo(() => status === "pending", [status]);
 
-  const update = useMutation(api.roles.updateRole);
+  const add = useMutation(api.roles.addRole);
 
-  const updateRole = useCallback(
+  const addRole = useCallback(
     async (
-      { serverMemberId, roleId }: RequestType,
-      { onSuccess, onSettled, onError}:Options
+      { name, serverId, permissions }: RequestType,
+      { onSuccess, onSettled, onError }: Options
     ) => {
       try {
         setData(null);
         setError(null);
 
         setStatus("pending");
-        const response = await update({ serverMemberId, roleId });
+        const response = await add({ name, serverId, permissions });
 
         onSuccess?.({ id: response });
       } catch (error) {
@@ -49,18 +51,16 @@ export const useUpdateRole = () => {
         onError?.(error as Error);
 
         setStatus("error");
-
-
       } finally {
         setStatus("settled");
         onSettled?.();
       }
     },
-    [update]
+    [add]
   );
 
   return {
-    updateRole,
+    addRole,
     data,
     error,
     isPending,
