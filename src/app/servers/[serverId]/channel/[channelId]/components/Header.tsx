@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { toast } from "sonner";
+import { errorToast, successToast } from "@/lib/toast";
 
 interface HeaderProps {
   channelName: string;
@@ -67,11 +68,11 @@ export const Header = ({ channelName }: HeaderProps) => {
       { channelId, name: value },
       {
         onSuccess: () => {
-          toast.success("Channel renamed");
+          successToast("Channel renamed");
           setEditOpen(false);
         },
         onError: () => {
-          toast.error("Failed to rename channel");
+          errorToast("Failed to rename channel");
         },
       }
     );
@@ -85,10 +86,10 @@ export const Header = ({ channelName }: HeaderProps) => {
       {
         onSuccess: () => {
           router.replace(`/servers/${serverId}`);
-          toast.success("Channel Deleted");
+          successToast("Channel Deleted");
         },
         onError: () => {
-          toast.error("Failed to delete channel");
+          errorToast("Failed to delete channel");
         },
       }
     );

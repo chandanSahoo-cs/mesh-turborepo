@@ -17,6 +17,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ShieldIcon, UserPlusIcon } from "lucide-react";
 import { toast } from "sonner";
 import type { Id } from "../../../../../convex/_generated/dataModel";
+import { errorToast, successToast } from "@/lib/toast";
 
 interface AssignServerRoleModalProps {
   open: boolean;
@@ -48,10 +49,10 @@ export const AssignServerRoleModal = ({
         { roleId, serverMemberId },
         {
           onSuccess() {
-            toast.success("Role removed");
+            successToast("Role removed");
           },
           onError() {
-            toast.error("Failed to remove role");
+            errorToast("Failed to remove role");
           },
         }
       );
@@ -61,10 +62,10 @@ export const AssignServerRoleModal = ({
         { roleId, serverMemberId },
         {
           onSuccess() {
-            toast.success("Role assigned");
+            successToast("Role assigned");
           },
           onError() {
-            toast.error("Failed to assign role");
+            errorToast("Failed to assign role");
           },
         }
       );

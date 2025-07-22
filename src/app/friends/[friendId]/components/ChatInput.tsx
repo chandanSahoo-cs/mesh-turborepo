@@ -6,6 +6,7 @@ import Quill from "quill";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Id } from "../../../../../convex/_generated/dataModel";
+import { errorToast } from "@/lib/toast";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 
@@ -75,7 +76,7 @@ console.log("conversationId:", conversationId)
       setEditorkey((prev) => prev + 1);
     } catch (error) {
       console.log(error);
-      toast.error("Failed to send message");
+      errorToast("Failed to send message");
     } finally {
       setIsPending(false);
       editorRef.current?.enable(true);

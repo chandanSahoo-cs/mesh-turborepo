@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { Conversation } from "./components/Conversation";
 import { useCreateOrGetServerConversation } from "@/features/conversations/api/useCreateOrGetConversation";
+import { errorToast } from "@/lib/toast";
 
 const MemberIdPage = () => {
   const serverId = useServerId();
@@ -31,7 +32,7 @@ const MemberIdPage = () => {
             setServerConversationId(serverConversation?._id);
         },
         onError() {
-          toast.error("Failed to get conversation");
+          errorToast("Failed to get conversation");
         },
       }
     );

@@ -19,6 +19,7 @@ import type { Id } from "../../../../convex/_generated/dataModel";
 import { useCurrentMember } from "../api/useCurrentMember";
 import { useGetMemberById } from "../api/useGetMemberById";
 import { useRemoveMember } from "../api/useRemoveMember";
+import { errorToast, successToast, warningToast } from "@/lib/toast";
 
 interface ProfileProps {
   serverMemberId: Id<"serverMembers">;
@@ -72,7 +73,7 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
       return;
     }
     if (server?.ownerId === profileMember?.userId) {
-      toast.warning("Transfer ownership before leaving the server");
+      warningToast("Transfer ownership before leaving the server");
       return;
     }
     removeMember(
@@ -81,11 +82,11 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
       },
       {
         onSuccess: () => {
-          toast.success("Member removed");
+          successToast("Member removed");
           onClose();
         },
         onError: () => {
-          toast.error("Failed to remove member");
+          errorToast("Failed to remove member");
         },
       }
     );
@@ -97,7 +98,7 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
       return;
     }
     if (server?.ownerId === profileMember?.userId) {
-      toast.warning("Transfer ownership before leaving the server");
+      warningToast("Transfer ownership before leaving the server");
       return;
     }
     removeMember(
@@ -106,11 +107,11 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
       },
       {
         onSuccess: () => {
-          toast.success("You left the server");
+          successToast("You left the server");
           onClose();
         },
         onError: () => {
-          toast.error("Failed to leave the server");
+          errorToast("Failed to leave the server");
         },
       }
     );

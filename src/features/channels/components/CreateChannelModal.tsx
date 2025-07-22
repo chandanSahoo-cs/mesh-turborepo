@@ -12,6 +12,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useCreateChannel } from "../api/useCreateChannel";
 import { useCreateChannelModal } from "../store/useCreateChannelModal";
+import { errorToast, successToast } from "@/lib/toast";
 
 export const CreateChannelModal = () => {
   const router = useRouter();
@@ -38,12 +39,12 @@ export const CreateChannelModal = () => {
       { serverId, name },
       {
         onSuccess: ({ id }) => {
-          toast.success(`${name} channel created`);
+          successToast(`${name} channel created`);
           router.push(`/servers/${serverId}/channel/${id}`);
           handleClose();
         },
         onError: () => {
-          toast.error("Failed to create channel");
+          errorToast("Failed to create channel");
         },
       }
     );

@@ -7,6 +7,7 @@ import { useEditMessage } from "@/features/messages/api/useEditMessage";
 import { useToggleReaction } from "@/features/reactions/api/useToggleReaction";
 import { useConfirm } from "@/hooks/useConfirm";
 import { usePanel } from "@/hooks/usePanel";
+import { errorToast, successToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
@@ -66,25 +67,25 @@ export const Message = ({
   threadTimestamp,
 }: MessageProps) => {
   const { parentMessageId, onOpenMessage, onClose } = usePanel();
-  console.log(serverMemberId)
+  console.log(serverMemberId);
   const [ConfirmDialog, confirm] = useConfirm(
     "Delete message",
     "Are you sure you want to delete this message? This cannot be undone"
   );
   const { editMessage, isPending: isEditingMessage } = useEditMessage();
   const { deleteMessage, isPending: isDeletingMessage } = useDeleteMessage();
-  const { toggleReaction} = useToggleReaction();
+  const { toggleReaction } = useToggleReaction();
 
   const handleUpdate = ({ body }: { body: string }) => {
     editMessage(
       { messageId: id, body },
       {
         onSuccess: () => {
-          toast.success("Message edited");
+          successToast("Message edited");
           setEditingId(null);
         },
         onError: () => {
-          toast.error("Failed to edit message");
+          errorToast("Failed to edit message");
         },
       }
     );
@@ -99,14 +100,14 @@ export const Message = ({
       { messageId: id },
       {
         onSuccess: () => {
-          toast.success("Message deleted");
+          successToast("Message deleted");
 
           if (parentMessageId === id) {
             onClose();
           }
         },
         onError: () => {
-          toast.error("Failed to delete message");
+          errorToast("Failed to delete message");
         },
       }
     );
@@ -119,7 +120,7 @@ export const Message = ({
       { value, messageId: id },
       {
         onError: () => {
-          toast.error("Failed to add reaction");
+          errorToast("Failed to add reaction");
         },
       }
     );

@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Conversation } from "./components/Conversation";
+import { errorToast } from "@/lib/toast";
 
 const MemberIdPage = () => {
   const friendId = useFriendId();
@@ -28,7 +29,7 @@ const MemberIdPage = () => {
             setFriendConversationId(friendConversation?._id);
         },
         onError() {
-          toast.error("Failed to get conversation");
+          errorToast("Failed to get conversation");
         },
       }
     );

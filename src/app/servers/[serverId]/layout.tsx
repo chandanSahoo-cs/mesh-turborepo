@@ -23,7 +23,7 @@ const ServerIdLayout = ({ children }: ServerIdLayoutProps) => {
   return (
     <div className="h-full bg-[#fffce9]">
       <Toolbar />
-      <div className="flex h-[calc(100vh-40px)]">
+      <div className="flex h-[calc(100vh-65px)]">
         <Sidebar />
         <ResizablePanelGroup direction="horizontal" autoSaveId="mesh_server_layout">
           <ResizablePanel defaultSize={20} minSize={11} className="bg-white border-r-4 border-black">

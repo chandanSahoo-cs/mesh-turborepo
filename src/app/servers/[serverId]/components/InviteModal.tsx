@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import { CopyIcon, RefreshCcwIcon } from "lucide-react";
 import { toast } from "sonner";
 import type { Doc } from "../../../../../convex/_generated/dataModel";
+import { errorToast, successToast } from "@/lib/toast";
 
 interface InviteModalProps {
   open: boolean;
@@ -30,7 +31,7 @@ export const InviteModal = ({ open, setOpen, server }: InviteModalProps) => {
     const inviteLink = `${window.location.origin}/join/${server._id}`;
     navigator.clipboard
       .writeText(inviteLink)
-      .then(() => toast.success("Invite link copied to clipboard"));
+      .then(() => successToast("Invite link copied to clipboard"));
   };
 
   const [ConfirmDialog, confirm] = useConfirm(
@@ -47,10 +48,10 @@ export const InviteModal = ({ open, setOpen, server }: InviteModalProps) => {
       },
       {
         onSuccess: () => {
-          toast.success("New join code generated");
+          successToast("New join code generated");
         },
         onError: () => {
-          toast.error("Failed to generate new join code");
+          errorToast("Failed to generate new join code");
         },
       }
     );

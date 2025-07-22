@@ -16,6 +16,7 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import { Message } from "../../../app/friends/[friendId]/components/Message";
 
 import { motion } from "framer-motion";
+import { errorToast } from "@/lib/toast";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 
@@ -105,7 +106,7 @@ export const FriendThread = ({ friendMessageId, onClose }: ThreadProps) => {
 
       setEditorKey((prevKey) => prevKey + 1);
     } catch {
-      toast.error("Failed to send message");
+      errorToast("Failed to send message");
     } finally {
       setIsPending(false);
       editorRef?.current?.enable(true);

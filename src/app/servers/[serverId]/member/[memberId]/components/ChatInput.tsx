@@ -7,6 +7,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
 import { motion } from "framer-motion";
+import { errorToast } from "@/lib/toast";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 
@@ -80,7 +81,7 @@ export const ChatInput = ({ placeholder, conversationId }: ChatInputProps) => {
       setEditorkey((prev) => prev + 1);
     } catch (error) {
       console.log(error);
-      toast.error("Failed to send message");
+      errorToast("Failed to send message");
     } finally {
       setIsPending(false);
       editorRef.current?.enable(true);

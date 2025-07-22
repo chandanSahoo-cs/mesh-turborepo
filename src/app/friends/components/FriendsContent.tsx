@@ -5,6 +5,7 @@ import type React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCreateFriendRequest } from "@/features/friends/api/useCreateFriendRequest";
+import { errorToast, successToast } from "@/lib/toast";
 import { motion } from "framer-motion";
 import { MailIcon, UserPlusIcon } from "lucide-react";
 import { useState } from "react";
@@ -34,10 +35,10 @@ export const FriendsContent = ({ friendRequests }: FriendsContentProps) => {
       { toUserEmail: email },
       {
         onSuccess: () => {
-          toast.success("Friend request sent!");
+          successToast("Friend request sent!");
           setEmail("");
         },
-        onError: () => toast.error("Failed to send friend request"),
+        onError: () => errorToast("Failed to send friend request"),
       }
     );
   };

@@ -20,6 +20,7 @@ import React from "react";
 import { toast } from "sonner";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { friendUserRequestsType } from "../../../../convex/friendRequests";
+import { errorToast, successToast } from "@/lib/toast";
 
 interface RenderFriendCardProps {
   friend: friendUserRequestsType;
@@ -72,8 +73,8 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
     acceptFriendRequest(
       { friendRequestId: id },
       {
-        onSuccess: () => toast.success("Friend request accepted!"),
-        onError: () => toast.error("Failed to accept friend request"),
+        onSuccess: () => successToast("Friend request accepted!"),
+        onError: () => errorToast("Failed to accept friend request"),
       }
     );
   };
@@ -82,8 +83,8 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
     rejectFriendRequest(
       { friendRequestId: id },
       {
-        onSuccess: () => toast.success("Friend request rejected"),
-        onError: () => toast.error("Failed to reject friend request"),
+        onSuccess: () => successToast("Friend request rejected"),
+        onError: () => errorToast("Failed to reject friend request"),
       }
     );
   };
@@ -92,8 +93,8 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
     rejectFriendRequest(
       { friendRequestId: id },
       {
-        onSuccess: () => toast.success("Friend removed"),
-        onError: () => toast.error("Failed to remove"),
+        onSuccess: () => successToast("Friend removed"),
+        onError: () => errorToast("Failed to remove"),
       }
     );
   };
@@ -102,8 +103,8 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
     blockFriendRequest(
       { friendRequestId: id },
       {
-        onSuccess: () => toast.success("User blocked"),
-        onError: () => toast.error("Failed to block user"),
+        onSuccess: () => successToast("User blocked"),
+        onError: () => errorToast("Failed to block user"),
       }
     );
   };
@@ -112,8 +113,8 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
     unblockFriendRequest(
       { friendRequestId: id },
       {
-        onSuccess: () => toast.success("User unblocked"),
-        onError: () => toast.error("Failed to unblock user"),
+        onSuccess: () => successToast("User unblocked"),
+        onError: () => errorToast("Failed to unblock user"),
       }
     );
   };

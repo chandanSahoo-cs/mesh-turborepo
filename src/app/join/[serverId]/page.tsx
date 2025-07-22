@@ -14,6 +14,7 @@ import { motion } from "framer-motion"
 import VerificationInput from "react-verification-input"
 import { toast } from "sonner"
 import { BackgroundAnimations } from "@/components/BackgroundAnimations"
+import { errorToast, successToast } from "@/lib/toast"
 
 
 const JoinPage = () => {
@@ -28,10 +29,10 @@ const JoinPage = () => {
       {
         onSuccess: ({ id }) => {
           router.replace(`/servers/${id}`)
-          toast.success("Successfully joined the server")
+          successToast("Successfully joined the server")
         },
         onError: () => {
-          toast.error("Failed to join the server")
+          errorToast("Failed to join the server")
         },
       },
     )

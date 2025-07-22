@@ -22,6 +22,7 @@ import { TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { errorToast, successToast } from "@/lib/toast";
 
 interface PreferencesModalProps {
   open: boolean;
@@ -57,11 +58,11 @@ export const PreferencesModal = ({
       },
       {
         onSuccess: () => {
-          toast.success("Renamed Server");
+          successToast("Renamed Server");
           setEditOpen(false);
         },
         onError: () => {
-          toast.error("Failed to rename workspace");
+          errorToast("Failed to rename workspace");
         },
       }
     );
@@ -78,10 +79,10 @@ export const PreferencesModal = ({
         onSuccess: () => {
           setOpen(false);
           router.replace("/");
-          toast.success("Server Deleted");
+          successToast("Server Deleted");
         },
         onError: () => {
-          toast.error("Failed to delete server");
+          errorToast("Failed to delete server");
         },
       }
     );

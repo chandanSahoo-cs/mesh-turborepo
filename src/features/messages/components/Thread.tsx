@@ -17,6 +17,7 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import { useCreateMessage } from "../api/useCreateMessage";
 import { useGetMessageById } from "../api/useGetMessageById";
 import { useGetMessages } from "../api/useGetMessages";
+import { errorToast } from "@/lib/toast";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 
@@ -113,7 +114,7 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
 
       setEditorKey((prevKey) => prevKey + 1);
     } catch {
-      toast.error("Failed to send message");
+      errorToast("Failed to send message");
     } finally {
       setIsPending(false);
       editorRef?.current?.enable(true);

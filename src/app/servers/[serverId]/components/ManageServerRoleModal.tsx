@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import type { Id } from "../../../../../convex/_generated/dataModel";
 import type { ServerPermission } from "../../../../../convex/schema";
 import { RoleInfo } from "./RoleInfo";
+import { errorToast, successToast } from "@/lib/toast";
 
 interface ManageServerRoleModal {
   open: boolean;
@@ -134,7 +135,7 @@ export const ManageServerRoleModal = ({
 
   const handleAddRole = async () => {
     if (!name.trim()) {
-      toast.error("Role name is required");
+      errorToast("Role name is required");
       return;
     }
 
@@ -146,13 +147,13 @@ export const ManageServerRoleModal = ({
       },
       {
         onSuccess() {
-          toast.success("Role created");
+          successToast("Role created");
           setName("");
           setPermissions([]);
           setShowCreateForm(false);
         },
         onError() {
-          toast.error("Failed to create role");
+          errorToast("Failed to create role");
         },
       }
     );
@@ -169,10 +170,10 @@ export const ManageServerRoleModal = ({
       },
       {
         onSuccess() {
-          toast.success("Role deleted");
+          successToast("Role deleted");
         },
         onError() {
-          toast.error("Failed to delete role");
+          errorToast("Failed to delete role");
         },
       }
     );
@@ -187,12 +188,12 @@ export const ManageServerRoleModal = ({
       },
       {
         onSuccess() {
-          toast.success("Role updated");
+          successToast("Role updated");
           setEditingRoleId(null);
           setPermissions([]);
         },
         onError() {
-          toast.error("Failed to update role");
+          errorToast("Failed to update role");
         },
       }
     );

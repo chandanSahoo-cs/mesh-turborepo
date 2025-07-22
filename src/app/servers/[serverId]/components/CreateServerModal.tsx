@@ -16,6 +16,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useCreateServer } from "../../../../features/servers/api/useCreateServer";
 import { useCreateServerModal } from "../../../../features/servers/store/useCreateServerModal";
+import { successToast } from "@/lib/toast";
 
 export const CreateServerModal = () => {
   const router = useRouter();
@@ -35,7 +36,7 @@ export const CreateServerModal = () => {
       {
         onSuccess({ id }) {
           setIsOpen(false);
-          toast.success("Server created");
+          successToast("Server created");
           setName("");
           router.push(`/servers/${id}`);
         },

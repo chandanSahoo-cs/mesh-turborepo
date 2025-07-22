@@ -15,6 +15,7 @@ import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { Doc, Id } from "../../../../../convex/_generated/dataModel";
 import { FriendReactions } from "./FriendReaction";
+import { errorToast, successToast } from "@/lib/toast";
 
 const Renderer = dynamic(() => import("@/components/Renderer"), { ssr: false });
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
@@ -80,11 +81,11 @@ export const Message = ({
       { friendMessageId: id, body },
       {
         onSuccess: () => {
-          toast.success("Message edited");
+          successToast("Message edited");
           setEditingId(null);
         },
         onError: () => {
-          toast.error("Failed to edit message");
+          errorToast("Failed to edit message");
         },
       }
     );
@@ -99,14 +100,14 @@ export const Message = ({
       { friendMessageId: id },
       {
         onSuccess: () => {
-          toast.success("Message deleted");
+          successToast("Message deleted");
 
           if (parentMessageId === id) {
             onClose();
           }
         },
         onError: () => {
-          toast.error("Failed to delete message");
+          errorToast("Failed to delete message");
         },
       }
     );
@@ -119,7 +120,7 @@ export const Message = ({
       { value, friendMessageId: id },
       {
         onError: () => {
-          toast.error("Failed to add reaction");
+          errorToast("Failed to add reaction");
         },
       }
     );

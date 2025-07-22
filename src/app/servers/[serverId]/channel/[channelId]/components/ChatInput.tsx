@@ -10,6 +10,7 @@ import type Quill from "quill";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import type { Id } from "../../../../../../../convex/_generated/dataModel";
+import { errorToast, successToast } from "@/lib/toast";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 
@@ -78,10 +79,10 @@ export const ChatInput = ({ placeholder }: ChatInputProps) => {
         throwError: true,
       });
       setEditorkey((prev) => prev + 1);
-      toast.success("Message sent!");
+      successToast("Message sent!");
     } catch (error) {
       console.log(error);
-      toast.error("Failed to send message");
+      errorToast("Failed to send message");
     } finally {
       setIsPending(false);
       editorRef.current?.enable(true);
