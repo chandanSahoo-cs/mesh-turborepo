@@ -40,7 +40,6 @@ export const useCreateServer = () => {
         setError(null);
 
         setStatus("pending");
-        console.log("Creating server");
         const response = await create({ name });
 
         onSuccess?.({ id: response });

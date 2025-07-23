@@ -40,12 +40,8 @@ export const useToggleReaction = () => {
         setData(null);
         setError(null);
 
-        console.log("Inside Toggle");
-
         setStatus("pending");
         const response = await toggle({ messageId, value });
-
-        console.log({ response });
 
         onSuccess?.({ id: response });
       } catch (error) {

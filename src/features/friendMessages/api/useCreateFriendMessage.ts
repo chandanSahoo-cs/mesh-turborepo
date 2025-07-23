@@ -38,7 +38,6 @@ export const useCreateFriendMessage = () => {
       { body, image, parentMessageId, friendConversationId }: RequestType,
       { onSuccess, onSettled, onError }: Options
     ) => {
-      console.log("usecreate:", friendConversationId);
       try {
         setData(null);
         setError(null);

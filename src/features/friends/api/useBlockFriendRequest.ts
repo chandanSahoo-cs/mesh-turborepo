@@ -40,7 +40,6 @@ export const useBlockFriendRequest = () => {
         setError(null);
 
         setStatus("pending");
-        console.log("Creating server");
         const response = await block({ friendRequestId });
 
         onSuccess?.({ id: response });

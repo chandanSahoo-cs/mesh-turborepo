@@ -40,7 +40,6 @@ export const useDeleteServer = () => {
         setError(null);
 
         setStatus("pending");
-        console.log("Creating server");
         const response = await deleteCascade({ serverId });
 
         onSuccess?.({ id: response });

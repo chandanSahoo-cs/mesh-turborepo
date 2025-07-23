@@ -248,6 +248,7 @@ body,
 }
 
 .lk-disconnect-button {
+  display: none !important;
   background-color: #ff4747;
   color: white;
   height: 40px;

@@ -1,13 +1,12 @@
 import { useCreateMessage } from "@/features/messages/api/useCreateMessage";
 import { useGenerateUploadUrl } from "@/features/upload/api/useGenerateUploadUrl";
 import { useServerId } from "@/hooks/useServerId";
+import { errorToast } from "@/lib/toast";
+import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import Quill from "quill";
 import { useRef, useState } from "react";
-import { toast } from "sonner";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
-import { motion } from "framer-motion";
-import { errorToast } from "@/lib/toast";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 
@@ -51,8 +50,6 @@ export const ChatInput = ({ placeholder, conversationId }: ChatInputProps) => {
         image: undefined,
       };
 
-
-
       if (image) {
         const url = await generateUploadUrl();
 
@@ -65,7 +62,6 @@ export const ChatInput = ({ placeholder, conversationId }: ChatInputProps) => {
           headers: { "Content-Type": image.type },
           body: image,
         });
-
 
         if (!result.ok) {
           throw new Error("Failed to upload file");
@@ -80,7 +76,6 @@ export const ChatInput = ({ placeholder, conversationId }: ChatInputProps) => {
       });
       setEditorkey((prev) => prev + 1);
     } catch (error) {
-      console.log(error);
       errorToast("Failed to send message");
     } finally {
       setIsPending(false);

@@ -21,8 +21,6 @@ const ChannelIdPage = () => {
   const serverId = useServerId();
 
   const { props } = useVoiceRoomProps();
-  console.log("props: ", props);
-
   const { results, status, loadMore } = useGetMessages({ channelId });
 
   if (channelLoading || status === "LoadingFirstPage") {

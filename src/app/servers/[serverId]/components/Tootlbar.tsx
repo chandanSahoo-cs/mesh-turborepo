@@ -102,7 +102,6 @@ export const Toolbar = () => {
         <Button
           onClick={() => {
             onOpenMemberPanel(!isOpen);
-            console.log("Member Panel button is clicked");
           }}
           className={cn(
             "bg-transparent hover:bg-transparent text-black size-10 p-2  border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000]",

@@ -32,7 +32,7 @@ const ServerIdPage = () => {
   });
 
   const firstChannelId = useMemo(() => {
-    for (const channel of (channels||[])) {
+    for (const channel of channels || []) {
       if (channel.type !== "category" && channel.type !== "voice") {
         return channel._id;
       }
@@ -40,12 +40,10 @@ const ServerIdPage = () => {
   }, [channels]);
 
   useEffect(() => {
-    console.log("Inside useEffect");
     if (serverLoading || channelsLoading || !server || !member || memberLoading)
       return;
     if (firstChannelId) {
       router.replace(`/servers/${serverId}/channel/${firstChannelId}`);
-      console.log("Router is working");
     } else if (!isOpen && isPermitted) {
       setIsOpen(true);
     }

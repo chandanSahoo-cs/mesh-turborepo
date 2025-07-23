@@ -6,6 +6,7 @@ export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   const room = req.nextUrl.searchParams.get("room");
+  console.log("room: ", room);
   const username = req.nextUrl.searchParams.get("username");
   if (!room) {
     return NextResponse.json(

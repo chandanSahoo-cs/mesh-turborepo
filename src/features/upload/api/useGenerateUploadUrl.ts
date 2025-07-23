@@ -8,10 +8,8 @@ export const useGenerateUploadUrl = () => {
   const generateUploadUrl = useCallback(async () => {
     try {
       const response = await generate();
-      console.log("From the method:", response);
       return response;
     } catch (error) {
-      console.log(error);
       throw new Error("Failed to generate link");
     }
   }, [generate]);

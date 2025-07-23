@@ -40,7 +40,6 @@ export const useUnblockFriendRequest = () => {
         setError(null);
 
         setStatus("pending");
-        console.log("Creating server");
         const response = await unblock({ friendRequestId });
 
         onSuccess?.({ id: response });

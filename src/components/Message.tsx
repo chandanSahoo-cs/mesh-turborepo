@@ -10,7 +10,6 @@ import { usePanel } from "@/hooks/usePanel";
 import { errorToast, successToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
-import { toast } from "sonner";
 import { Hint } from "./Hint";
 import { Reactions } from "./Reactions";
 import { ThreadBar } from "./ThreadBar";
@@ -67,7 +66,6 @@ export const Message = ({
   threadTimestamp,
 }: MessageProps) => {
   const { parentMessageId, onOpenMessage, onClose } = usePanel();
-  console.log(serverMemberId);
   const [ConfirmDialog, confirm] = useConfirm(
     "Delete message",
     "Are you sure you want to delete this message? This cannot be undone"
@@ -115,7 +113,6 @@ export const Message = ({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleReaction = (value: any) => {
-    console.log({ value });
     toggleReaction(
       { value, messageId: id },
       {

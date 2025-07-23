@@ -41,7 +41,6 @@ export const useRenameServer = () => {
         setError(null);
 
         setStatus("pending");
-        console.log("Creating server");
         const response = await rename({ serverId, name });
 
         onSuccess?.({ id: response });

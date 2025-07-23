@@ -40,7 +40,6 @@ export const useRejectFriendRequest = () => {
         setError(null);
 
         setStatus("pending");
-        console.log("Creating server");
         const response = await reject({ friendRequestId });
 
         onSuccess?.({ id: response });

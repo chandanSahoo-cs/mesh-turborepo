@@ -1,4 +1,3 @@
-
 import { useMutation } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
 import { api } from "../../../../convex/_generated/api";
@@ -41,7 +40,6 @@ export const useCreateFriendRequest = () => {
         setError(null);
 
         setStatus("pending");
-        console.log("Creating server");
         const response = await create({ toUserEmail });
 
         onSuccess?.({ id: response });

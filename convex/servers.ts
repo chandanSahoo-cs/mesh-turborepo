@@ -102,9 +102,7 @@ export const createServer = mutation({
       }
 
       return serverId;
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   },
 });
 
@@ -129,9 +127,7 @@ export const getServers = query({
       );
 
       return memberServer;
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   },
 });
 
@@ -168,9 +164,7 @@ export const getServerById = query({
       }
 
       return server;
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   },
 });
 
@@ -379,7 +373,7 @@ export const joinServer = mutation({
       isMuted: false,
     });
 
-    // console.log("serverId: ",serverId)
+    //
 
     return serverId;
   },

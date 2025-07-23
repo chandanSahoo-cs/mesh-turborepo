@@ -10,12 +10,11 @@ import { useEditFriendMessage } from "@/features/friendMessages/api/useEditFrien
 import { useToggleFriendReaction } from "@/features/reactions/api/useToggleFriendReaction";
 import { useConfirm } from "@/hooks/useConfirm";
 import { usePanel } from "@/hooks/usePanel";
+import { errorToast, successToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
-import { toast } from "sonner";
 import { Doc, Id } from "../../../../../convex/_generated/dataModel";
 import { FriendReactions } from "./FriendReaction";
-import { errorToast, successToast } from "@/lib/toast";
 
 const Renderer = dynamic(() => import("@/components/Renderer"), { ssr: false });
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
@@ -115,7 +114,6 @@ export const Message = ({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleReaction = (value: any) => {
-    console.log({ value });
     toggleFriendReaction(
       { value, friendMessageId: id },
       {
@@ -259,9 +257,8 @@ export const Message = ({
             isAuthor={isAuthor}
             isPending={isPending}
             handleEdit={() => setEditingId(id)}
-            handleThread={() =>{
-                console.log("Thread is triggered")
-                onOpenMessage(id)
+            handleThread={() => {
+              onOpenMessage(id);
             }}
             handleDelete={handleDelete}
             handleReaction={handleReaction}

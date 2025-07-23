@@ -17,8 +17,6 @@ export async function POST(req: Request) {
     parentMessageData: Doc<"friendMessages">;
   } = await req.json();
 
-  console.log("userData: ",userData);
-
   if (!userData || !parentMessageData) {
     return new Response("Unauthorized", { status: 401 });
   }

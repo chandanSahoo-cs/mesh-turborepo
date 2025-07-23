@@ -55,8 +55,6 @@ export const MessageList = ({
     {} as Record<string, typeof data>
   );
 
-  console.log("data:",data)
-
   return (
     <div className="flex-1 flex flex-col-reverse pb-4 overflow-y-auto messages-scrollbar bg-[#fffce9]">
       {Object.entries(groupedMessages || {}).map(([dateKey, messages]) => (

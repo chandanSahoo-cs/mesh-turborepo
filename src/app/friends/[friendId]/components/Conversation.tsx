@@ -15,7 +15,6 @@ interface ConversationProps {
 }
 
 export const Conversation = ({ friendConversationId }: ConversationProps) => {
-  console.log("friendConversationId: ", friendConversationId);
   const friendId = useFriendId();
 
   const { onOpenFriendProfile } = usePanel();
@@ -65,7 +64,7 @@ export const Conversation = ({ friendConversationId }: ConversationProps) => {
   return (
     <div className="flex flex-col h-full">
       <Header
-      friendImage={friendUser.image}
+        friendImage={friendUser.image}
         friendName={friendUser.name}
         onClick={() => onOpenFriendProfile(friendId)}
       />

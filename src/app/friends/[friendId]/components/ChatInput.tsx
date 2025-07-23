@@ -1,12 +1,11 @@
 import { useCreateFriendMessage } from "@/features/friendMessages/api/useCreateFriendMessage";
 import { useGenerateUploadUrl } from "@/features/upload/api/useGenerateUploadUrl";
+import { errorToast } from "@/lib/toast";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import Quill from "quill";
 import { useRef, useState } from "react";
-import { toast } from "sonner";
 import { Id } from "../../../../../convex/_generated/dataModel";
-import { errorToast } from "@/lib/toast";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 
@@ -22,7 +21,6 @@ type CreateMessageValue = {
 };
 
 export const ChatInput = ({ placeholder, conversationId }: ChatInputProps) => {
-console.log("conversationId:", conversationId)
   const editorRef = useRef<Quill | null>(null);
   const [editorKey, setEditorkey] = useState(0);
   const [isPending, setIsPending] = useState(false);
@@ -41,10 +39,8 @@ console.log("conversationId:", conversationId)
       setIsPending(true);
       editorRef?.current?.enable(false);
 
-      console.log("Hello");
-
       const values: CreateMessageValue = {
-        friendConversationId:conversationId,
+        friendConversationId: conversationId,
         body,
         image: undefined,
       };
@@ -75,7 +71,6 @@ console.log("conversationId:", conversationId)
       });
       setEditorkey((prev) => prev + 1);
     } catch (error) {
-      console.log(error);
       errorToast("Failed to send message");
     } finally {
       setIsPending(false);

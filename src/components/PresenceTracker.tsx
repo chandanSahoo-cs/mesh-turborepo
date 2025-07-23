@@ -6,14 +6,12 @@ import { api } from "../../convex/_generated/api";
 
 export const PresenceTracker = () => {
   const self = useSelf();
-  // console.log("self: ", self);
+  // ;
 
   const markStatus = useMutation(api.users.updateEffectiveStatus);
   const { userData } = useCurrentUser();
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  
 
   useEffect(() => {
     if (!userData) return;
