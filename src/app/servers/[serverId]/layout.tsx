@@ -3,6 +3,7 @@
 import type React from "react";
 
 import { Loader } from "@/components/Loader";
+import { VoiceRoom } from "@/components/rooms/VoiceRoom";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -11,6 +12,7 @@ import {
 import { Thread } from "@/features/messages/components/Thread";
 import { Profile } from "@/features/serverMembers/components/Profile";
 import { useMemberPanel } from "@/features/servers/store/useMemberPanel";
+import { useVoiceRoom } from "@/features/voice/store/useVoiceRoom";
 import { usePanel } from "@/hooks/usePanel";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { MemberPanel } from "./components/MemberPanel";
@@ -26,6 +28,8 @@ const ServerIdLayout = ({ children }: ServerIdLayoutProps) => {
   const { parentMessageId, profileMemberId, onClose } = usePanel();
   const { isOpen } = useMemberPanel();
   const showPanel = !!parentMessageId || !!profileMemberId || isOpen;
+
+  const { isOpen: isVoiceRoomOpen } = useVoiceRoom();
 
   return (
     <div className="h-full bg-[#fffce9]">
@@ -43,6 +47,7 @@ const ServerIdLayout = ({ children }: ServerIdLayoutProps) => {
           </ResizablePanel>
           <ResizableHandle className="bg-transparent w-2 hover:bg-[#5170ff] transition-colors duration-200" />
           <ResizablePanel minSize={20} defaultSize={80} className="bg-white">
+            <VoiceRoom />
             {children}
           </ResizablePanel>
           {showPanel && (
@@ -63,7 +68,7 @@ const ServerIdLayout = ({ children }: ServerIdLayoutProps) => {
                     onClose={onClose}
                   />
                 ) : isOpen ? (
-                  <MemberPanel/>
+                  <MemberPanel />
                 ) : (
                   <Loader />
                 )}

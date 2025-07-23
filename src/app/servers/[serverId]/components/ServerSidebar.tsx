@@ -116,7 +116,7 @@ export const ServerSidebar = () => {
                   key={channelItem._id}
                   icon={channelItem.type === "text" ? HashIcon : Volume2Icon}
                   label={channelItem.name}
-                  id={channelItem._id}
+                  channelItem={channelItem}
                   variant={channelID === channelItem._id ? "active" : "default"}
                 />
               ))}

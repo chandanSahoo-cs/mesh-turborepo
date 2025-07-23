@@ -1,18 +1,22 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useVoiceRoom } from "@/features/voice/store/useVoiceRoom";
+import { useVoiceRoomProps } from "@/features/voice/store/useVoiceRoomProps";
 import { useServerId } from "@/hooks/useServerId";
+import { livekitRoomRef } from "@/lib/liveKitRoomRef";
 import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import type { IconType } from "react-icons/lib";
+import { Doc } from "../../../../../convex/_generated/dataModel";
 
 interface SidebarItemProps {
   label: string;
   icon: LucideIcon | IconType;
-  id?: string;
+  channelItem?: Doc<"channels">;
   variant?: VariantProps<typeof sidebarItemVariants>["variant"];
 }
 
@@ -36,10 +40,26 @@ const sidebarItemVariants = cva(
 export const SidebarItem = ({
   label,
   icon: Icon,
-  id,
+  channelItem,
   variant,
 }: SidebarItemProps) => {
   const serverId = useServerId();
+
+  const { setIsOpen } = useVoiceRoom();
+  const { setProps } = useVoiceRoomProps();
+
+  // const {room} = useCustomLiveKitRoom()
+
+  const handleVoiceChannel = async () => {
+    setIsOpen(true);
+    setProps({
+      type: "server",
+      serverId: serverId,
+      channelId: channelItem?._id,
+      audio: true,
+      video: true,
+    });
+  };
 
   return (
     <motion.div
@@ -50,13 +70,26 @@ export const SidebarItem = ({
         size="sm"
         className={cn(sidebarItemVariants({ variant }))}
         asChild>
-        {id ? (
-          <Link href={`/servers/${serverId}/channel/${id}`}>
-            <Icon className="size-4 mr-1 shrink-0" />
-            <span className="text-sm truncate uppercase tracking-wide">
-              {label}
-            </span>
-          </Link>
+        {channelItem ? (
+          channelItem.type === "text" ? (
+            <Link
+              onClick={() => setIsOpen(false)}
+              href={`/servers/${serverId}/channel/${channelItem._id}`}>
+              <Icon className="size-4 mr-1 shrink-0" />
+              <span className="text-sm truncate uppercase tracking-wide">
+                {label}
+              </span>
+            </Link>
+          ) : (
+            <div
+              onClick={() => handleVoiceChannel()}
+              className="cursor-pointer">
+              <Icon className="size-4 mr-1 shrink-0" />
+              <span className="text-sm truncate uppercase tracking-wide">
+                {label}
+              </span>
+            </div>
+          )
         ) : (
           <div>
             <Icon className="size-4 mr-1 shrink-0" />

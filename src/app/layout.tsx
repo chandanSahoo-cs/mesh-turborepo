@@ -7,6 +7,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
+// In layout.tsx or page.tsx
+import "@livekit/components-styles";
+import { VoiceRoom } from "@/components/rooms/VoiceRoom";
+import { VoiceRoomWrapper } from "@/components/rooms/VoiceRoomWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
