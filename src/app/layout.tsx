@@ -9,7 +9,6 @@ import { Toaster } from "sonner";
 import "./globals.css";
 // In layout.tsx or page.tsx
 import "@livekit/components-styles";
-import { VoiceRoom } from "@/components/rooms/VoiceRoom";
 import { VoiceRoomWrapper } from "@/components/rooms/VoiceRoomWrapper";
 
 const geistSans = Geist({
@@ -42,6 +41,7 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <NuqsAdapter>
             <ConvexClientProvider>
+              <VoiceRoomWrapper/>
               <Toaster richColors />
               <Modals />
               {children}

@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -178,4 +177,87 @@ body,
 .messages-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: #dcdcdc #f8f8f8;
+}
+
+/*Live kit*/
+
+:root {
+  /* Core Colors */
+  --lk-fg: #fffce9;
+  --lk-fg-secondary: #374151;
+  --lk-fg-tertiary: #6b7280;
+  --lk-bg: hsl(0, 0%, 100%);
+  --lk-bg-secondary: #f8fafc;
+  --lk-bg-tertiary: #f1f5f9;
+
+  /* Accent Colors */
+  --lk-accent-fg: #ffffff;
+  --lk-accent-bg: #5170ff;
+
+  /* Status Colors */
+  --lk-danger-fg: #ffffff;
+  --lk-danger: #ff4747;
+  --lk-danger-text: #7f1d1d;
+  --lk-danger-bg: #fecaca;
+
+  --lk-success-fg: #ffffff;
+  --lk-success: #10b981;
+  --lk-success-text: #14532d;
+  --lk-success-bg: #dcfce7;
+
+  --lk-warning-fg: #000000;
+  --lk-warning: #f59e0b;
+  --lk-warning-text: #92400e;
+  --lk-warning-bg: #fef3c7;
+
+  /* Control Colors */
+  --lk-control-fg: var(--lk-fg);
+  --lk-control-bg: var(--lk-bg-secondary);
+
+  /* Connection Quality */
+  --lk-connection-excellent: #10b981;
+  --lk-connection-good: #f59e0b;
+  --lk-connection-poor: #ef4444;
+
+  /* Design System - Minimal */
+  --lk-font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --lk-border-color: #e2e8f0;
+  --lk-border-radius: 12px;
+  --lk-border-radius-small: 8px;
+  --lk-border-radius-large: 16px;
+  --lk-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --lk-shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.lk-video-conference {
+  background-color: #000000;
+}
+
+.lk-grid-layout-wrapper,
+.lk-focus-layout-wrapper {
+  background-color: #000000;
+}
+
+.lk-video-container {
+  border: 2;
+  border-radius: 12px;
+  border-color: #fffce9;
+  overflow: hidden;
+}
+
+.lk-disconnect-button {
+  background-color: #ff4747;
+  color: white;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.lk-button {
+  border-radius: 12px;
+}
+
+.lk-button.lk-chat-toggle {
+  display: none !important;
 }

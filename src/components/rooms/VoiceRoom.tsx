@@ -4,7 +4,7 @@ import { Loader } from "../Loader";
 
 import { useVoiceRoom } from "@/features/voice/store/useVoiceRoom";
 import { useVoiceRoomProps } from "@/features/voice/store/useVoiceRoomProps";
-import { livekitRoomRef } from "@/lib/liveKitRoomRef";
+import { livekitRoomRef } from "@/lib/livekitRoomRef";
 import { cn } from "@/lib/utils";
 import { RoomContext, VideoConference } from "@livekit/components-react";
 import { Room } from "livekit-client";
@@ -23,6 +23,14 @@ export const VoiceRoom = () => {
     livekitRoomRef.current = r;
     return r;
   });
+
+  useEffect(() => {
+    console.log("mounted");
+
+    return ()=>{
+      console.log("unmounted");
+    }
+  },[]);
 
   useEffect(() => {
     if (!userData) return;
@@ -81,7 +89,7 @@ export const VoiceRoom = () => {
 
   return (
     <div
-      className={cn("h-[calc(100vh-65px)]", !isOpen && "hidden")}
+      className={cn("h-[100vh]", !isOpen && "hidden")}
       data-lk-theme="default">
       <RoomContext.Provider value={room}>
         <VideoConference />

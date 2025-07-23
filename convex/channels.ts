@@ -95,7 +95,6 @@ export const getChannelById = query({
 
     const channel = await ctx.db.get(channelId);
 
-    console.log("channel:", channel);
     if (!channel) {
       return null;
     }

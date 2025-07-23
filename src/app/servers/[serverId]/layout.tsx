@@ -47,7 +47,7 @@ const ServerIdLayout = ({ children }: ServerIdLayoutProps) => {
           </ResizablePanel>
           <ResizableHandle className="bg-transparent w-2 hover:bg-[#5170ff] transition-colors duration-200" />
           <ResizablePanel minSize={20} defaultSize={80} className="bg-white">
-            <VoiceRoom />
+            {/* <VoiceRoom /> */}
             {children}
           </ResizablePanel>
           {showPanel && (
