@@ -97,7 +97,7 @@ export const ServerSidebar = () => {
             onClick={() => {
               setIsOpen(true);
             }}
-            className="w-full bg-[#7ed957] text-black border-4 border-black rounded-xl shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] hover:bg-[#4060ef] font-mono font-black uppercase tracking-wide py-2 h-10 transition-all duration-200 flex items-center justify-center gap-2 text-xs">
+            className="w-full bg-[#7ed957] text-black border-4 border-black rounded-xl shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] hover:bg-[#7ed957] font-mono font-black uppercase tracking-wide py-2 h-10 transition-all duration-200 flex items-center justify-center gap-2 text-xs">
             <PlusIcon className="size-4" />
             Create Category
           </Button>

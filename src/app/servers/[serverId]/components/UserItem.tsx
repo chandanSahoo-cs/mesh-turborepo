@@ -15,7 +15,7 @@ const userItemVariants = cva(
     variants: {
       variant: {
         default:
-          "text-white border-transparent hover:border-[#5170ff] hover:bg-[#5170ff]/20 hover:shadow-[2px_2px_0px_0px_#5170ff]",
+          "text-black border-transparent hover:border-[#7ed957] hover:bg-[#7ed957]/20 hover:shadow-[2px_2px_0px_0px_#7ed957]",
         active:
           "bg-[#7ed957] text-black border-black shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] hover:scale-102",
       },

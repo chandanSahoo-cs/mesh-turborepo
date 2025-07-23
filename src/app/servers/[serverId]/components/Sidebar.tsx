@@ -15,7 +15,7 @@ export const Sidebar = () => {
   const router = useRouter();
 
   return (
-    <aside className="w-[70px] h-full bg-white border-r-4 border-black flex flex-col gap-y-4 items-center pt-4 pb-4">
+    <aside className="w-[72px] h-full bg-white border-r-4 border-black flex flex-col gap-y-4 items-center pt-4 pb-4">
       <motion.div
         className="flex flex-col items-center justify-center gap-y-1 cursor-pointer group"
         whileHover={{ scale: 1.05 }}

@@ -24,7 +24,7 @@ const sidebarItemVariants = cva(
         default:
           "text-black border-transparent hover:border-[#5170ff] hover:bg-[#5170ff]/20 hover:shadow-[2px_2px_0px_0px_#5170ff]",
         active:
-          "bg-[#5170ff] text-white border-black shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] hover:scale-102",
+          "bg-[#5170ff] hover:bg-[#5170ff] text-white border-black shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] hover:scale-102",
       },
     },
     defaultVariants: {
