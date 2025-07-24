@@ -21,10 +21,10 @@ export async function POST(req: Request) {
   }
 
   const serverId = channelData.serverId;
-  const userId = userData._id
+  const userId = userData._id;
   const membership = await convex.query(api.serverMembers.checkMembership, {
     serverId,
-    userId
+    userId,
   });
 
   if (!membership) {

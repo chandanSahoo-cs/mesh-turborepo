@@ -13,7 +13,8 @@ export const AuthScreen = () => {
   return (
     <div className="h-full flex items-center justify-center bg-[#fffce9] p-4 relative">
       <BackgroundAnimations />
-Voicv className="md:h-auto md:w-[420px] w-full relative z-10">
+
+      <div className="md:h-auto md:w-[420px] w-full relative z-10">
         <AnimatePresence mode="wait">
           {authState === "signIn" ? (
             <motion.div

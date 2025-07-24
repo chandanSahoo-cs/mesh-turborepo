@@ -1,11 +1,9 @@
 import { Liveblocks } from "@liveblocks/node";
-import { ConvexHttpClient } from "convex/browser";
 import { Doc } from "../../../../convex/_generated/dataModel";
 
 const liveblocks = new Liveblocks({
   secret: process.env.LIVEBLOCKS_SECRET_KEY!,
 });
-
 
 export async function POST(req: Request) {
   const {

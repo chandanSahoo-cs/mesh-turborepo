@@ -1,5 +1,4 @@
 import { Liveblocks } from "@liveblocks/node";
-import { ConvexHttpClient } from "convex/browser";
 import { Doc } from "../../../../convex/_generated/dataModel";
 
 type RequestType = {
@@ -11,7 +10,6 @@ type RequestType = {
 const liveblocks = new Liveblocks({
   secret: process.env.LIVEBLOCKS_SECRET_KEY!,
 });
-
 
 export async function POST(req: Request) {
   const { userData }: RequestType = await req.json();

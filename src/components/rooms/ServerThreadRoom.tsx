@@ -18,7 +18,7 @@ export const ServerThreadRoom = ({
   children: React.ReactNode;
 }) => {
   const { userData, isLoading: isLoadingUserData } = useCurrentUser();
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [parentMessageId, _] = useParentMessageId();
 
   const { data: parentMessageData, isLoading: isLoadingParentMessageData } =

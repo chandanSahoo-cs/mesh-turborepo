@@ -42,6 +42,7 @@ const Editor = ({
 }: EditorProps) => {
   const others = useOthers();
   const isTyping = others.filter((user) => user.presence.isTyping === true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, updateMyPresence] = useMyPresence();
 
   const [text, setText] = useState("");

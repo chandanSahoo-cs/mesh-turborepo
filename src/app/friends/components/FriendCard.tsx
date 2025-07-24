@@ -34,7 +34,7 @@ interface RenderFriendCardProps {
 
 export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
   const router = useRouter();
-  const { onOpenFriendProfile} = usePanel();
+  const { onOpenFriendProfile } = usePanel();
   const getStatusColor = () => {
     switch (type) {
       case "accepted":
@@ -253,6 +253,8 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
                     <MessageSquareIcon className="size-4" />
                   </Button>
                 </motion.div>
+                {/*eslint-disable-next-line @typescript-eslint/no-unused-expressions*/}
+                {/*eslint-disable-next-line @typescript-eslint/no-unused-expressions*/}
 
                 <motion.div
                   whileHover={{ scale: 1.05 }}
@@ -262,6 +264,7 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
                       e: React.MouseEvent<HTMLButtonElement, MouseEvent>
                     ) => {
                       e.stopPropagation();
+                      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                       isActive && props.friendId === friend.friendUserInfo?._id
                         ? handleLeaveCall()
                         : handleJoinCall();

@@ -1,11 +1,9 @@
 import { Liveblocks } from "@liveblocks/node";
-import { ConvexHttpClient } from "convex/browser";
 import { Doc } from "../../../../convex/_generated/dataModel";
 
 const liveblocks = new Liveblocks({
   secret: process.env.LIVEBLOCKS_SECRET_KEY!,
 });
-
 
 export async function POST(req: Request) {
   const {
@@ -20,10 +18,9 @@ export async function POST(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const [u1,u2] = [userData._id,otherUserData._id].sort()
+  const [u1, u2] = [userData._id, otherUserData._id].sort();
 
-  const room =
-    "friendMessage" + String(u1) + String(u2);
+  const room = "friendMessage" + String(u1) + String(u2);
 
   const session = liveblocks.prepareSession(userData._id, {
     userInfo: {

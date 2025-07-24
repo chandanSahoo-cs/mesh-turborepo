@@ -24,10 +24,6 @@ export const UserButton = () => {
   const { isLoading, userData } = useCurrentUser();
 
   // Voice control states
-
-  const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOn, setIsVideoOn] = useState(false);
-  const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [isInCall, setIsInCall] = useState(false); // Set to true to show the indicator
 
   const { setProps } = useVoiceRoomProps();

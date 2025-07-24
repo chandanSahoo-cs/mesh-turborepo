@@ -10,13 +10,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { successToast } from "@/lib/toast";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
 import { useCreateServer } from "../../../../features/servers/api/useCreateServer";
 import { useCreateServerModal } from "../../../../features/servers/store/useCreateServerModal";
-import { successToast } from "@/lib/toast";
 
 export const CreateServerModal = () => {
   const router = useRouter();
