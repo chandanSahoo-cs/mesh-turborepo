@@ -50,12 +50,12 @@ export const VoiceRoom = () => {
       roomName = type + String(u1) + String(u2);
     }
 
-    const name = userData.name;
+    const email = userData.email;
 
     (async () => {
       try {
         const response = await fetch(
-          `/api/livekit?room=${roomName}&username=${name}`
+          `/api/livekit?room=${roomName}&useremail=${email}`
         );
         const data = await response.json();
         setToken(data.token);

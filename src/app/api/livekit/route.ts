@@ -7,13 +7,13 @@ export const revalidate = 0;
 export async function GET(req: NextRequest) {
   const room = req.nextUrl.searchParams.get("room");
   console.log("room: ", room);
-  const username = req.nextUrl.searchParams.get("username");
+  const useremail = req.nextUrl.searchParams.get("useremail");
   if (!room) {
     return NextResponse.json(
       { error: 'Missing "room" query parameter' },
       { status: 400 }
     );
-  } else if (!username) {
+  } else if (!useremail) {
     return NextResponse.json(
       { error: 'Missing "username" query parameter' },
       { status: 400 }
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const at = new AccessToken(apiKey, apiSecret, { identity: username });
+  const at = new AccessToken(apiKey, apiSecret, { identity: useremail });
   at.addGrant({ room, roomJoin: true, canPublish: true, canSubscribe: true });
 
   return NextResponse.json(
