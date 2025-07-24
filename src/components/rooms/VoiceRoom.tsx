@@ -12,6 +12,7 @@ import {
   MessageCircleIcon,
   XIcon,
 } from "lucide-react";
+import { Button } from "../ui/button";
 
 export const VoiceRoom = () => {
   const { userData } = useCurrentUser();
@@ -97,6 +98,11 @@ export const VoiceRoom = () => {
     );
   }
 
+  const handleScroll = () => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    handleDismissIndicator();
+  };
+
   return (
     room && (
       <div
@@ -121,47 +127,22 @@ export const VoiceRoom = () => {
           </button>
 
           {!isIndicatorDismissed && (
-            <div className="absolute bottom-5 right-4 z-40 animate-bounce cursor-pointer">
+            <Button
+              onClick={() => handleScroll()}
+              className="absolute bottom-5 right-4 z-40 animate-bounce cursor-pointer">
               <div className="bg-[#5170ff] border-3 border-black rounded-xl shadow-[4px_4px_0px_0px_#000000] p-3 flex items-center gap-2 text-white font-mono font-black uppercase tracking-wide text-sm relative">
                 <MessageCircleIcon className="size-4" />
                 <span>Scroll down for chat</span>
                 <ChevronDownIcon className="size-4 animate-pulse" />
 
                 {/* Close button */}
-                <button
-                  onClick={handleDismissIndicator}
-                  className="ml-2 size-5 bg-white/20 hover:bg-white/30 border border-white/30 rounded-md flex items-center justify-center transition-all duration-200">
+                <div className="ml-2 size-5 bg-white/20 hover:bg-white/30 border border-white/30 rounded-md flex items-center justify-center transition-all duration-200">
                   <XIcon className="size-3" />
-                </button>
+                </div>
               </div>
-            </div>
+            </Button>
           )}
 
-          {/* Hidden Element */}
-          <div
-            onClick={() =>
-              room.localParticipant.setMicrophoneEnabled(
-                !room.localParticipant.isMicrophoneEnabled
-              )
-            }
-            className="hidden"
-          />
-          <div
-            onClick={() => {
-              room.localParticipant.setCameraEnabled(
-                !room.localParticipant.isCameraEnabled
-              );
-            }}
-            className="hidden"
-          />
-          <div
-            onClick={() => {
-              room.localParticipant.setScreenShareEnabled(
-                !room.localParticipant.isScreenShareEnabled
-              );
-            }}
-            className="hidden"
-          />
           <VideoConference />
         </LiveKitRoom>
       </div>
