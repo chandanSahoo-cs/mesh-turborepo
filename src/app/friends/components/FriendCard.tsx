@@ -6,21 +6,25 @@ import { useAcceptFriendRequest } from "@/features/friends/api/useAcceptFriendRe
 import { useBlockFriendRequest } from "@/features/friends/api/useBlockFriendRequest";
 import { useRejectFriendRequest } from "@/features/friends/api/useRejectFriendRequest";
 import { useUnblockFriendRequest } from "@/features/friends/api/useUnblockFriendReques";
+import { useVoiceRoom } from "@/features/voice/store/useControl";
+import { useVoiceRoomProps } from "@/features/voice/store/useVoiceRoomProps";
 import { usePanel } from "@/hooks/usePanel";
+import { errorToast, successToast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import {
   BanIcon,
   CheckIcon,
   CircleMinusIcon,
   MessageSquareIcon,
+  PhoneIcon,
+  PhoneOffIcon,
   XIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { toast } from "sonner";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { friendUserRequestsType } from "../../../../convex/friendRequests";
-import { errorToast, successToast } from "@/lib/toast";
 
 interface RenderFriendCardProps {
   friend: friendUserRequestsType;
@@ -119,6 +123,29 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
     );
   };
 
+  const { setProps } = useVoiceRoomProps();
+
+  const { isActive, setIsActive } = useVoiceRoom();
+
+  const handleLeaveCall = async () => {
+    setIsActive(false);
+    setProps({
+      type: undefined,
+      friendId: undefined,
+      audio: false,
+      video: false,
+    });
+  };
+
+  const handleJoinCall = async () => {
+    setProps({
+      type: "dm",
+      friendId: friend.friendUserInfo?._id,
+      audio: true,
+      video: true,
+    });
+  };
+
   return (
     <motion.div
       key={friend._id}
@@ -189,18 +216,44 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
           )}
 
           {type === "accepted" && (
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                onClick={(
-                  e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-                ) => {
-                  e.stopPropagation();
-                  router.push(`/friends/${friend.friendUserInfo?._id}`);
-                }}
-                className="bg-[#5170ff] hover:bg-[#5170ff] text-white font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
-                <MessageSquareIcon className="size-4" />
-              </Button>
-            </motion.div>
+            <>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}>
+                <Button
+                  onClick={(
+                    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                  ) => {
+                    e.stopPropagation();
+                    router.push(`/friends/${friend.friendUserInfo?._id}`);
+                  }}
+                  className="bg-[#5170ff] hover:bg-[#5170ff] text-white font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
+                  <MessageSquareIcon className="size-4" />
+                </Button>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}>
+                <Button
+                  onClick={(
+                    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                  ) => {
+                    e.stopPropagation();
+                    isActive ? handleLeaveCall() : handleJoinCall();
+                  }}
+                  className={cn(
+                    "bg-[#7ed957] hover:bg-[#7ed957] text-white font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all",
+                    isActive && "bg-red-400 hover:bg-red-500"
+                  )}>
+                  {!isActive ? (
+                    <PhoneIcon className="size-4" />
+                  ) : (
+                    <PhoneOffIcon className="size-4" />
+                  )}
+                </Button>
+              </motion.div>
+            </>
           )}
 
           {type === "blocked" && (

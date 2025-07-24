@@ -4,9 +4,7 @@ import { Loader } from "@/components/Loader";
 import { MessageList } from "@/components/MessageList";
 import { useGetChannelById } from "@/features/channels/api/useGetChannelById";
 import { useGetMessages } from "@/features/messages/api/useGetMessages";
-import { useVoiceRoomProps } from "@/features/voice/store/useVoiceRoomProps";
 import { useChannelId } from "@/hooks/useChannelId";
-import { useServerId } from "@/hooks/useServerId";
 import { motion } from "framer-motion";
 import { TriangleAlertIcon } from "lucide-react";
 import { ChatInput } from "./components/ChatInput";
@@ -17,10 +15,6 @@ const ChannelIdPage = () => {
   const { data: channel, isLoading: channelLoading } = useGetChannelById({
     channelId: channelId,
   });
-
-  const serverId = useServerId();
-
-  const { props } = useVoiceRoomProps();
   const { results, status, loadMore } = useGetMessages({ channelId });
 
   if (channelLoading || status === "LoadingFirstPage") {

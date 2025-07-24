@@ -1,6 +1,5 @@
 "use client";
 import { Loader } from "@/components/Loader";
-import { handleScreenShare } from "@/components/rooms/VoiceRoom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,22 +9,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import { useVoiceRoom } from "@/features/voice/store/useControl";
 import { useVoiceRoomProps } from "@/features/voice/store/useVoiceRoomProps";
-import { livekitRoomRef } from "@/lib/livekitRoomRef";
 import { cn } from "@/lib/utils";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { motion } from "framer-motion";
-import {
-  LogOut,
-  Mic,
-  MicOff,
-  Monitor,
-  MonitorOff,
-  Phone,
-  Video,
-  VideoOff,
-} from "lucide-react";
-import { useState } from "react";
+import { LogOut, Phone } from "lucide-react";
+import { useEffect, useState } from "react";
 import { ImExit } from "react-icons/im";
 import { useCurrentUser } from "../api/useCurrentUser";
 
@@ -34,16 +24,18 @@ export const UserButton = () => {
   const { isLoading, userData } = useCurrentUser();
 
   // Voice control states
+
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(false);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
-  const [isInCall, setIsInCall] = useState(true); // Set to true to show the indicator
+  const [isInCall, setIsInCall] = useState(false); // Set to true to show the indicator
 
   const { setProps } = useVoiceRoomProps();
 
-  const room = livekitRoomRef.current;
+  const { isActive: roomActive, setIsActive: setRoomActive } = useVoiceRoom();
 
   const handleLeaveRoom = () => {
+    setRoomActive(false);
     setProps({
       channelId: undefined,
       serverId: undefined,
@@ -53,6 +45,10 @@ export const UserButton = () => {
       video: undefined,
     });
   };
+
+  useEffect(() => {
+    setIsInCall(roomActive);
+  }, [roomActive]);
 
   if (isLoading) {
     return <Loader />;
@@ -84,7 +80,6 @@ export const UserButton = () => {
 
   const handleScreenShareToggle = async () => {
     setIsScreenSharing(!isScreenSharing);
-    handleScreenShare();
     console.log("Screen share toggled:", !isScreenSharing);
   };
 
@@ -153,75 +148,6 @@ export const UserButton = () => {
 
         {isInCall && (
           <div className="space-y-3 mb-4">
-            <h3 className="font-mono font-black text-black uppercase tracking-wide text-sm px-2">
-              Voice Controls
-            </h3>
-
-            {/* Microphone Control */}
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                onClick={handleMicToggle}
-                className={`w-full flex items-center justify-between p-4 border-4 border-black rounded-xl shadow-[3px_3px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all duration-200 ${
-                  isMuted
-                    ? "bg-red-400 hover:bg-red-500 text-black"
-                    : "bg-white hover:bg-gray-50 text-black"
-                }`}>
-                <div className="flex items-center gap-3">
-                  {isMuted ? (
-                    <MicOff className="size-5" />
-                  ) : (
-                    <Mic className="size-5" />
-                  )}
-                  <span className="font-mono font-black uppercase tracking-wide text-sm">
-                    {isMuted ? "Unmute" : "Mute"}
-                  </span>
-                </div>
-              </Button>
-            </motion.div>
-
-            {/* Video Control */}
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                onClick={handleVideoToggle}
-                className={`w-full flex items-center justify-between p-4 border-4 border-black rounded-xl shadow-[3px_3px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all duration-200 ${
-                  isVideoOn
-                    ? "bg-[#5170ff] hover:bg-[#4060ef] text-white"
-                    : "bg-white hover:bg-gray-50 text-black"
-                }`}>
-                <div className="flex items-center gap-3">
-                  {isVideoOn ? (
-                    <Video className="size-5" />
-                  ) : (
-                    <VideoOff className="size-5" />
-                  )}
-                  <span className="font-mono font-black uppercase tracking-wide text-sm">
-                    {isVideoOn ? "Turn Off Camera" : "Turn On Camera"}
-                  </span>
-                </div>
-              </Button>
-            </motion.div>
-
-            {/* Screen Share Control */}
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                onClick={handleScreenShareToggle}
-                className={`w-full flex items-center justify-between p-4 border-4 border-black rounded-xl shadow-[3px_3px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all duration-200 ${
-                  isScreenSharing
-                    ? "bg-[#7ed957] hover:bg-[#6bc946] text-black"
-                    : "bg-white hover:bg-gray-50 text-black"
-                }`}>
-                <div className="flex items-center gap-3">
-                  {isScreenSharing ? (
-                    <Monitor className="size-5" />
-                  ) : (
-                    <MonitorOff className="size-5" />
-                  )}
-                  <span className="font-mono font-black uppercase tracking-wide text-sm">
-                    {isScreenSharing ? "Stop Sharing" : "Share Screen"}
-                  </span>
-                </div>
-              </Button>
-            </motion.div>
             {/*Leave Call */}
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button

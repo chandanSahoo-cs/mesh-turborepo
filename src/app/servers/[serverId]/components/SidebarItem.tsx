@@ -1,10 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useVoiceRoom } from "@/features/voice/store/useVoiceRoom";
 import { useVoiceRoomProps } from "@/features/voice/store/useVoiceRoomProps";
 import { useServerId } from "@/hooks/useServerId";
-import { livekitRoomRef } from "@/lib/liveKitRoomRef";
 import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { motion } from "framer-motion";
@@ -45,13 +43,11 @@ export const SidebarItem = ({
 }: SidebarItemProps) => {
   const serverId = useServerId();
 
-  const { setIsOpen } = useVoiceRoom();
   const { setProps } = useVoiceRoomProps();
 
   // const {room} = useCustomLiveKitRoom()
 
   const handleVoiceChannel = async () => {
-    setIsOpen(true);
     setProps({
       type: "server",
       serverId: serverId,
@@ -72,9 +68,7 @@ export const SidebarItem = ({
         asChild>
         {channelItem ? (
           channelItem.type === "text" ? (
-            <Link
-              onClick={() => setIsOpen(false)}
-              href={`/servers/${serverId}/channel/${channelItem._id}`}>
+            <Link href={`/servers/${serverId}/channel/${channelItem._id}`}>
               <Icon className="size-4 mr-1 shrink-0" />
               <span className="text-sm truncate uppercase tracking-wide">
                 {label}
