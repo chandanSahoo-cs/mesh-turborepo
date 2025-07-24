@@ -68,21 +68,6 @@ export const UserButton = () => {
   const hue = Math.abs(nameToNumber) % 360;
   const color = `hsl(${hue},80%,60%)`;
 
-  const handleMicToggle = () => {
-    setIsMuted(!isMuted);
-    console.log("Mic toggled:", !isMuted);
-  };
-
-  const handleVideoToggle = () => {
-    setIsVideoOn(!isVideoOn);
-    console.log("Video toggled:", !isVideoOn);
-  };
-
-  const handleScreenShareToggle = async () => {
-    setIsScreenSharing(!isScreenSharing);
-    console.log("Screen share toggled:", !isScreenSharing);
-  };
-
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger

@@ -1,16 +1,15 @@
 "use client";
 
 import { Loader } from "@/components/Loader";
+import { useCreateOrGetServerConversation } from "@/features/conversations/api/useCreateOrGetConversation";
 import { useMemberId } from "@/hooks/useMemberId";
 import { useServerId } from "@/hooks/useServerId";
+import { errorToast } from "@/lib/toast";
 import { motion } from "framer-motion";
 import { TriangleAlertIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { Conversation } from "./components/Conversation";
-import { useCreateOrGetServerConversation } from "@/features/conversations/api/useCreateOrGetConversation";
-import { errorToast } from "@/lib/toast";
 
 const MemberIdPage = () => {
   const serverId = useServerId();
@@ -18,7 +17,8 @@ const MemberIdPage = () => {
 
   const [serverConversationId, setServerConversationId] =
     useState<Id<"serverConversations"> | null>(null);
-  const { createOrGetConversation, isPending } = useCreateOrGetServerConversation();
+  const { createOrGetConversation, isPending } =
+    useCreateOrGetServerConversation();
 
   useEffect(() => {
     createOrGetConversation(

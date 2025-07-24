@@ -13,6 +13,7 @@ import { useModifyRole } from "@/features/roles/api/useModifyRole";
 import { useRemoveRole } from "@/features/roles/api/useRemoveRole";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useServerId } from "@/hooks/useServerId";
+import { errorToast, successToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Dialog } from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
@@ -25,11 +26,9 @@ import {
   UserIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 import type { Id } from "../../../../../convex/_generated/dataModel";
 import type { ServerPermission } from "../../../../../convex/schema";
 import { RoleInfo } from "./RoleInfo";
-import { errorToast, successToast } from "@/lib/toast";
 
 interface ManageServerRoleModal {
   open: boolean;
@@ -48,7 +47,7 @@ export const ManageServerRoleModal = ({
   const { addRole, isPending: addingRole } = useAddRole();
   const { removeRole, isPending: removingRole } = useRemoveRole();
   const { modifyRole, isPending: modifyingRole } = useModifyRole();
-  const { data: roles, isLoading: isLoadingRoles } = useGetRoles({ serverId });
+  const { data: roles} = useGetRoles({ serverId });
 
   const [ConfirmDialog, confirm] = useConfirm(
     "Are you sure?",
@@ -59,6 +58,7 @@ export const ManageServerRoleModal = ({
     value: ServerPermission;
     label: string;
     description: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     icon: any;
   }[] = [
     {

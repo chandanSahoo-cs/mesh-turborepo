@@ -32,7 +32,7 @@ export const ServerSection = ({
   const [on, toggle] = useToggle(true);
   const [isOpen, setIsOpen] = useState(false);
 
-  const { removeChannel, isPending: removingChannel } = useRemoveChannel();
+  const { removeChannel} = useRemoveChannel();
 
   const [ConfirmDialog, confirm] = useConfirm(
     "Are you sure?",

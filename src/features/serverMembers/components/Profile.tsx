@@ -5,21 +5,19 @@ import { Loader } from "@/components/Loader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useGetRoleByMemberId } from "@/features/roles/api/useGetRolesByMemberId";
 import { useHasPermission } from "@/features/roles/api/useHasPermission";
 import { useGetServerById } from "@/features/servers/api/useGetServerById";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useServerId } from "@/hooks/useServerId";
+import { errorToast, successToast, warningToast } from "@/lib/toast";
 import { motion } from "framer-motion";
 import { AlertTriangleIcon, MailIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { toast } from "sonner";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { useCurrentMember } from "../api/useCurrentMember";
 import { useGetMemberById } from "../api/useGetMemberById";
 import { useRemoveMember } from "../api/useRemoveMember";
-import { errorToast, successToast, warningToast } from "@/lib/toast";
 
 interface ProfileProps {
   serverMemberId: Id<"serverMembers">;
@@ -32,11 +30,6 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
     id: serverId,
   });
 
-  const { data: userRoles, isLoading: isLoadingUserRoles } =
-    useGetRoleByMemberId({
-      serverMemberId,
-    });
-
   const [LeaveDialog, confirmLeave] = useConfirm(
     "Leave Server",
     "Are you sure you want to leave this server?"
@@ -44,10 +37,6 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
   const [RemoveDialog, confirmRemove] = useConfirm(
     "Remove Member",
     "Are you sure you want to remove this member?"
-  );
-  const [UpdateDialog] = useConfirm(
-    "Change Role",
-    "Are you sure you want to change this member's role?"
   );
 
   const { data: currentMember, isLoading: isLoadingCurrentMember } =

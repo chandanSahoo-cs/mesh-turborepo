@@ -69,7 +69,9 @@ export const VoiceRoom = () => {
         );
         const data = await response.json();
         setToken(data.token);
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     })();
   }, [props.channelId, props.serverId, props.friendId, props.type]);
 

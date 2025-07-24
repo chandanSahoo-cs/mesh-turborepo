@@ -11,12 +11,11 @@ import {
 } from "@/components/ui/dialog";
 import { useNewJoinCode } from "@/features/servers/api/useNewJoinCode";
 import { useConfirm } from "@/hooks/useConfirm";
+import { errorToast, successToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { CopyIcon, RefreshCcwIcon } from "lucide-react";
-import { toast } from "sonner";
 import type { Doc } from "../../../../../convex/_generated/dataModel";
-import { errorToast, successToast } from "@/lib/toast";
 
 interface InviteModalProps {
   open: boolean;

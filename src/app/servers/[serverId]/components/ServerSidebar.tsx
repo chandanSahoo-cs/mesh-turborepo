@@ -6,10 +6,8 @@ import { Separator } from "@/components/ui/separator";
 import { useGetChannels } from "@/features/channels/api/useGetChannels";
 import { CreateCategoryModal } from "@/features/channels/components/CreateCategoryModal";
 import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember";
-import { useGetMembers } from "@/features/serverMembers/api/useGetMembers";
 import { useGetServerById } from "@/features/servers/api/useGetServerById";
 import { useChannelId } from "@/hooks/useChannelId";
-import { useMemberId } from "@/hooks/useMemberId";
 import { useServerId } from "@/hooks/useServerId";
 import { motion } from "framer-motion";
 import {
@@ -23,12 +21,10 @@ import { Doc, Id } from "../../../../../convex/_generated/dataModel";
 import { ServerHeader } from "./ServerHeader";
 import { ServerSection } from "./ServerSection";
 import { SidebarItem } from "./SidebarItem";
-import { UserItem } from "./UserItem";
 
 export const ServerSidebar = () => {
   const serverId = useServerId();
   const channelID = useChannelId();
-  const memberId = useMemberId();
 
   const { data: currentMember, isLoading: currentMemberLoading } =
     useCurrentMember({
@@ -39,10 +35,6 @@ export const ServerSidebar = () => {
   });
 
   const { data: channels } = useGetChannels({
-    serverId,
-  });
-
-  const { data: serverMembers } = useGetMembers({
     serverId,
   });
 
@@ -104,28 +96,30 @@ export const ServerSidebar = () => {
         </motion.div>
       </div>
       <CreateCategoryModal isOpen={isOpen} setIsOpen={setIsOpen} />
-      <div className="overflow-y-scroll messages-scrollbar max-h-[550px]">      
-      {Array.from(categoryChannelMap.entries()).map(
-        ([categoryId, channels]) => (
-          <div key={categoryId} >
-            <ServerSection
-              label={categoryInfoMap.get(categoryId)?.name || "Category"}
-              hint="New channel"
-              categoryId={categoryId}>
-              {channels?.map((channelItem) => (
-                <SidebarItem
-                  key={channelItem._id}
-                  icon={channelItem.type === "text" ? HashIcon : Volume2Icon}
-                  label={channelItem.name}
-                  channelItem={channelItem}
-                  variant={channelID === channelItem._id ? "active" : "default"}
-                />
-              ))}
-            </ServerSection>
-            <Separator className="border-2 border-black mt-4" />
-          </div>
-        )
-      )}
+      <div className="overflow-y-scroll messages-scrollbar max-h-[550px]">
+        {Array.from(categoryChannelMap.entries()).map(
+          ([categoryId, channels]) => (
+            <div key={categoryId}>
+              <ServerSection
+                label={categoryInfoMap.get(categoryId)?.name || "Category"}
+                hint="New channel"
+                categoryId={categoryId}>
+                {channels?.map((channelItem) => (
+                  <SidebarItem
+                    key={channelItem._id}
+                    icon={channelItem.type === "text" ? HashIcon : Volume2Icon}
+                    label={channelItem.name}
+                    channelItem={channelItem}
+                    variant={
+                      channelID === channelItem._id ? "active" : "default"
+                    }
+                  />
+                ))}
+              </ServerSection>
+              <Separator className="border-2 border-black mt-4" />
+            </div>
+          )
+        )}
       </div>
     </div>
   );

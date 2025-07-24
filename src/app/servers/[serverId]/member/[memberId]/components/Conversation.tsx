@@ -4,11 +4,11 @@ import { useGetMessages } from "@/features/messages/api/useGetMessages";
 import { useGetMemberById } from "@/features/serverMembers/api/useGetMemberById";
 import { useMemberId } from "@/hooks/useMemberId";
 import { usePanel } from "@/hooks/usePanel";
+import { motion } from "framer-motion";
 import { TriangleAlertIcon } from "lucide-react";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
 import { ChatInput } from "./ChatInput";
 import { Header } from "./Header";
-import { motion } from "framer-motion";
 
 interface ConversationProps {
   serverConversationId: Id<"serverConversations">;
@@ -27,7 +27,7 @@ export const Conversation = ({ serverConversationId }: ConversationProps) => {
   });
 
   if (serverMemberLoading || status === "LoadingFirstPage") {
-    return <Loader message="Loading messages..."/>;
+    return <Loader message="Loading messages..." />;
   }
 
   if (!serverMember) {
@@ -54,7 +54,7 @@ export const Conversation = ({ serverConversationId }: ConversationProps) => {
             Member not found
           </span>
           <p className="text-sm font-mono text-gray-700 text-center">
-            The member you're looking for doesn't exist.
+            The member you&apos;re looking for doesn&apos;t exist.
           </p>
         </motion.div>
       </div>

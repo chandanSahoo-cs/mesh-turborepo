@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader } from "@/components/Loader";
-import { PresenceTracker } from "@/components/PresenceTracker";
 import {
   ResizableHandle,
   ResizablePanel,

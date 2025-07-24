@@ -11,12 +11,11 @@ import { AlertTriangleIcon, XIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import Quill from "quill";
 import { useRef, useState } from "react";
-import { toast } from "sonner";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Message } from "../../../app/friends/[friendId]/components/Message";
 
-import { motion } from "framer-motion";
 import { errorToast } from "@/lib/toast";
+import { motion } from "framer-motion";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 
@@ -41,7 +40,7 @@ const formatDateLabel = (dateStr: string) => {
 };
 
 export const FriendThread = ({ friendMessageId, onClose }: ThreadProps) => {
-  const { userData, isLoading: isLoadingUserData } = useCurrentUser();
+  const { userData } = useCurrentUser();
 
   const { createFriendMessage } = useCreateFriendMessage();
   const { generateUploadUrl } = useGenerateUploadUrl();

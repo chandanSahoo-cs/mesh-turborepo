@@ -19,7 +19,7 @@ export const FriendThreadRoom = ({
 }) => {
   const { userData, isLoading: isLoadingUserData } = useCurrentUser();
 
-  const [parentMessageId, _setParentMessageId] = useParentMessageId();
+  const [parentMessageId, _] = useParentMessageId();
 
   const { data: parentMessageData, isLoading: isLoadingParentMessageData } =
     useGetFriendMessageById({
@@ -31,7 +31,6 @@ export const FriendThreadRoom = ({
   if (isLoading) {
     return <Loader message="Loading channel" />;
   }
-
 
   return (
     <LiveblocksProvider

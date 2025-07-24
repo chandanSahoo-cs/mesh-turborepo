@@ -46,7 +46,6 @@ const formatFullTime = (date: Date) => {
 
 export const Message = ({
   id,
-  authorId,
   authorImage,
   authorName = "Friend",
   isAuthor,

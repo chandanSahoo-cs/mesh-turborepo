@@ -20,7 +20,7 @@ type ReactionMap = {
 };
 
 export const FriendReactions = ({ data, onChange }: FriendReactionProps) => {
-  const { userData, isLoading: isLoadingUserData } = useCurrentUser();
+  const { userData } = useCurrentUser();
 
   if (data.length === 0) {
     return null;

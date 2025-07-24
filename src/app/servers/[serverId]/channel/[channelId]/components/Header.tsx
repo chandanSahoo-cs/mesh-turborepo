@@ -19,14 +19,13 @@ import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember"
 import { useChannelId } from "@/hooks/useChannelId";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useServerId } from "@/hooks/useServerId";
+import { errorToast, successToast } from "@/lib/toast";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { motion } from "framer-motion";
 import { HashIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
-import { toast } from "sonner";
-import { errorToast, successToast } from "@/lib/toast";
 
 interface HeaderProps {
   channelName: string;
@@ -214,7 +213,6 @@ export const Header = ({ channelName }: HeaderProps) => {
           </Dialog>
         </>
       )}
-
     </div>
   );
 };

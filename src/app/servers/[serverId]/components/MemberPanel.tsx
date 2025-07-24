@@ -1,15 +1,13 @@
 "use client";
 
 import { Loader } from "@/components/Loader";
-import { Button } from "@/components/ui/button";
 import { useGetMembers } from "@/features/serverMembers/api/useGetMembers";
 import { useMemberId } from "@/hooks/useMemberId";
 import { useServerId } from "@/hooks/useServerId";
 import { motion } from "framer-motion";
-import { AlertTriangleIcon, XIcon } from "lucide-react";
+import { AlertTriangleIcon } from "lucide-react";
 import { ServerSection } from "./ServerSection";
 import { UserItem } from "./UserItem";
-
 
 export const MemberPanel = () => {
   const serverId = useServerId();

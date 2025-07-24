@@ -88,8 +88,8 @@ const ServerIdPage = () => {
             Server not found
           </span>
           <p className="text-sm font-mono text-gray-700 text-center">
-            The server you're looking for doesn't exist or you don't have access
-            to it.
+            The server you&apos;re looking for doesn&apos;t exist or you
+            don&apos;t have access to it.
           </p>
         </motion.div>
       </div>
@@ -119,7 +119,8 @@ const ServerIdPage = () => {
           No channel found
         </span>
         <p className="text-sm font-mono text-gray-700 text-center">
-          This server doesn't have any channels yet. Create one to get started!
+          This server doesn&apos;t have any channels yet. Create one to get
+          started!
         </p>
       </motion.div>
     </div>

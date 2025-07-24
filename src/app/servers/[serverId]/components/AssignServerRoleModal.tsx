@@ -12,12 +12,11 @@ import { useGetRoles } from "@/features/roles/api/useGetRoles";
 import { useGetRoleByMemberId } from "@/features/roles/api/useGetRolesByMemberId";
 import { useRemoveRoleFromeMember } from "@/features/roles/api/useRemoveRoleFromMember";
 import { useServerId } from "@/hooks/useServerId";
+import { errorToast, successToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ShieldIcon, UserPlusIcon } from "lucide-react";
-import { toast } from "sonner";
 import type { Id } from "../../../../../convex/_generated/dataModel";
-import { errorToast, successToast } from "@/lib/toast";
 
 interface AssignServerRoleModalProps {
   open: boolean;

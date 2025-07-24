@@ -3,13 +3,12 @@
 import { Loader } from "@/components/Loader";
 import { useCreateOrGetFriendConversation } from "@/features/conversations/api/useCreateOrGetFriendConversation";
 import { useFriendId } from "@/hooks/useFriendId";
+import { errorToast } from "@/lib/toast";
 import { motion } from "framer-motion";
 import { TriangleAlertIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Conversation } from "./components/Conversation";
-import { errorToast } from "@/lib/toast";
 
 const MemberIdPage = () => {
   const friendId = useFriendId();

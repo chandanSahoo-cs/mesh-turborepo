@@ -6,18 +6,17 @@ import { useCurrentMember } from "@/features/serverMembers/api/useCurrentMember"
 import { useGenerateUploadUrl } from "@/features/upload/api/useGenerateUploadUrl";
 import { useChannelId } from "@/hooks/useChannelId";
 import { useServerId } from "@/hooks/useServerId";
+import { errorToast } from "@/lib/toast";
 import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 import { motion } from "framer-motion";
 import { AlertTriangleIcon, XIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import Quill from "quill";
 import { useRef, useState } from "react";
-import { toast } from "sonner";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useCreateMessage } from "../api/useCreateMessage";
 import { useGetMessageById } from "../api/useGetMessageById";
 import { useGetMessages } from "../api/useGetMessages";
-import { errorToast } from "@/lib/toast";
 
 const Editor = dynamic(() => import("@/components/Editor"), { ssr: false });
 

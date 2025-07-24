@@ -16,13 +16,12 @@ import { useDeleteServer } from "@/features/servers/api/useDeleteServer";
 import { useRenameServer } from "@/features/servers/api/useRenameServer";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useServerId } from "@/hooks/useServerId";
+import { errorToast, successToast } from "@/lib/toast";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { motion } from "framer-motion";
 import { TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
-import { errorToast, successToast } from "@/lib/toast";
 
 interface PreferencesModalProps {
   open: boolean;

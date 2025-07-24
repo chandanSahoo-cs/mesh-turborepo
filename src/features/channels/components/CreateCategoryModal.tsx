@@ -45,7 +45,7 @@ export const CreateCategoryModal = ({
     createChannel(
       { serverId, name, type: "category" },
       {
-        onSuccess: ({ id }) => {
+        onSuccess: () => {
           successToast(`${name} category created`);
           handleClose();
         },

@@ -34,7 +34,7 @@ interface RenderFriendCardProps {
 
 export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
   const router = useRouter();
-  const { onOpenFriendProfile, onClose } = usePanel();
+  const { onOpenFriendProfile} = usePanel();
   const getStatusColor = () => {
     switch (type) {
       case "accepted":

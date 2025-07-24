@@ -54,7 +54,7 @@ export const Conversation = ({ friendConversationId }: ConversationProps) => {
             User not found
           </span>
           <p className="text-sm font-mono text-gray-700 text-center">
-            The user you're looking for doesn't exist.
+            The user you&apos;re looking for doesn&apos;t exist.
           </p>
         </motion.div>
       </div>

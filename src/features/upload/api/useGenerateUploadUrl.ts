@@ -9,7 +9,7 @@ export const useGenerateUploadUrl = () => {
     try {
       const response = await generate();
       return response;
-    } catch (error) {
+    } catch{
       throw new Error("Failed to generate link");
     }
   }, [generate]);

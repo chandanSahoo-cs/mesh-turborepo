@@ -1,13 +1,11 @@
 "use client";
 
+import { BackgroundAnimations } from "@/components/BackgroundAnimations";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { SignInFlow } from "../types";
 import { SignInCard } from "./SignInCard";
 import { SignUpCard } from "./SignUpCard";
-import { BackgroundAnimations } from "@/components/BackgroundAnimations";
-
-
 
 export const AuthScreen = () => {
   const [authState, setAuthState] = useState<SignInFlow>("signIn");
@@ -15,8 +13,7 @@ export const AuthScreen = () => {
   return (
     <div className="h-full flex items-center justify-center bg-[#fffce9] p-4 relative">
       <BackgroundAnimations />
-
-      <div className="md:h-auto md:w-[420px] w-full relative z-10">
+Voicv className="md:h-auto md:w-[420px] w-full relative z-10">
         <AnimatePresence mode="wait">
           {authState === "signIn" ? (
             <motion.div

@@ -19,7 +19,7 @@ export const ServerThreadRoom = ({
 }) => {
   const { userData, isLoading: isLoadingUserData } = useCurrentUser();
 
-  const [parentMessageId, _setParentMessageId] = useParentMessageId();
+  const [parentMessageId, _] = useParentMessageId();
 
   const { data: parentMessageData, isLoading: isLoadingParentMessageData } =
     useGetMessageById({ messageId: parentMessageId as Id<"messages"> });

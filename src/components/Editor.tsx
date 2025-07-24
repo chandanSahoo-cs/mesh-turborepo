@@ -1,6 +1,5 @@
 "use client";
 
-import { useCurrentUser } from "@/features/auth/api/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { useMyPresence, useOthers } from "@liveblocks/react";
 import { motion } from "framer-motion";
@@ -43,8 +42,7 @@ const Editor = ({
 }: EditorProps) => {
   const others = useOthers();
   const isTyping = others.filter((user) => user.presence.isTyping === true);
-  const { userData } = useCurrentUser();
-  const [myPresence, updateMyPresence] = useMyPresence();
+  const [_, updateMyPresence] = useMyPresence();
 
   const [text, setText] = useState("");
   const [image, setImage] = useState<File | null>(null);

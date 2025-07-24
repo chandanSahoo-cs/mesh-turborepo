@@ -38,7 +38,7 @@ export const MessageList = ({
   isLoadingMore,
   canLoadMore,
 }: MessageListProps) => {
-  const { userData, isLoading: isLoadingUserData } = useCurrentUser();
+  const { userData } = useCurrentUser();
   const [editingId, setEditingId] = useState<Id<"friendMessages"> | null>(null);
 
   const groupedMessages = data?.reduce(

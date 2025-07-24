@@ -9,7 +9,6 @@ import { errorToast, successToast } from "@/lib/toast";
 import { motion } from "framer-motion";
 import { MailIcon, UserPlusIcon } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 import {
   FriendRequestInfoType,
   friendUserRequestsType,
@@ -84,6 +83,7 @@ export const FriendsContent = ({ friendRequests }: FriendsContentProps) => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}>
                 <Button
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onClick={() => setActiveSection(tab.id as any)}
                   className={`font-mono font-bold px-4 py-2 border-2 border-black rounded-lg transition-all uppercase tracking-wide ${
                     activeSection === tab.id
