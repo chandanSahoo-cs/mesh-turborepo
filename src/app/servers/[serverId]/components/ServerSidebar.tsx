@@ -104,9 +104,10 @@ export const ServerSidebar = () => {
         </motion.div>
       </div>
       <CreateCategoryModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <div className="overflow-y-scroll messages-scrollbar max-h-[550px]">      
       {Array.from(categoryChannelMap.entries()).map(
         ([categoryId, channels]) => (
-          <div key={categoryId}>
+          <div key={categoryId} >
             <ServerSection
               label={categoryInfoMap.get(categoryId)?.name || "Category"}
               hint="New channel"
@@ -121,10 +122,11 @@ export const ServerSidebar = () => {
                 />
               ))}
             </ServerSection>
-            <Separator className="border-2 border-black" />
+            <Separator className="border-2 border-black mt-4" />
           </div>
         )
       )}
+      </div>
     </div>
   );
 };

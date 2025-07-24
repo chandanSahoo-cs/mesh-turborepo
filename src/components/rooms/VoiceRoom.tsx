@@ -113,13 +113,13 @@ export const VoiceRoom = () => {
               room.disconnect();
               handleLeave();
             }}
-            className="absolute top-4 left-4 z-50 bg-[#ff5252] hover:bg-[#fd3b3b] h-[40px] border-3 px-3 border-black rounded-xl shadow-[4px_4px_0px_0px_#000000] flex items-center gap-2 text-white">
+            className="absolute top-4 left-4 z-50 bg-[#ff5252] hover:bg-[#fd3b3b] h-[40px] border-3 px-3 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] flex items-center gap-2 text-white hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
             <LogOut className="size-4" />
             Leave
           </button>
 
           {!isIndicatorDismissed && (
-            <div className="absolute bottom-20 right-4 z-40 animate-bounce">
+            <div className="absolute bottom-5 right-4 z-40 animate-bounce cursor-pointer">
               <div className="bg-[#5170ff] border-3 border-black rounded-xl shadow-[4px_4px_0px_0px_#000000] p-3 flex items-center gap-2 text-white font-mono font-black uppercase tracking-wide text-sm relative">
                 <MessageCircleIcon className="size-4" />
                 <span>Scroll down for chat</span>

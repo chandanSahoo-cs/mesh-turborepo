@@ -8,6 +8,7 @@ import { useRejectFriendRequest } from "@/features/friends/api/useRejectFriendRe
 import { useUnblockFriendRequest } from "@/features/friends/api/useUnblockFriendReques";
 import { useVoiceRoom } from "@/features/voice/store/useControl";
 import { useVoiceRoomProps } from "@/features/voice/store/useVoiceRoomProps";
+import { useConfirm } from "@/hooks/useConfirm";
 import { usePanel } from "@/hooks/usePanel";
 import { errorToast, successToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -92,8 +93,12 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
       }
     );
   };
+  const [ConfirmDialog, confirm] = useConfirm("Are you sure?", "");
 
-  const handleRemoved = (id: Id<"friendRequests">) => {
+  const handleRemoved = async (id: Id<"friendRequests">) => {
+    const ok = await confirm();
+    if (!ok) return;
+
     rejectFriendRequest(
       { friendRequestId: id },
       {
@@ -103,7 +108,10 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
     );
   };
 
-  const handleBlocked = (id: Id<"friendRequests">) => {
+  const handleBlocked = async (id: Id<"friendRequests">) => {
+    const ok = await confirm();
+    if (!ok) return;
+
     blockFriendRequest(
       { friendRequestId: id },
       {
@@ -113,7 +121,10 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
     );
   };
 
-  const handleUnblocked = (id: Id<"friendRequests">) => {
+  const handleUnblocked = async (id: Id<"friendRequests">) => {
+    const ok = await confirm();
+    if (!ok) return;
+
     unblockFriendRequest(
       { friendRequestId: id },
       {
@@ -123,7 +134,7 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
     );
   };
 
-  const { setProps } = useVoiceRoomProps();
+  const { props, setProps } = useVoiceRoomProps();
 
   const { isActive, setIsActive } = useVoiceRoom();
 
@@ -147,149 +158,52 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
   };
 
   return (
-    <motion.div
-      key={friend._id}
-      className="bg-white border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#5170ff] transition-all duration-200"
-      whileHover={{ scale: 1.01 }}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}>
-      <div
-        className="flex items-center justify-between"
-        onClick={() =>
-          onOpenFriendProfile(friend.friendUserInfo?._id as Id<"users">)
-        }>
-        <div className="flex items-center gap-3">
-          <Avatar className="size-12 border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000]">
-            <AvatarImage src={friend.friendUserInfo?.image} />
-            <AvatarFallback className="bg-[#5170ff] text-white font-mono font-black">
-              {(friend.friendUserInfo?.name as string).charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h3 className="font-mono font-bold text-black uppercase tracking-wide">
-              {(friend.friendUserInfo?.name as string) || "Unknown User"}
-            </h3>
-            <p className="text-sm font-mono text-gray-600">
-              {(friend.friendUserInfo?.email as string) || "No email"}
-            </p>
-            <span
-              className={`inline-block px-2 py-1 rounded-lg text-xs font-mono font-black text-black border-2 border-black ${getStatusColor()} mt-1`}>
-              {getStatusText()}
-            </span>
+    <>
+      <ConfirmDialog />
+      <motion.div
+        key={friend._id}
+        className="bg-white border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#5170ff] transition-all duration-200"
+        whileHover={{ scale: 1.01 }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}>
+        <div
+          className="flex items-center justify-between"
+          onClick={() =>
+            onOpenFriendProfile(friend.friendUserInfo?._id as Id<"users">)
+          }>
+          <div className="flex items-center gap-3">
+            <Avatar className="size-12 border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000]">
+              <AvatarImage src={friend.friendUserInfo?.image} />
+              <AvatarFallback className="bg-[#5170ff] text-white font-mono font-black">
+                {(friend.friendUserInfo?.name as string)
+                  .charAt(0)
+                  .toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h3 className="font-mono font-bold text-black uppercase tracking-wide">
+                {(friend.friendUserInfo?.name as string) || "Unknown User"}
+              </h3>
+              <p className="text-sm font-mono text-gray-600">
+                {(friend.friendUserInfo?.email as string) || "No email"}
+              </p>
+
+              <div className="flex gap-2">
+                <span
+                  className={`inline-block px-2 py-1 rounded-lg text-xs font-mono font-black text-black border-2 border-black ${getStatusColor()} mt-1`}>
+                  {getStatusText()}
+                </span>
+                <span
+                  className={`inline-block px-2 py-1 rounded-lg text-xs font-mono font-black text-black border-2 border-black mt-1`}>
+                  {friend.friendUserInfo?.effectiveStatus}
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-2">
-          {type === "incoming" && (
-            <>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}>
-                <Button
-                  onClick={(
-                    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-                  ) => {
-                    e.stopPropagation();
-                    handleAccepted(friend._id);
-                  }}
-                  disabled={acceptingFriendRequest}
-                  className="bg-[#7ed957] hover:bg-[#7ed957] text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
-                  <CheckIcon className="size-4" />
-                </Button>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}>
-                <Button
-                  onClick={(
-                    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-                  ) => {
-                    e.stopPropagation();
-                    handleRejected(friend._id);
-                  }}
-                  disabled={rejectingFriendRequest}
-                  className="bg-red-400 hover:bg-red-400 text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
-                  <XIcon className="size-4" />
-                </Button>
-              </motion.div>
-            </>
-          )}
-
-          {type === "accepted" && (
-            <>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}>
-                <Button
-                  onClick={(
-                    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-                  ) => {
-                    e.stopPropagation();
-                    router.push(`/friends/${friend.friendUserInfo?._id}`);
-                  }}
-                  className="bg-[#5170ff] hover:bg-[#5170ff] text-white font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
-                  <MessageSquareIcon className="size-4" />
-                </Button>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}>
-                <Button
-                  onClick={(
-                    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-                  ) => {
-                    e.stopPropagation();
-                    isActive ? handleLeaveCall() : handleJoinCall();
-                  }}
-                  className={cn(
-                    "bg-[#7ed957] hover:bg-[#7ed957] text-white font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all",
-                    isActive && "bg-red-400 hover:bg-red-500"
-                  )}>
-                  {!isActive ? (
-                    <PhoneIcon className="size-4" />
-                  ) : (
-                    <PhoneOffIcon className="size-4" />
-                  )}
-                </Button>
-              </motion.div>
-            </>
-          )}
-
-          {type === "blocked" && (
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                onClick={(
-                  e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-                ) => {
-                  e.stopPropagation();
-                  handleUnblocked(friend._id);
-                }}
-                disabled={unblockingFriendRequest}
-                className="bg-[#7ed957] hover:bg-[#7ed957] text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
-                Unblock
-              </Button>
-            </motion.div>
-          )}
-
-          {type !== "blocked" && (
-            <>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}>
-                <Button
-                  onClick={(
-                    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-                  ) => {
-                    e.stopPropagation();
-                    handleBlocked(friend._id);
-                  }}
-                  disabled={blockingFriendRequest}
-                  className="bg-white hover:bg-white text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
-                  <BanIcon className="size-4" />
-                </Button>
-              </motion.div>
-              {type !== "incoming" && (
+          <div className="flex items-center gap-2">
+            {type === "incoming" && (
+              <>
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}>
@@ -298,18 +212,134 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
                       e: React.MouseEvent<HTMLButtonElement, MouseEvent>
                     ) => {
                       e.stopPropagation();
-                      handleRemoved(friend._id);
+                      handleAccepted(friend._id);
                     }}
-                    disabled={rejectingFriendRequest}
-                    className="bg-white hover:bg-white text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
-                    <CircleMinusIcon className="size-4" />
+                    disabled={acceptingFriendRequest}
+                    className="bg-[#7ed957] hover:bg-[#7ed957] text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
+                    <CheckIcon className="size-4" />
                   </Button>
                 </motion.div>
-              )}
-            </>
-          )}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}>
+                  <Button
+                    onClick={(
+                      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                    ) => {
+                      e.stopPropagation();
+                      handleRejected(friend._id);
+                    }}
+                    disabled={rejectingFriendRequest}
+                    className="bg-red-400 hover:bg-red-400 text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
+                    <XIcon className="size-4" />
+                  </Button>
+                </motion.div>
+              </>
+            )}
+
+            {type === "accepted" && (
+              <>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}>
+                  <Button
+                    onClick={(
+                      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                    ) => {
+                      e.stopPropagation();
+                      router.push(`/friends/${friend.friendUserInfo?._id}`);
+                    }}
+                    className="bg-[#5170ff] hover:bg-[#5170ff] text-white font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
+                    <MessageSquareIcon className="size-4" />
+                  </Button>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}>
+                  <Button
+                    onClick={(
+                      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                    ) => {
+                      e.stopPropagation();
+                      isActive && props.friendId === friend.friendUserInfo?._id
+                        ? handleLeaveCall()
+                        : handleJoinCall();
+                    }}
+                    className={cn(
+                      "bg-[#7ed957] hover:bg-[#7ed957] text-white font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all",
+                      isActive &&
+                        props.friendId === friend.friendUserInfo?._id &&
+                        "bg-red-400 hover:bg-red-500"
+                    )}>
+                    {!isActive ||
+                    props.friendId !== friend.friendUserInfo?._id ? (
+                      <PhoneIcon className="size-4" />
+                    ) : (
+                      <PhoneOffIcon className="size-4" />
+                    )}
+                  </Button>
+                </motion.div>
+              </>
+            )}
+
+            {type === "blocked" && (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}>
+                <Button
+                  onClick={(
+                    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                  ) => {
+                    e.stopPropagation();
+                    handleUnblocked(friend._id);
+                  }}
+                  disabled={unblockingFriendRequest}
+                  className="bg-[#7ed957] hover:bg-[#7ed957] text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
+                  Unblock
+                </Button>
+              </motion.div>
+            )}
+
+            {type !== "blocked" && (
+              <>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}>
+                  <Button
+                    onClick={(
+                      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                    ) => {
+                      e.stopPropagation();
+                      handleBlocked(friend._id);
+                    }}
+                    disabled={blockingFriendRequest}
+                    className="bg-white hover:bg-white text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
+                    <BanIcon className="size-4" />
+                  </Button>
+                </motion.div>
+                {type !== "incoming" && (
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}>
+                    <Button
+                      onClick={(
+                        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                      ) => {
+                        e.stopPropagation();
+                        handleRemoved(friend._id);
+                      }}
+                      disabled={rejectingFriendRequest}
+                      className="bg-white hover:bg-white text-black font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all">
+                      <CircleMinusIcon className="size-4" />
+                    </Button>
+                  </motion.div>
+                )}
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 };

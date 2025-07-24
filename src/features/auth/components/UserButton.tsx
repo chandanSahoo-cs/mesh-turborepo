@@ -141,7 +141,7 @@ export const UserButton = () => {
               {name}
             </p>
             <p className="font-mono font-bold text-gray-600 text-sm normal-case">
-              {isInCall ? "In a call" : "Online"}
+              {isInCall ? "In a call" : userData.manualStatus}
             </p>
           </div>
         </div>

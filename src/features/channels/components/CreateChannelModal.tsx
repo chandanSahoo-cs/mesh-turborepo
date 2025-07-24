@@ -55,7 +55,8 @@ export const CreateChannelModal = ({
       {
         onSuccess: ({ id }) => {
           successToast(`${name} channel created`);
-          router.push(`/servers/${serverId}/channel/${id}`);
+          if (channelType === "text")
+            router.push(`/servers/${serverId}/channel/${id}`);
           handleClose();
         },
         onError: () => {

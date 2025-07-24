@@ -15,7 +15,7 @@ export const Sidebar = () => {
   const router = useRouter();
 
   return (
-    <aside className="w-[72px] h-full bg-white border-r-4 border-black flex flex-col gap-y-4 items-center pt-4 pb-4">
+    <aside className="w-[80px] h-full bg-white border-r-4 border-black flex flex-col gap-y-4 items-center pt-4 pb-4">
       <motion.div
         className="flex flex-col items-center justify-center gap-y-1 cursor-pointer group"
         whileHover={{ scale: 1.05 }}
@@ -29,7 +29,7 @@ export const Sidebar = () => {
         </span>
       </motion.div>
       {/* Server List */}
-      <div className="flex flex-col gap-y-3">
+      <div className="flex flex-col gap-y-3 overflow-x-hidden rounded-xl hover:bg-accent-foreground/20 p-2 pr-[10px] pb-[10px] overflow-y-scroll max-h-[280px] messages-scrollbar scrollbar-hide transition">
         {servers?.map(
           (server) =>
             server && <SidebarButton key={server._id} server={server} />
