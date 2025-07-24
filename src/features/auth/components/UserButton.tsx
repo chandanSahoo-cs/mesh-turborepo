@@ -47,7 +47,7 @@ export const UserButton = () => {
   }, [roomActive]);
 
   if (isLoading) {
-    return <Loader />;
+    return <Loader message="Loading user..."/>;
   }
 
   if (!userData) {

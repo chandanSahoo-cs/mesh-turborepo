@@ -66,7 +66,7 @@ const ServerIdLayout = ({ children }: ServerIdLayoutProps) => {
                 ) : isOpen ? (
                   <MemberPanel />
                 ) : (
-                  <Loader />
+                  <Loader message="Loading server..." />
                 )}
               </ResizablePanel>
             </>

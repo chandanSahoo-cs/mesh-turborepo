@@ -136,7 +136,7 @@ export const FriendThread = ({ friendMessageId, onClose }: ThreadProps) => {
             <XIcon className="size-5 stroke-[1.5]" />
           </Button>
         </div>
-        <Loader />
+        <Loader message="Loading friend thread..."/>
       </div>
     );
   }

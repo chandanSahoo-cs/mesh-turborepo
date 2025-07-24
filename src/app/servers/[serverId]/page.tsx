@@ -61,7 +61,7 @@ const ServerIdPage = () => {
   ]);
 
   if (serverLoading || channelsLoading || memberLoading) {
-    return <Loader />;
+    return <Loader message="Loading server..."/>;
   }
 
   if (!server || !member) {

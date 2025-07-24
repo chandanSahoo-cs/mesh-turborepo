@@ -43,7 +43,7 @@ const JoinPage = () => {
   }, [isMember, router, serverId]);
 
   if (isLoading) {
-    return <Loader />;
+    return <Loader message="Loading server..."/>;
   }
 
   return (

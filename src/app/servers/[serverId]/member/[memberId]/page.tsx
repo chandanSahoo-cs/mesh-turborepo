@@ -39,7 +39,7 @@ const MemberIdPage = () => {
   }, [memberId, serverId, createOrGetConversation]);
 
   if (isPending) {
-    return <Loader />;
+    return <Loader message="Loading member..." />;
   }
 
   if (!serverConversationId) {

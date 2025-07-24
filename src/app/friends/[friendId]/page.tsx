@@ -35,7 +35,7 @@ const MemberIdPage = () => {
   }, [friendId, createOrGetFriendConversation]);
 
   if (isPending) {
-    return <Loader />;
+    return <Loader message="Loading friend..." />;
   }
 
   if (!friendConversationId) {
