@@ -29,10 +29,8 @@ export const DefaultPresenceTracker = () => {
       }
     };
 
-    window.addEventListener("beforeunload", handleUnload);
-
     return () => {
-      window.removeEventListener("beforeunload", handleUnload);
+      handleUnload();
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
