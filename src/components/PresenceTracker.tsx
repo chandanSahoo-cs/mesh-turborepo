@@ -29,8 +29,14 @@ export const PresenceTracker = () => {
     }
 
     const handleUnload = () => {
-      console.log("Unload");
-      markStatus({ status: "offline", userId: userData._id });
+      if (userData?._id) {
+        navigator.sendBeacon(
+          "/api/set-offline",
+          new Blob([JSON.stringify({ userId: userData._id })], {
+            type: "application/json",
+          })
+        );
+      }
     };
 
     window.addEventListener("beforeunload", handleUnload);
