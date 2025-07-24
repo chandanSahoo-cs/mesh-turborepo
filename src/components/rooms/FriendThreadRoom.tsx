@@ -10,7 +10,6 @@ import {
 } from "@liveblocks/react";
 import { Id } from "../../../convex/_generated/dataModel";
 import { Loader } from "../Loader";
-import { PresenceTracker } from "../PresenceTracker";
 
 export const FriendThreadRoom = ({
   children,
@@ -47,7 +46,6 @@ export const FriendThreadRoom = ({
         id={"friendThreadMessage" + String(parentMessageData?._id)}>
         <ClientSideSuspense
           fallback={<Loader message="Loading your session" />}>
-          <PresenceTracker />
           {children}
         </ClientSideSuspense>
       </RoomProvider>

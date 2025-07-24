@@ -12,7 +12,7 @@ import {
   RoomProvider,
 } from "@liveblocks/react";
 import { Loader } from "../Loader";
-import { PresenceTracker } from "../PresenceTracker";
+
 
 export const MemberRoom = ({ children }: { children: React.ReactNode }) => {
   const { userData, isLoading: isLoadingUserData } = useCurrentUser();
@@ -58,7 +58,7 @@ export const MemberRoom = ({ children }: { children: React.ReactNode }) => {
         id={String(serverId) + String(id1) + String(id2)}>
         <ClientSideSuspense
           fallback={<Loader message="Loading your session" />}>
-          <PresenceTracker />
+
           {children}
         </ClientSideSuspense>
       </RoomProvider>

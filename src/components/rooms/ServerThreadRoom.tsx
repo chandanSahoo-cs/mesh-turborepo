@@ -10,7 +10,6 @@ import {
 } from "@liveblocks/react";
 import { Id } from "../../../convex/_generated/dataModel";
 import { Loader } from "../Loader";
-import { PresenceTracker } from "../PresenceTracker";
 
 export const ServerThreadRoom = ({
   children,
@@ -18,7 +17,7 @@ export const ServerThreadRoom = ({
   children: React.ReactNode;
 }) => {
   const { userData, isLoading: isLoadingUserData } = useCurrentUser();
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [parentMessageId, _] = useParentMessageId();
 
   const { data: parentMessageData, isLoading: isLoadingParentMessageData } =
@@ -45,7 +44,6 @@ export const ServerThreadRoom = ({
         id={"parentMessage" + String(parentMessageData?._id)}>
         <ClientSideSuspense
           fallback={<Loader message="Loading your session" />}>
-          <PresenceTracker />
           {children}
         </ClientSideSuspense>
       </RoomProvider>

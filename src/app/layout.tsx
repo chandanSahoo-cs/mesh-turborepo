@@ -8,7 +8,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 // In layout.tsx or page.tsx
-import { DefaultPresenceTrackerWarpper } from "@/components/DefaultPresenceTrackerWrapper";
 import { VoiceRoomWrapper } from "@/components/rooms/VoiceRoomWrapper";
 import "@livekit/components-styles";
 
@@ -42,7 +41,6 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <NuqsAdapter>
             <ConvexClientProvider>
-              <DefaultPresenceTrackerWarpper />
               <VoiceRoomWrapper />
               <Toaster richColors />
               <Modals />

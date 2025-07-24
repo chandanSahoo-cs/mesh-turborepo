@@ -9,7 +9,6 @@ import {
   RoomProvider,
 } from "@liveblocks/react";
 import { Loader } from "../Loader";
-import { PresenceTracker } from "../PresenceTracker";
 
 export const ChannelRoom = ({ children }: { children: React.ReactNode }) => {
   const { userData, isLoading: isLoadingUserData } = useCurrentUser();
@@ -38,7 +37,6 @@ export const ChannelRoom = ({ children }: { children: React.ReactNode }) => {
         id={String(channelData?._id)}>
         <ClientSideSuspense
           fallback={<Loader message="Loading your session" />}>
-          <PresenceTracker />
           {children}
         </ClientSideSuspense>
       </RoomProvider>

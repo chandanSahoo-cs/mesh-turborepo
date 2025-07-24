@@ -9,7 +9,6 @@ import {
   RoomProvider,
 } from "@liveblocks/react";
 import { Loader } from "../Loader";
-import { PresenceTracker } from "../PresenceTracker";
 
 export const FriendRoom = ({ children }: { children: React.ReactNode }) => {
   const { userData, isLoading: isLoadingUserData } = useCurrentUser();
@@ -41,7 +40,6 @@ export const FriendRoom = ({ children }: { children: React.ReactNode }) => {
         id={"friendMessage" + String(u1) + String(u2)}>
         <ClientSideSuspense
           fallback={<Loader message="Loading your session" />}>
-          <PresenceTracker />
           {children}
         </ClientSideSuspense>
       </RoomProvider>
