@@ -193,10 +193,10 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
                   className={`inline-block px-2 py-1 rounded-lg text-xs font-mono font-black text-black border-2 border-black ${getStatusColor()} mt-1`}>
                   {getStatusText()}
                 </span>
-                {/* <span
+                <span
                   className={`inline-block px-2 py-1 rounded-lg text-xs font-mono font-black text-black border-2 border-black mt-1`}>
                   {friend.friendUserInfo?.effectiveStatus}
-                </span> */}
+                </span>
               </div>
             </div>
           </div>
