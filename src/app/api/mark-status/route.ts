@@ -12,7 +12,12 @@ export async function POST(req: Request) {
     await req.json();
 
   if (!userId || !status) {
-    return new Response("Either userId or status is missing", { status: 400 });
+    return new Response("Either userId or status is missing", {
+      status: 400,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
   }
 
   const markStatus = await convex.mutation(api.users.updateEffectiveStatus, {
@@ -21,7 +26,17 @@ export async function POST(req: Request) {
   });
 
   if (!markStatus) {
-    return new Response("Failed to mark the user status", { status: 500 });
+    return new Response("Failed to mark the user status", {
+      status: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
   }
-  return new Response(`User:${userId} is marked ${status}`, { status: 200 });
+  return new Response(`User:${userId} is marked ${status}`, {
+    status: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
 }
