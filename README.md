@@ -2,6 +2,15 @@
 
 ## Overview
 **Mesh** is a modern full-stack communication platform inspired by Discord, enabling real-time messaging, server-based collaboration, friend interactions, role-based permissions, and voice support. It leverages a monorepo setup for scalable development across multiple apps.
+- Mesh App (original link) : https://github.com/chandanSahoo-cs/mesh
+- Mesh WSS (original link) : https://github.com/chandanSahoo-cs/mesh-wss
+
+![Image1](/public/image1.png)
+![Image2](/public/image2.png)
+![Image3](/public/image3.png)
+![Image4](/public/image4.png)
+![Image5](/public/image5.png)
+![Image6](/public/image6.png)
 
 ## Features
 - **Real-time Messaging**: Instant text and image communication across servers (Convex reactivity)
