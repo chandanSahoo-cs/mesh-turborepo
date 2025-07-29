@@ -37,8 +37,6 @@
   - `apps/mesh-wss`: Custom Websocket server
 
 ## Usage
-
-### 1. Getting Started
 ```bash
 git clone https://github.com/chandanSahoo-cs/mesh-turborepo.git
 cd mesh-turborepo
