@@ -72,7 +72,9 @@ export const Header = ({ friendImage, friendName, onClick }: HeaderProps) => {
           onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             e.stopPropagation();
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-            isActive ? handleLeaveCall() : handleJoinCall();
+            isActive && props.friendId && props.friendId === friendId
+              ? handleLeaveCall()
+              : handleJoinCall();
           }}
           className={cn(
             "bg-[#7ed957] hover:bg-[#7ed957] text-white font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all",
@@ -81,7 +83,7 @@ export const Header = ({ friendImage, friendName, onClick }: HeaderProps) => {
               props.friendId === friendId &&
               "bg-red-400 hover:bg-red-500"
           )}>
-          {!isActive ? (
+          {!(isActive && props.friendId && props.friendId === friendId) ? (
             <PhoneIcon className="size-4" />
           ) : (
             <PhoneOffIcon className="size-4" />
