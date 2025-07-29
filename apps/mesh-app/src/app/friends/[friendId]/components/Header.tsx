@@ -22,6 +22,7 @@ export const Header = ({ friendImage, friendName, onClick }: HeaderProps) => {
   const { setProps } = useVoiceRoomProps();
 
   const { isActive, setIsActive } = useVoiceRoom();
+  const { props } = useVoiceRoomProps();
 
   const handleLeaveCall = async () => {
     setIsActive(false);
@@ -75,7 +76,10 @@ export const Header = ({ friendImage, friendName, onClick }: HeaderProps) => {
           }}
           className={cn(
             "bg-[#7ed957] hover:bg-[#7ed957] text-white font-mono font-bold p-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all",
-            isActive && "bg-red-400 hover:bg-red-500"
+            isActive &&
+              props.friendId &&
+              props.friendId === friendId &&
+              "bg-red-400 hover:bg-red-500"
           )}>
           {!isActive ? (
             <PhoneIcon className="size-4" />
