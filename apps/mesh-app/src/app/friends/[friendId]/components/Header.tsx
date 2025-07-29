@@ -72,7 +72,7 @@ export const Header = ({ friendImage, friendName, onClick }: HeaderProps) => {
           onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             e.stopPropagation();
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-            isActive && props.friendId && props.friendId === friendId
+            (isActive && props.friendId && props.friendId === friendId)
               ? handleLeaveCall()
               : handleJoinCall();
           }}
