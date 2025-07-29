@@ -93,7 +93,7 @@ export const FriendReactions = ({ data, onChange }: FriendReactionProps) => {
       ))}
       <EmojiPopover
         hint="Add reaction"
-        onEmojiSelect={(emoji) => onChange(emoji.native)}>
+        onEmojiSelect={(emoji) => onChange(emoji)}>
         <motion.button
           className="h-8 px-3 rounded-xl bg-white border-2 border-black hover:border-[#7ed957] hover:bg-[#7ed957] text-black flex items-center gap-2 shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all duration-200 font-mono font-bold"
           whileHover={{ scale: 1.05 }}
