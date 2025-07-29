@@ -2,8 +2,8 @@
 
 ## Overview
 **Mesh** is a modern full-stack communication platform, enabling real-time messaging, server-based collaboration, friend interactions, role-based permissions, and voice support. It leverages a monorepo setup for scalable development across multiple apps.
-- Mesh App (original link) : https://github.com/chandanSahoo-cs/mesh
-- Mesh WSS (original link) : https://github.com/chandanSahoo-cs/mesh-wss
+- Mesh App (original link) : https://github.com/chandanSahoo-cs/mesh (hosted on vercel)
+- Mesh WSS (original link) : https://github.com/chandanSahoo-cs/mesh-wss (hosted on railway)
 
 ![Image1](/public/image1.png)
 ![Image2](/public/image2.png)
