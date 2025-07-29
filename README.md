@@ -15,7 +15,7 @@
 ## Features
 - **Real-time Messaging**: Instant text and image communication across servers (Convex reactivity)
 - **Typing Indication**: Real time typing indication with channel and dm scope (Liveblocks)
-- **User presence**: A custom websocket server to mark the user presence 
+- **User presence**: A custom websocket server to mark the user presence with multitab support and heartbeat system to clean stale sessions
 - **Server & Channel Structure**: Create servers with categorized channels (text, voice, etc.)
 - **Role-based Access Control**: Manage user permissions granularly with custom roles
 - **Threaded Conversations**: Support for message threads within channels and DMs
