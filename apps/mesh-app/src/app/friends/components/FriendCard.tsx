@@ -343,7 +343,7 @@ export const RenderFriendCard = ({ friend, type }: RenderFriendCardProps) => {
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}>
-                    <Hint label="Cancel request">
+                    <Hint label="Remove">
                       <Button
                         onClick={(
                           e: React.MouseEvent<HTMLButtonElement, MouseEvent>
