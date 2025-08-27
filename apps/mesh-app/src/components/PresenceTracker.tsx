@@ -7,7 +7,7 @@ import 'dotenv/config'
 const PresenceTracker = () => {
   const { userData } = useCurrentUser();
 
-  const wssurl = process.env.WEBSOCKET_SERVER_URL;
+  const wssurl = process.env.NEXT_PUBLIC_WEBSOCKET_SERVER_URL;
   console.log("wssurl:", wssurl);
 
   useEffect(() => {
