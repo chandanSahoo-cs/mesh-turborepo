@@ -2,6 +2,7 @@
 
 import { useCurrentUser } from "@/features/auth/api/useCurrentUser";
 import { useEffect } from "react";
+import 'dotenv/config'
 
 const PresenceTracker = () => {
   const { userData } = useCurrentUser();
@@ -13,7 +14,7 @@ const PresenceTracker = () => {
     if (!userData) return;
     const connect = async () => {
       const ws = new WebSocket(
-        `wss://presence-tracker-for-mesh-production.up.railway.app?userId=${userData?._id}`
+        `${wssurl}?userId=${userData?._id}`
       );
       ws.onopen = () => console.log("Connected to [WSS]");
       ws.onmessage = (msg) => console.log("Message:", msg.data);
