@@ -7,7 +7,16 @@ dotenv.config();
 
 const API_ENDPOINT = process.env.API_ENDPOINT!;
 
-const server = createServer();
+const server = createServer((req, res) => {
+  if (req.url === "/health") {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("OK");
+    return;
+  }
+
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("WebSocket server running");
+});
 const wss = new WebSocketServer({ server });
 
 const concurrentConnectionsMap = new Map<string, number>();
