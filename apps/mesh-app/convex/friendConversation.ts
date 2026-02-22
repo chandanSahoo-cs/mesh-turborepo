@@ -2,6 +2,14 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
 import { mutation } from "./_generated/server";
 
+
+/*
+- Check for auth user
+- Check if the other user exists
+- sort(userids) // so that there is no duplicates
+- check for existing converstion
+- If there is no previous conversation, create new one
+*/
 export const createOrGetFriendConversation = mutation({
   args: {
     userId: v.id("users"), // person with whom the user to want to have a conversation

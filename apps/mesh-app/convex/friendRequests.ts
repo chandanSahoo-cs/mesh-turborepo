@@ -16,6 +16,13 @@ export type FriendRequestInfoType =
     }
   | undefined;
 
+/*
+- Check for auth user
+- Check if the user exists
+- sort(userids) // to prevent duplicates
+- check if the friend user already exists
+- Create friend request , if there is not existing friend exists
+*/
 export const createFriendRequest = mutation({
   args: {
     toUserEmail: v.string(),
@@ -60,6 +67,14 @@ export const createFriendRequest = mutation({
   },
 });
 
+/*
+- Check for auth user
+- Check if the user exists
+- Check if the friend request exists
+- Check if the friend request belongs to the user
+- Check if the status of the friend request is pending
+  - If yes, accept the friend request
+*/
 export const acceptFriendRequest = mutation({
   args: {
     friendRequestId: v.id("friendRequests"),
@@ -96,6 +111,14 @@ export const acceptFriendRequest = mutation({
   },
 });
 
+/*
+- Check for auth user
+- Check if the user exists
+- Check if the friend request exists
+- Check if the friend request belongs to the user
+- Check if the status of the friend request is pending and not accepted
+  - If yes, reject the friend request
+*/
 export const rejectFriendRequest = mutation({
   args: {
     friendRequestId: v.id("friendRequests"),
@@ -133,6 +156,13 @@ export const rejectFriendRequest = mutation({
   },
 });
 
+/*
+- Check for auth user
+- Check if the user exists
+- Check if the friend request exists
+- Check if the friend request belongs to the user
+- Block the friend request
+*/
 export const blockFriendRequest = mutation({
   args: {
     friendRequestId: v.id("friendRequests"),
@@ -165,6 +195,13 @@ export const blockFriendRequest = mutation({
   },
 });
 
+/*
+- Check for auth user
+- Check if the user exists
+- Check if the friend request exists
+- Check if the friend request belongs to the user
+- Unblock the friend request
+*/
 export const unblockFriendRequest = mutation({
   args: {
     friendRequestId: v.id("friendRequests"),
@@ -199,6 +236,11 @@ export const unblockFriendRequest = mutation({
   },
 });
 
+/*
+- Check for auth user
+- Fetch friend request for that user
+- Sort request according to status
+*/
 export const getFriendRequests = query({
   args: {},
   handler: async (ctx) => {
@@ -226,6 +268,7 @@ export const getFriendRequests = query({
     const acceptedFriendRequest = [];
     const blockedFriendRequest = [];
 
+  // Create promise here
     for (const request of friendRequests) {
       const { status, initiatedBy, userOne, userTwo } = request;
 
@@ -256,6 +299,7 @@ export const getFriendRequests = query({
       }
     }
 
+    // Resolve here
     const friendRequestInfo = {
       incomingRequests: await Promise.all(
         incomingRequests.map(async (r) => ({
@@ -287,6 +331,7 @@ export const getFriendRequests = query({
   },
 });
 
+// Fetch friend request by id
 export const getFriendRequestById = query({
   args: {
     friendRequestId: v.id("friendRequests"),

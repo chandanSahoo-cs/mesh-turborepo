@@ -1,3 +1,5 @@
+// auth configuration
+
 export default {
   providers: [
     {

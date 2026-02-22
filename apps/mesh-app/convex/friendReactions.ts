@@ -2,6 +2,13 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
 import { mutation } from "./_generated/server";
 
+/*
+- Check for auth user
+- Check for message
+- Check if that specific reaction exists from that exact user
+  - If yes delete it
+  - Else create 
+*/
 export const toggleFriendReaction = mutation({
   args: {
     friendMessageId: v.id("friendMessages"),

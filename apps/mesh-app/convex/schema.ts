@@ -5,7 +5,7 @@ import { v } from "convex/values";
 export const SERVER_PERMISSIONS = [
   // Server management
   "MANAGE_SERVER", // Rename/delete server, change settings
-  "VIEW_AUDIT_LOG", // See server activity logs (if you have them)
+  "VIEW_AUDIT_LOG", // See server activity logs
 
   // Member management
   "MANAGE_MEMBERS", // Kick, ban, or change member roles
@@ -17,22 +17,22 @@ export const SERVER_PERMISSIONS = [
   // Channel management
   "MANAGE_CHANNELS", // Create, edit, delete channels
 
-  // Category management (if you support it)
+  // Category management
   "MANAGE_CATEGORIES", // Create, edit, delete channel categories
 
   // General communication control
-  "VIEW_CHANNELS", // View channel list (server-level fallback)
+  "VIEW_CHANNELS", // View channel list
   "SEND_MESSAGES", // Post messages in all text channels
   "DELETE_MESSAGES", // Delete anyone's messages
 
-  // Voice control (if using voice)
+  // Voice control 
   "CONNECT_VOICE", // Join voice channels
   "MUTE_MEMBERS", // Mute others in voice
   "DEAFEN_MEMBERS", // Deafen others in voice
   "MOVE_MEMBERS", // Move users between voice channels
 
   // Admin powers
-  "ADMINISTRATOR", // Bypass all permission checks (dangerous)
+  "ADMINISTRATOR", // Bypass all permission checks
 ] as const;
 
 export type ServerPermission = (typeof SERVER_PERMISSIONS)[number];

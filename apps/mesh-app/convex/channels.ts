@@ -3,6 +3,11 @@ import { ConvexError, v } from "convex/values";
 import { checkPermission } from "../src/lib/permissions";
 import { mutation, query } from "./_generated/server";
 
+/*
+- Check for auth user
+- Check if the member belongs to this server
+- Fetch channels and return
+*/
 export const getChannels = query({
   args: {
     serverId: v.id("servers"),
@@ -34,6 +39,13 @@ export const getChannels = query({
   },
 });
 
+/*
+- Check for auth user
+- Check for server member
+- Check if the user is permitted to perform the action
+- Check for valid name
+- Create channel
+*/
 export const createChannel = mutation({
   args: {
     serverId: v.id("servers"),
@@ -113,6 +125,13 @@ export const getChannelById = query({
   },
 });
 
+/*
+- Check for auth user
+- Check for server member
+- Check if the user is permitted to perform the action
+- Check for valid name
+- Create rename channel
+*/
 export const renameChannel = mutation({
   args: {
     channelId: v.id("channels"),
@@ -162,6 +181,14 @@ export const renameChannel = mutation({
   },
 });
 
+/*
+- Check for auth user
+- Check for server member
+- Check if the user is permitted to perform the action
+- Delete all the messages belonging to that channel
+- Delete the channel
+- Create rename channel
+*/
 export const removeChannel = mutation({
   args: {
     channelId: v.id("channels"),

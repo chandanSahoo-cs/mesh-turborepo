@@ -4,10 +4,12 @@ import { ConvexError, v } from "convex/values";
 import { Id } from "./_generated/dataModel";
 import { mutation, query, QueryCtx } from "./_generated/server";
 
+// get the user
 const populateUser = (ctx: QueryCtx, userId: Id<"users">) => {
   return ctx.db.get(userId);
 };
 
+// to get thread info
 const populateThread = async (
   ctx: QueryCtx,
   friendMessageId: Id<"friendMessages">
@@ -38,6 +40,7 @@ const populateThread = async (
   };
 };
 
+// get reaction for the message
 const populateReactions = (ctx: QueryCtx, friendMessageId: Id<"friendMessages">) => {
   return ctx.db
     .query("friendReactions")
@@ -45,6 +48,12 @@ const populateReactions = (ctx: QueryCtx, friendMessageId: Id<"friendMessages">)
     .collect();
 };
 
+/*
+- Check for auth user
+- Check for reply
+- Fetch messages
+- Populate it with reaction and thread
+*/
 export const getFriendMessages = query({
   args: {
     friendConversationId: v.optional(v.id("friendConversations")),
@@ -114,6 +123,12 @@ export const getFriendMessages = query({
   },
 });
 
+/*
+- Check for auth user
+- Check for message body or any image
+- Check if it is a top level message or a reply
+- Create message
+*/
 export const createFriendMessage = mutation({
   args: {
     body: v.optional(v.string()),
@@ -134,6 +149,7 @@ export const createFriendMessage = mutation({
 
     let _friendConversationId = friendConversationId;
 
+    // in case of reply
     if (!friendConversationId && parentMessageId) {
       const parentMessage = await ctx.db.get(parentMessageId);
 
@@ -155,6 +171,12 @@ export const createFriendMessage = mutation({
   },
 });
 
+/*
+- Check for auth user
+- Check if the message exists
+- Check for the user who actually sent the message
+- Update the message
+*/
 export const updateFriendMessage = mutation({
   args: {
     friendMessageId: v.id("friendMessages"),
@@ -186,6 +208,13 @@ export const updateFriendMessage = mutation({
   },
 });
 
+/*
+- Check for auth user
+- Check if the message exists
+- Check for the user who actually sent the message
+- Delete reactions for this message
+- Delete the message
+*/
 export const deleteFriendMessage = mutation({
   args: {
     friendMessageId: v.id("friendMessages"),
@@ -220,6 +249,13 @@ export const deleteFriendMessage = mutation({
   },
 });
 
+/*
+- Check for auth user
+- Check if the message exists
+- Check for the user who actually sent the message
+- Fetch reactions for this message
+- If any image, fetch the image
+*/
 export const getFriendMessageById = query({
   args: {
     friendMessageId: v.id("friendMessages"),
