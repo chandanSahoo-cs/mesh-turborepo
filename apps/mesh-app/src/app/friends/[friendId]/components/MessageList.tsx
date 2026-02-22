@@ -107,12 +107,14 @@ export const MessageList = ({
           })}
         </div>
       ))}
+      // To detect when element becomes visible in viewport
       <div
         className="h-1"
         ref={(el) => {
           if (el) {
             const observer = new IntersectionObserver(
               ([entry]) => {
+                //check  observed element is currently visible inside the viewport and more data can be loaded
                 if (entry.isIntersecting && canLoadMore) {
                   loadMore();
                 }

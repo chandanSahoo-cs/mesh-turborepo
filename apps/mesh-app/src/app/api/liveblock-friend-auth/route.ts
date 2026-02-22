@@ -1,3 +1,4 @@
+// for self presence
 import { Liveblocks } from "@liveblocks/node";
 import { Doc } from "../../../../convex/_generated/dataModel";
 
