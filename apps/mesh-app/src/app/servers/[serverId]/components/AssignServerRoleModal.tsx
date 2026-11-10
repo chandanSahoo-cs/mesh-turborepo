@@ -76,7 +76,7 @@ export const AssignServerRoleModal = ({
   };
 
   const availableRoles =
-    allRoles?.filter((role) => role.name !== "@everyone") || [];
+    allRoles?.filter((role) => !role.isEveryone && role.name !== "@everyone") || [];
   const memberRoleIds = new Set(memberRoles?.map((role) => role?._id) || []);
 
   return (

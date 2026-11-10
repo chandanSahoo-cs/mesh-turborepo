@@ -17,7 +17,7 @@ export const checkMembership = query({
     const serverMembership = await ctx.db
       .query("serverMembers")
       .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", serverId)
+        q.eq("userId", userId).eq("serverId", serverId),
       )
       .unique();
 
@@ -37,7 +37,7 @@ export const getCurrentMember = query({
     const member = await ctx.db
       .query("serverMembers")
       .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", serverId)
+        q.eq("userId", userId).eq("serverId", serverId),
       )
       .unique();
 
@@ -63,7 +63,7 @@ export const getMembers = query({
     const memeber = await ctx.db
       .query("serverMembers")
       .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", serverId)
+        q.eq("userId", userId).eq("serverId", serverId),
       )
       .unique();
 
@@ -85,7 +85,7 @@ export const getMembers = query({
         serverMembers.map(async (serverMember) => {
           const memberInfo = await ctx.db.get(serverMember.userId);
           return { ...serverMember, memberInfo };
-        })
+        }),
       )
     ).filter(Boolean);
 
@@ -161,12 +161,15 @@ export const removeMember = mutation({
       throw new ConvexError("Transfer ownership before leaving the server");
     }
 
+    // Members may always leave themselves; removing anyone else needs MANAGE_MEMBERS.
+    const isLeaving = currentMember._id === member._id;
     const isPermitted =
+      isLeaving ||
       (await checkPermission({
         ctx,
-        serverMemberId: currentMember?._id,
+        serverMemberId: currentMember._id,
         permission: "MANAGE_MEMBERS",
-      })) || currentMember._id !== member._id;
+      }));
 
     //messages, reactions
 
@@ -183,13 +186,13 @@ export const removeMember = mutation({
       ctx.db
         .query("messages")
         .withIndex("byServerMemberId", (q) =>
-          q.eq("serverMemberId", member._id)
+          q.eq("serverMemberId", member._id),
         )
         .collect(),
       ctx.db
         .query("reactions")
         .withIndex("byServerMemberId", (q) =>
-          q.eq("serverMemberId", member._id)
+          q.eq("serverMemberId", member._id),
         )
         .collect(),
 
@@ -215,7 +218,7 @@ export const removeMember = mutation({
       }),
       ...deletedMemberReactions.map((reaction) => ctx.db.delete(reaction._id)),
       ...deletedMemberServerConversation.map((serverConversation) =>
-        ctx.db.delete(serverConversation._id)
+        ctx.db.delete(serverConversation._id),
       ),
     ]);
 

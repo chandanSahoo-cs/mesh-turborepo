@@ -1,12 +1,13 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
-import { checkPermission } from "../src/lib/permissions";
+import { checkPermission, EVERYONE_ROLE } from "../src/lib/permissions";
 import { mutation, query } from "./_generated/server";
 
 const generateCode = () => {
   const code = Array.from(
     { length: 6 },
-    () => "0123456789abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 36)]
+    () =>
+      "0123456789abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 36)],
   ).join("");
   return code;
 };
@@ -25,7 +26,7 @@ export const checkMembership = query({
     const serverMembership = await ctx.db
       .query("serverMembers")
       .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", serverId)
+        q.eq("userId", userId).eq("serverId", serverId),
       )
       .unique();
 
@@ -59,7 +60,7 @@ export const createServer = mutation({
 
       const everyoneRoleId = await ctx.db.insert("roles", {
         serverId,
-        name: "@everyone",
+        name: EVERYONE_ROLE,
         permissions: ["VIEW_CHANNELS", "SEND_MESSAGES", "CONNECT_VOICE"],
         isEveryone: true,
       });
@@ -123,7 +124,7 @@ export const getServers = query({
       const memberServerId = membership.map((m) => m.serverId);
 
       const memberServer = await Promise.all(
-        memberServerId.map((id) => ctx.db.get(id))
+        memberServerId.map((id) => ctx.db.get(id)),
       );
 
       return memberServer;
@@ -152,7 +153,7 @@ export const getServerById = query({
         const memeber = await ctx.db
           .query("serverMembers")
           .withIndex("uniqueMembership", (q) =>
-            q.eq("userId", userId).eq("serverId", server._id)
+            q.eq("userId", userId).eq("serverId", server._id),
           )
           .unique();
 
@@ -184,7 +185,7 @@ export const renameServer = mutation({
       const member = await ctx.db
         .query("serverMembers")
         .withIndex("uniqueMembership", (q) =>
-          q.eq("userId", userId).eq("serverId", serverId)
+          q.eq("userId", userId).eq("serverId", serverId),
         )
         .unique();
 
@@ -209,6 +210,7 @@ export const renameServer = mutation({
       return serverId;
     } catch (error) {
       console.error(error);
+      throw error;
     }
   },
 });
@@ -272,6 +274,7 @@ export const deleteServer = mutation({
       return serverId;
     } catch (error) {
       console.error(error);
+      throw error;
     }
   },
 });
@@ -291,7 +294,7 @@ export const generateNewJoinCode = mutation({
       const member = await ctx.db
         .query("serverMembers")
         .withIndex("uniqueMembership", (q) =>
-          q.eq("userId", userId).eq("serverId", serverId)
+          q.eq("userId", userId).eq("serverId", serverId),
         )
         .unique();
 
@@ -299,10 +302,10 @@ export const generateNewJoinCode = mutation({
         throw new ConvexError("User is not a server member");
       }
 
-      const isPermitted = checkPermission({
+      const isPermitted = await checkPermission({
         ctx,
         serverMemberId: member._id,
-        permission: "ADMINISTRATOR",
+        permission: "INVITE_MEMBERS",
       });
 
       if (!isPermitted) {
@@ -318,6 +321,7 @@ export const generateNewJoinCode = mutation({
       return serverId;
     } catch (error) {
       console.error(error);
+      throw error;
     }
   },
 });
@@ -347,7 +351,7 @@ export const joinServer = mutation({
     const existingMember = await ctx.db
       .query("serverMembers")
       .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", serverId)
+        q.eq("userId", userId).eq("serverId", serverId),
       )
       .unique();
 
@@ -358,7 +362,7 @@ export const joinServer = mutation({
     const everyoneRole = await ctx.db
       .query("roles")
       .withIndex("byNameAndServerId", (q) =>
-        q.eq("name", "@everyone").eq("serverId", serverId)
+        q.eq("name", EVERYONE_ROLE).eq("serverId", serverId),
       )
       .unique();
 
@@ -393,7 +397,7 @@ export const getServerInfoById = query({
     const member = await ctx.db
       .query("serverMembers")
       .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", serverId)
+        q.eq("userId", userId).eq("serverId", serverId),
       )
       .unique();
 

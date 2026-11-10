@@ -1,49 +1,87 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
 import { checkMember } from "../src/lib/checkMember";
-import { checkPermission } from "../src/lib/permissions";
-import { mutation, query } from "./_generated/server";
-import { serverPermissionValidator } from "./schema";
+import {
+  EVERYONE_ROLE,
+  getMemberPermissions,
+  isEveryoneRole,
+} from "../src/lib/permissions";
+import { Doc, Id } from "./_generated/dataModel";
+import { mutation, MutationCtx, query } from "./_generated/server";
+import { ServerPermission, serverPermissionValidator } from "./schema";
 
-// export const SERVER_PERMISSIONS = [
-//   // Server management
-//   "MANAGE_SERVER", // Rename/delete server, change settings
-//   "VIEW_AUDIT_LOG", // See server activity logs (if you have them)
+/*
+- Resolve the caller's membership in the server
+- Resolve the caller's effective permissions
+- Require MANAGE_ROLES
+*/
+const requireRoleManager = async (
+  ctx: MutationCtx,
+  serverId: Id<"servers">,
+) => {
+  const userId = await getAuthUserId(ctx);
 
-//   // Member management
-//   "MANAGE_MEMBERS", // Kick, ban, or change member roles
-//   "INVITE_MEMBERS", // Generate invite links
+  if (!userId) {
+    throw new ConvexError("Unauthorized user");
+  }
 
-//   // Role management
-//   "MANAGE_ROLES", // Create/edit/delete roles
+  const actor = await checkMember({ ctx, serverId, userId });
 
-//   // Channel management
-//   "MANAGE_CHANNELS", // Create, edit, delete channels
+  if (!actor) {
+    throw new ConvexError("User is not a server member");
+  }
 
-//   // Category management (if you support it)
-//   "MANAGE_CATEGORIES", // Create, edit, delete channel categories
+  const actorPermissions = await getMemberPermissions(ctx, actor._id);
 
-//   // General communication control
-//   "VIEW_CHANNELS", // View channel list (server-level fallback)
-//   "SEND_MESSAGES", // Post messages in all text channels
-//   "DELETE_MESSAGES", // Delete anyone's messages
+  if (!actorPermissions.has("MANAGE_ROLES")) {
+    throw new ConvexError("User is not allowed to manage roles");
+  }
 
-//   // Voice control (if using voice)
-//   "CONNECT_VOICE", // Join voice channels
-//   "MUTE_MEMBERS", // Mute others in voice
-//   "DEAFEN_MEMBERS", // Deafen others in voice
-//   "MOVE_MEMBERS", // Move users between voice channels
+  return { actor, actorPermissions };
+};
 
-//   // Admin powers
-//   "ADMINISTRATOR", // Bypass all permission checks (dangerous)
-// ] as const;
+// Prevents privilege escalation: you can only grant, edit or hand out
+// permissions you already hold yourself.
+const assertCanGrant = (
+  actorPermissions: Set<ServerPermission>,
+  permissions: readonly ServerPermission[],
+) => {
+  const missing = permissions.filter((p) => !actorPermissions.has(p));
 
-// get member object
-// get all member roles
-// merge all perms from those role
-// and validate from the given role
+  if (missing.length > 0) {
+    throw new ConvexError(
+      `You can't grant permissions you don't have: ${missing.join(", ")}`,
+    );
+  }
+};
 
-export const EVERYONE_ROLE = "@everyone";
+const getRoleInServer = async (
+  ctx: MutationCtx,
+  roleId: Id<"roles">,
+  serverId: Id<"servers">,
+): Promise<Doc<"roles">> => {
+  const role = await ctx.db.get(roleId);
+
+  if (!role || role.serverId !== serverId) {
+    throw new ConvexError("Role not found");
+  }
+
+  return role;
+};
+
+const normalizeRoleName = (name: string) => {
+  const trimmed = name.trim();
+
+  if (!trimmed) {
+    throw new ConvexError("Role name can't be empty");
+  }
+
+  if (trimmed === EVERYONE_ROLE) {
+    throw new ConvexError("'@everyone' is a default role");
+  }
+
+  return trimmed;
+};
 
 export const hasPermission = query({
   args: {
@@ -51,12 +89,22 @@ export const hasPermission = query({
     permission: serverPermissionValidator,
   },
   handler: async (ctx, { serverMemberId, permission }) => {
-    const isPermitted = await checkPermission({
-      ctx,
-      serverMemberId,
-      permission,
-    });
-    return isPermitted;
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      return false;
+    }
+
+    // Only answer for the caller's own membership, so this can't be used
+    // to probe other members' permissions.
+    const member = await ctx.db.get(serverMemberId);
+
+    if (!member || member.userId !== userId) {
+      return false;
+    }
+
+    const permissions = await getMemberPermissions(ctx, serverMemberId);
+    return permissions.has(permission);
   },
 });
 
@@ -66,122 +114,63 @@ export const assignRoleToMember = mutation({
     roleId: v.id("roles"),
   },
   handler: async (ctx, { serverMemberId, roleId }) => {
-    const userId = await getAuthUserId(ctx);
-
-    if (!userId) {
-      throw new Error("User Unauthorized");
-    }
-
-    const role = await ctx.db.get(roleId);
-
-    if (!role) {
-      throw new ConvexError("Role not found");
-    }
-
     const member = await ctx.db.get(serverMemberId);
 
     if (!member) {
-      throw new Error("Member not found");
+      throw new ConvexError("Member not found");
     }
 
-    const currentMember = await checkMember({
-      ctx,
-      serverId: member.serverId,
-      userId,
-    });
+    const { actorPermissions } = await requireRoleManager(ctx, member.serverId);
 
-    if (!currentMember) {
-      throw new ConvexError("User is not a server member");
+    const role = await getRoleInServer(ctx, roleId, member.serverId);
+
+    if (isEveryoneRole(role)) {
+      throw new ConvexError("'@everyone' is assigned to every member");
     }
 
-    const isPermitted = await checkPermission({
-      ctx,
-      serverMemberId: currentMember?._id,
-      permission: "MANAGE_ROLES",
-    });
+    assertCanGrant(actorPermissions, role.permissions);
 
-    if (!isPermitted) {
-      throw new ConvexError("User is not allowed to change roles");
+    if (member.roleIds.includes(roleId)) {
+      return serverMemberId;
     }
 
     await ctx.db.patch(serverMemberId, {
       roleIds: [...member.roleIds, roleId],
     });
 
-    serverMemberId;
+    return serverMemberId;
   },
 });
 
-export const removRoleFromMember = mutation({
+export const removeRoleFromMember = mutation({
   args: {
     serverMemberId: v.id("serverMembers"),
     roleId: v.id("roles"),
   },
   handler: async (ctx, { serverMemberId, roleId }) => {
-    const userId = await getAuthUserId(ctx);
-
-    if (!userId) {
-      throw new Error("User Unauthorized");
-    }
-
-    const role = await ctx.db.get(roleId);
-
-    if (!role) {
-      throw new ConvexError("Role not found");
-    }
-
     const member = await ctx.db.get(serverMemberId);
 
     if (!member) {
-      throw new Error("Member not found");
+      throw new ConvexError("Member not found");
     }
 
-    const currentMember = await checkMember({
-      ctx,
-      serverId: member.serverId,
-      userId,
-    });
+    const { actorPermissions } = await requireRoleManager(ctx, member.serverId);
 
-    if (!currentMember) {
-      throw new ConvexError("User is not a server member");
+    const role = await getRoleInServer(ctx, roleId, member.serverId);
+
+    if (isEveryoneRole(role)) {
+      throw new ConvexError("'@everyone' can't be removed from a member");
     }
 
-    const everyoneRole = await ctx.db
-      .query("roles")
-      .withIndex("byNameAndServerId", (q) =>
-        q.eq("name", EVERYONE_ROLE).eq("serverId", member.serverId)
-      )
-      .unique();
-
-    if (!everyoneRole) {
-      throw new ConvexError("Everyone role not found");
-    }
-
-    const isEveryoneRole = everyoneRole?._id === roleId;
-
-    if (isEveryoneRole) {
-      throw new ConvexError("'Everyone' is not allowed to be deleted");
-    }
-
-    const isPermitted = await checkPermission({
-      ctx,
-      serverMemberId: currentMember?._id,
-      permission: "MANAGE_ROLES",
-    });
-
-    if (!isPermitted) {
-      throw new ConvexError("User is not allowed to change roles");
-    }
-
-    const newUserRole = member.roleIds.filter(
-      (userRoleId) => userRoleId !== roleId
-    );
+    // Removing a role you couldn't have granted (e.g. stripping an admin)
+    // is just as much an escalation as granting it.
+    assertCanGrant(actorPermissions, role.permissions);
 
     await ctx.db.patch(serverMemberId, {
-      roleIds: newUserRole,
+      roleIds: member.roleIds.filter((id) => id !== roleId),
     });
 
-    serverMemberId;
+    return serverMemberId;
   },
 });
 
@@ -192,41 +181,16 @@ export const addRole = mutation({
     serverId: v.id("servers"),
   },
   handler: async (ctx, { name, permissions, serverId }) => {
-    const userId = await getAuthUserId(ctx);
+    const { actorPermissions } = await requireRoleManager(ctx, serverId);
 
-    if (!userId) {
-      throw new ConvexError("Unauthorized user");
-    }
-
-    const serverMember = await ctx.db
-      .query("serverMembers")
-      .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", serverId)
-      )
-      .unique();
-
-    if (!serverMember) {
-      throw new ConvexError("User is not a server member");
-    }
-
-    const isPermitted = await checkPermission({
-      ctx,
-      serverMemberId: serverMember._id,
-      permission: "MANAGE_ROLES",
-    });
-
-    if (!isPermitted) {
-      throw new ConvexError("User is not allowed to manage roles");
-    }
-
-    if (name == EVERYONE_ROLE) {
-      throw new ConvexError("'@everyone' is a default role");
-    }
+    const roleName = normalizeRoleName(name);
+    assertCanGrant(actorPermissions, permissions);
 
     const roleId = await ctx.db.insert("roles", {
       serverId,
-      name,
-      permissions,
+      name: roleName,
+      permissions: [...new Set(permissions)],
+      isEveryone: false,
     });
 
     return roleId;
@@ -239,42 +203,31 @@ export const removeRole = mutation({
     roleId: v.id("roles"),
   },
   handler: async (ctx, { serverId, roleId }) => {
-    const userId = await getAuthUserId(ctx);
+    const { actorPermissions } = await requireRoleManager(ctx, serverId);
 
-    if (!userId) {
-      throw new ConvexError("Unauthorized user");
-    }
+    const role = await getRoleInServer(ctx, roleId, serverId);
 
-    const serverMember = await ctx.db
-      .query("serverMembers")
-      .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", serverId)
-      )
-      .unique();
-
-    if (!serverMember) {
-      throw new ConvexError("User is not a server member");
-    }
-
-    const isPermitted = await checkPermission({
-      ctx,
-      serverMemberId: serverMember._id,
-      permission: "MANAGE_ROLES",
-    });
-
-    if (!isPermitted) {
-      throw new ConvexError("User is not allowed to manage roles");
-    }
-
-    const role = await ctx.db.get(roleId);
-
-    if (!role) {
-      throw new ConvexError("Role not found");
-    }
-
-    if (role.name === EVERYONE_ROLE) {
+    if (isEveryoneRole(role)) {
       throw new ConvexError("Everyone role can't be deleted");
     }
+
+    assertCanGrant(actorPermissions, role.permissions);
+
+    // Strip the role from every member so no dangling ids are left behind.
+    const members = await ctx.db
+      .query("serverMembers")
+      .withIndex("byServerId", (q) => q.eq("serverId", serverId))
+      .collect();
+
+    await Promise.all(
+      members
+        .filter((m) => m.roleIds.includes(roleId))
+        .map((m) =>
+          ctx.db.patch(m._id, {
+            roleIds: m.roleIds.filter((id) => id !== roleId),
+          }),
+        ),
+    );
 
     await ctx.db.delete(roleId);
 
@@ -287,44 +240,35 @@ export const modifyRole = mutation({
     roleId: v.id("roles"),
     serverId: v.id("servers"),
     permissions: v.array(serverPermissionValidator),
+    name: v.optional(v.string()),
   },
-  handler: async (ctx, { roleId, serverId, permissions }) => {
-    const userId = await getAuthUserId(ctx);
+  handler: async (ctx, { roleId, serverId, permissions, name }) => {
+    const { actorPermissions } = await requireRoleManager(ctx, serverId);
 
-    if (!userId) {
-      throw new ConvexError("Unauthorized user");
+    const role = await getRoleInServer(ctx, roleId, serverId);
+
+    // Must be able to grant both what the role had and what it will have.
+    assertCanGrant(actorPermissions, role.permissions);
+    assertCanGrant(actorPermissions, permissions);
+
+    const everyone = isEveryoneRole(role);
+
+    if (everyone && permissions.includes("ADMINISTRATOR")) {
+      throw new ConvexError("'@everyone' can't be given ADMINISTRATOR");
     }
 
-    const serverMember = await ctx.db
-      .query("serverMembers")
-      .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", serverId)
-      )
-      .unique();
+    const patch: Partial<Doc<"roles">> = {
+      permissions: [...new Set(permissions)],
+    };
 
-    if (!serverMember) {
-      throw new ConvexError("User is not a server member");
+    if (name !== undefined && name.trim() !== role.name) {
+      if (everyone) {
+        throw new ConvexError("'@everyone' can't be renamed");
+      }
+      patch.name = normalizeRoleName(name);
     }
 
-    const isPermitted = await checkPermission({
-      ctx,
-      serverMemberId: serverMember._id,
-      permission: "MANAGE_ROLES",
-    });
-
-    if (!isPermitted) {
-      throw new ConvexError("User is not allowed to manage roles");
-    }
-
-    const role = await ctx.db.get(roleId);
-
-    if (!role) {
-      throw new ConvexError("Role not found");
-    }
-
-    await ctx.db.patch(roleId, {
-      permissions: permissions,
-    });
+    await ctx.db.patch(roleId, patch);
 
     return roleId;
   },
@@ -341,26 +285,16 @@ export const getRoles = query({
       return null;
     }
 
-    const serverMember = await ctx.db
-      .query("serverMembers")
-      .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", serverId)
-      )
-      .unique();
+    const serverMember = await checkMember({ ctx, serverId, userId });
 
     if (!serverMember) {
       return null;
     }
 
-    const roles = await ctx.db
+    return ctx.db
       .query("roles")
       .withIndex("byServerId", (q) => q.eq("serverId", serverId))
       .collect();
-
-    if (!roles) {
-      return null;
-    }
-    return roles;
   },
 });
 
@@ -376,12 +310,7 @@ export const getRoleById = query({
       return null;
     }
 
-    const serverMember = await ctx.db
-      .query("serverMembers")
-      .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", serverId)
-      )
-      .unique();
+    const serverMember = await checkMember({ ctx, serverId, userId });
 
     if (!serverMember) {
       return null;
@@ -389,7 +318,7 @@ export const getRoleById = query({
 
     const role = await ctx.db.get(roleId);
 
-    if (!role) return null;
+    if (!role || role.serverId !== serverId) return null;
 
     return role;
   },
@@ -412,10 +341,24 @@ export const getRoleByMemberId = query({
       return null;
     }
 
+    // Caller must share the server with the member they're looking up.
+    const caller = await checkMember({
+      ctx,
+      serverId: serverMember.serverId,
+      userId,
+    });
+
+    if (!caller) {
+      return null;
+    }
+
     const roles = await Promise.all(
-      serverMember.roleIds.map((roleId) => ctx.db.get(roleId))
+      serverMember.roleIds.map((roleId) => ctx.db.get(roleId)),
     );
 
-    return roles;
+    return roles.filter(
+      (role): role is Doc<"roles"> =>
+        !!role && role.serverId === serverMember.serverId,
+    );
   },
 });

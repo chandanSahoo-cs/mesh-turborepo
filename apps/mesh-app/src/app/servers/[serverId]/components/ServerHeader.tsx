@@ -24,9 +24,13 @@ interface ServerHeaderProps {
 }
 
 export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
-  const { data: isAdmin } = useHasPermission({
+  const { data: canInvite } = useHasPermission({
     serverMemberId: member._id,
-    permission: "ADMINISTRATOR",
+    permission: "INVITE_MEMBERS",
+  });
+  const { data: canManageRoles } = useHasPermission({
+    serverMemberId: member._id,
+    permission: "MANAGE_ROLES",
   });
 
   const [preferencesOpen, setPreferencesOpen] = useState(false);
@@ -53,7 +57,8 @@ export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
               <Button
                 variant="transparent"
                 className="font-mono font-black text-lg w-auto p-3 overflow-hidden text-black hover:bg-white hover:border-4 hover:border-black hover:rounded-xl hover:shadow-[4px_4px_0px_0px_#000000] transition-all duration-200"
-                size="sm">
+                size="sm"
+              >
                 <span className="truncate uppercase tracking-wide">
                   {server.name}
                 </span>
@@ -64,7 +69,8 @@ export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
           <DropdownMenuContent
             side="bottom"
             align="start"
-            className="w-64 bg-white border-4 border-black shadow-[6px_6px_0px_0px_#000000] rounded-xl">
+            className="w-64 bg-white border-4 border-black shadow-[6px_6px_0px_0px_#000000] rounded-xl"
+          >
             <DropdownMenuItem className="cursor-pointer capitalize p-3 hover:bg-[#fffce9] rounded-lg">
               <div className="size-10 relative overflow-hidden bg-[#5170ff] text-white font-mono font-black text-lg rounded-xl flex items-center justify-center mr-3 border-2 border-black shadow-[2px_2px_0px_0px_#000000]">
                 {server.name.charAt(0).toUpperCase()}
@@ -79,17 +85,23 @@ export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
               </div>
             </DropdownMenuItem>
             <DropdownMenuSeparator className="border-2 border-black" />
-            {isAdmin && (
+            {canInvite && (
               <>
                 <DropdownMenuItem
                   onClick={() => setInviteOpen(true)}
-                  className="cursor-pointer py-3 px-3 hover:bg-[#7ed957] hover:text-black rounded-lg font-mono font-bold uppercase tracking-wide">
+                  className="cursor-pointer py-3 px-3 hover:bg-[#7ed957] hover:text-black rounded-lg font-mono font-bold uppercase tracking-wide"
+                >
                   Invite people to {server.name}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="border-2 border-black" />
+              </>
+            )}
+            {canManageRoles && (
+              <>
                 <DropdownMenuItem
                   onClick={() => setManageRoleOpen(true)}
-                  className="cursor-pointer py-3 px-3 hover:bg-[#7ed957] hover:text-black rounded-lg font-mono font-bold uppercase tracking-wide">
+                  className="cursor-pointer py-3 px-3 hover:bg-[#7ed957] hover:text-black rounded-lg font-mono font-bold uppercase tracking-wide"
+                >
                   Manage roles
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="border-2 border-black" />
@@ -97,7 +109,8 @@ export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
             )}
             <DropdownMenuItem
               className="cursor-pointer py-3 px-3 hover:bg-[#5170ff] hover:text-white rounded-lg font-mono font-bold uppercase tracking-wide"
-              onClick={() => setPreferencesOpen(true)}>
+              onClick={() => setPreferencesOpen(true)}
+            >
               Preferences
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -108,7 +121,8 @@ export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 variant="transparent"
-                className="size-9 p-2 hover:bg-[#5170ff] hover:text-white border-2 border-transparent hover:border-black hover:rounded-xl hover:shadow-[2px_2px_0px_0px_#000000] transition-all duration-200">
+                className="size-9 p-2 hover:bg-[#5170ff] hover:text-white border-2 border-transparent hover:border-black hover:rounded-xl hover:shadow-[2px_2px_0px_0px_#000000] transition-all duration-200"
+              >
                 <ListFilterIcon className="size-4" />
               </Button>
             </motion.div>
@@ -117,7 +131,8 @@ export const ServerHeader = ({ server, member }: ServerHeaderProps) => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 variant="transparent"
-                className="size-9 p-2 hover:bg-[#7ed957] hover:text-black border-2 border-transparent hover:border-black hover:rounded-xl hover:shadow-[2px_2px_0px_0px_#000000] transition-all duration-200">
+                className="size-9 p-2 hover:bg-[#7ed957] hover:text-black border-2 border-transparent hover:border-black hover:rounded-xl hover:shadow-[2px_2px_0px_0px_#000000] transition-all duration-200"
+              >
                 <SquarePenIcon className="size-4" />
               </Button>
             </motion.div>

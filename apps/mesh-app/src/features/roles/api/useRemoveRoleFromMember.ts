@@ -29,7 +29,7 @@ export const useRemoveRoleFromeMember = () => {
 
   const isPending = useMemo(() => status === "pending", [status]);
 
-  const remove = useMutation(api.roles.removRoleFromMember);
+  const remove = useMutation(api.roles.removeRoleFromMember);
 
   const removeRoleFromMember = useCallback(
     async (

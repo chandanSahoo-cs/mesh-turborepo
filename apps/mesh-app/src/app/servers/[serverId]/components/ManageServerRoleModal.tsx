@@ -209,7 +209,7 @@ export const ManageServerRoleModal = ({
   };
 
   const filteredRoles =
-    roles?.filter((role) => role.name !== "@everyone") || [];
+    roles?.filter((role) => !role.isEveryone && role.name !== "@everyone") || [];
 
   return (
     <>

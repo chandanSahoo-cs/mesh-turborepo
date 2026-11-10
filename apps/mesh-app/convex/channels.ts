@@ -22,11 +22,21 @@ export const getChannels = query({
     const member = await ctx.db
       .query("serverMembers")
       .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", serverId)
+        q.eq("userId", userId).eq("serverId", serverId),
       )
       .unique();
 
     if (!member) {
+      return [];
+    }
+
+    const canView = await checkPermission({
+      ctx,
+      serverMemberId: member._id,
+      permission: "VIEW_CHANNELS",
+    });
+
+    if (!canView) {
       return [];
     }
 
@@ -63,7 +73,7 @@ export const createChannel = mutation({
     const member = await ctx.db
       .query("serverMembers")
       .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", serverId)
+        q.eq("userId", userId).eq("serverId", serverId),
       )
       .unique();
 
@@ -74,11 +84,27 @@ export const createChannel = mutation({
     const isPermitted = await checkPermission({
       ctx,
       serverMemberId: member._id,
-      permission: "MANAGE_CHANNELS",
+      permission: type === "category" ? "MANAGE_CATEGORIES" : "MANAGE_CHANNELS",
     });
 
     if (!isPermitted) {
-      throw new ConvexError("User is not allowed to create new channels");
+      throw new ConvexError(
+        type === "category"
+          ? "User is not allowed to create categories"
+          : "User is not allowed to create new channels",
+      );
+    }
+
+    if (categoryId) {
+      const category = await ctx.db.get(categoryId);
+
+      if (
+        !category ||
+        category.serverId !== serverId ||
+        category.type !== "category"
+      ) {
+        throw new ConvexError("Category not found");
+      }
     }
 
     const parsedName = name.replace(/\s+/g, "-").toLowerCase();
@@ -114,13 +140,24 @@ export const getChannelById = query({
     const member = await ctx.db
       .query("serverMembers")
       .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", channel?.serverId)
+        q.eq("userId", userId).eq("serverId", channel?.serverId),
       )
       .unique();
 
     if (!member) {
       return null;
     }
+
+    const canView = await checkPermission({
+      ctx,
+      serverMemberId: member._id,
+      permission: "VIEW_CHANNELS",
+    });
+
+    if (!canView) {
+      return null;
+    }
+
     return channel;
   },
 });
@@ -153,7 +190,7 @@ export const renameChannel = mutation({
     const member = await ctx.db
       .query("serverMembers")
       .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", channel?.serverId)
+        q.eq("userId", userId).eq("serverId", channel?.serverId),
       )
       .unique();
 
@@ -164,11 +201,12 @@ export const renameChannel = mutation({
     const isPermitted = await checkPermission({
       ctx,
       serverMemberId: member._id,
-      permission: "MANAGE_CHANNELS",
+      permission:
+        channel.type === "category" ? "MANAGE_CATEGORIES" : "MANAGE_CHANNELS",
     });
 
     if (!isPermitted) {
-      throw new ConvexError("User is not allowed to create new channels");
+      throw new ConvexError("User is not allowed to rename this channel");
     }
 
     const parsedName = name.replace(/\s+/g, "-").toLowerCase();
@@ -209,7 +247,7 @@ export const removeChannel = mutation({
     const member = await ctx.db
       .query("serverMembers")
       .withIndex("uniqueMembership", (q) =>
-        q.eq("userId", userId).eq("serverId", channel?.serverId)
+        q.eq("userId", userId).eq("serverId", channel?.serverId),
       )
       .unique();
 
@@ -220,11 +258,12 @@ export const removeChannel = mutation({
     const isPermitted = await checkPermission({
       ctx,
       serverMemberId: member._id,
-      permission: "MANAGE_CHANNELS",
+      permission:
+        channel.type === "category" ? "MANAGE_CATEGORIES" : "MANAGE_CHANNELS",
     });
 
     if (!isPermitted) {
-      throw new ConvexError("User is not allowed to create new channels");
+      throw new ConvexError("User is not allowed to delete this channel");
     }
 
     const [messages] = await Promise.all([

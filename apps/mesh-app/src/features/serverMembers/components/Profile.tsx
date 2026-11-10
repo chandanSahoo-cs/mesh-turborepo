@@ -32,11 +32,11 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
 
   const [LeaveDialog, confirmLeave] = useConfirm(
     "Leave Server",
-    "Are you sure you want to leave this server?"
+    "Are you sure you want to leave this server?",
   );
   const [RemoveDialog, confirmRemove] = useConfirm(
     "Remove Member",
-    "Are you sure you want to remove this member?"
+    "Are you sure you want to remove this member?",
   );
 
   const { data: currentMember, isLoading: isLoadingCurrentMember } =
@@ -52,9 +52,13 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
 
   const { data: isPermitted, isLoading: isLoadingPermission } =
     useHasPermission({
-      serverMemberId,
+      serverMemberId: currentMember?._id,
       permission: "MANAGE_MEMBERS",
     });
+  const { data: canManageRoles } = useHasPermission({
+    serverMemberId: currentMember?._id,
+    permission: "MANAGE_ROLES",
+  });
 
   const onRemove = async () => {
     const ok = await confirmRemove();
@@ -77,7 +81,7 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
         onError: () => {
           errorToast("Failed to remove member");
         },
-      }
+      },
     );
   };
 
@@ -102,7 +106,7 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
         onError: () => {
           errorToast("Failed to leave the server");
         },
-      }
+      },
     );
   };
 
@@ -112,7 +116,7 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
     isLoadingCurrentMember ||
     isLoadingProfileMember ||
     isLoadingServer ||
-    isLoadingPermission
+    (!!currentMember && isLoadingPermission)
   ) {
     return (
       <div className="h-full flex flex-col bg-white">
@@ -123,7 +127,8 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               onClick={onClose}
-              className="size-10 p-2 bg-white text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] hover:bg-gray-50 transition-all duration-200">
+              className="size-10 p-2 bg-white text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] hover:bg-gray-50 transition-all duration-200"
+            >
               <XIcon className="size-5" />
             </Button>
           </motion.div>
@@ -145,7 +150,8 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               onClick={onClose}
-              className="size-10 p-2 bg-white text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] hover:bg-gray-50 transition-all duration-200">
+              className="size-10 p-2 bg-white text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] hover:bg-gray-50 transition-all duration-200"
+            >
               <XIcon className="size-5" />
             </Button>
           </motion.div>
@@ -160,7 +166,8 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
               duration: 2,
               repeat: Number.POSITIVE_INFINITY,
               ease: "easeInOut",
-            }}>
+            }}
+          >
             <AlertTriangleIcon className="size-8 text-red-600" />
           </motion.div>
           <p className="text-sm font-mono font-bold text-black uppercase tracking-wide text-center">
@@ -191,7 +198,8 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               onClick={onClose}
-              className="size-10 p-2 bg-white text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] hover:bg-gray-50 transition-all duration-200">
+              className="size-10 p-2 bg-white text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] hover:bg-gray-50 transition-all duration-200"
+            >
               <XIcon className="size-5" />
             </Button>
           </motion.div>
@@ -202,7 +210,8 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
           <motion.div
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
-            className="relative">
+            className="relative"
+          >
             <Avatar className="size-32 border-6 border-black rounded-3xl shadow-[8px_8px_0px_0px_#000000]">
               <AvatarImage
                 src={profileMember.user?.image || "/placeholder.svg"}
@@ -228,30 +237,40 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
 
           <div className="flex space-x-2 justify-around">
             {/* Action Buttons */}
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                onClick={() => setAssignRoleOpen(true)}
-                className="w-40 bg-[#5a78ff] text-black font-mono font-bold py-3 px-6 border-4 border-black uppercase tracking-wide shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] rounded-xl transition-all hover:bg-[#3a5eff]">
-                Manage roles
-              </Button>
-            </motion.div>
+            {canManageRoles && (
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  onClick={() => setAssignRoleOpen(true)}
+                  className="w-40 bg-[#5a78ff] text-black font-mono font-bold py-3 px-6 border-4 border-black uppercase tracking-wide shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] rounded-xl transition-all hover:bg-[#3a5eff]"
+                >
+                  Manage roles
+                </Button>
+              </motion.div>
+            )}
             {isCurrent ? (
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}>
+                whileTap={{ scale: 0.98 }}
+              >
                 <Button
                   onClick={onLeave}
-                  className="w-40 bg-red-400 text-black font-mono font-bold py-3 px-6 border-4 border-black uppercase tracking-wide shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] rounded-xl transition-all hover:bg-red-500">
+                  className="w-40 bg-red-400 text-black font-mono font-bold py-3 px-6 border-4 border-black uppercase tracking-wide shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] rounded-xl transition-all hover:bg-red-500"
+                >
                   Leave Server
                 </Button>
               </motion.div>
             ) : isPermitted ? (
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}>
+                whileTap={{ scale: 0.98 }}
+              >
                 <Button
                   onClick={onRemove}
-                  className="w-full bg-red-400 text-black font-mono font-bold py-3 px-6 border-4 border-black uppercase tracking-wide shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] rounded-xl transition-all hover:bg-red-500">
+                  className="w-full bg-red-400 text-black font-mono font-bold py-3 px-6 border-4 border-black uppercase tracking-wide shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] rounded-xl transition-all hover:bg-red-500"
+                >
                   Remove Member
                 </Button>
               </motion.div>
@@ -269,7 +288,8 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
           </h4>
           <motion.div
             className="bg-white border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#5170ff] transition-all duration-200"
-            whileHover={{ scale: 1.01 }}>
+            whileHover={{ scale: 1.01 }}
+          >
             <div className="flex items-center gap-3">
               <div className="size-12 rounded-xl bg-[#5170ff] border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">
                 <MailIcon className="size-5 text-white" />
@@ -280,7 +300,8 @@ export const Profile = ({ serverMemberId, onClose }: ProfileProps) => {
                 </p>
                 <Link
                   href={`mailto:${profileMember.user?.email}`}
-                  className="text-sm font-mono font-bold text-[#5170ff] hover:text-[#4060ef] hover:underline transition-colors duration-200 uppercase tracking-wide">
+                  className="text-sm font-mono font-bold text-[#5170ff] hover:text-[#4060ef] hover:underline transition-colors duration-200 uppercase tracking-wide"
+                >
                   {profileMember.user?.email}
                 </Link>
               </div>
